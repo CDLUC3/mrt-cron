@@ -1,1 +1,3 @@
 consistency-driver/vendor/
+billing/daily-billing-prd.sh
+billing/daily-billing-stg.sh
