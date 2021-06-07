@@ -2,6 +2,8 @@
 
 This library is part of the [Merritt Preservation System](https://github.com/CDLUC3/mrt-doc).
 
+## Purpose
+The purpose of this repository is to house crons for the Merritt system that can be run from any host.
 ## Code invoked by this repository
 - [Merritt Billing Scripts](https://github.com/CDLUC3/mrt-admin-lambda/tree/main/merrit-billing)
 - [Merritt Consistency Reports](https://github.com/CDLUC3/mrt-admin-lambda)
