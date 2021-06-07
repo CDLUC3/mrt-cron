@@ -1,4 +1,5 @@
 admintool:
+  function: uc3-mrt-admintool-img
   daily:
   # verify primary node configuration
   - path: con_primary
@@ -36,6 +37,7 @@ admintool:
   - path: audit_processed_size
     days: '5'
 colladmin:
+  function: uc3-mrt-colladmin-img-dev
   daily:
   # Look for ingest queue failures  
   - path: queues

@@ -1,5 +1,4 @@
 require 'yaml'
-require 'aws-sdk-ssm'
 require 'aws-sdk-lambda'
 require "base64"
 
@@ -7,19 +6,18 @@ class ConsistencyDriver
     def initialize(mode)
         @config = YAML.load_file('reports.yml')
         region = ENV['AWS_REGION'] || 'us-west-2'
-        @ssm_root_path = ENV['SSM_ROOT_PATH'] || ''
         @mode = mode
         @tmpfile = "/tmp/adminrpt.#{@mode}.txt"
 
-        @client = Aws::SSM::Client.new(region: region)
-        @admintool = get_parameter("admintool/lambda-arn-base", mode).gsub(/^.*function:/,'')
-        @colladmin = get_parameter("colladmin/lambda-arn-base", mode).gsub(/^.*function:/,'')
+        @admintool = get_func_name("admintool", @mode)
+        @colladmin = get_func_name("colladmin", @mode)
         @lambda = Aws::Lambda::Client.new(region: region)
+        puts @admintool
+        puts @colladmin
     end
 
-    def get_parameter(key, suffix)
-        fullkey = "#{@ssm_root_path}#{key}"
-        val = @client.get_parameter(name: fullkey)[:parameter][:value]
+    def get_func_name(key, suffix)
+        val = @config.fetch("admintool", {}).fetch("function", "na")
         "#{val}-#{suffix}"
     end
 
@@ -29,19 +27,19 @@ class ConsistencyDriver
                 function_name: arn, 
                 payload: params.to_json 
             })
-            puts resp.status_code
-            rbody = resp.payload.read
-            rj = JSON.parse(JSON.parse(rbody).fetch("body", {}.to_json))
-            puts rj.fetch("report_path","n/a")
+            # payload is serialized json
+            payload = JSON.parse(resp.payload.read)
+            # Body of the response is serialized
+            rj = JSON.parse(payload.fetch("body", {}.to_json))
+            rpt = rj.fetch("report_path","n/a")
+            puts("\t#{resp.status_code}\t#{rpt}")
         rescue => e
-            puts(e.message)
+            puts("\t#{e.message}")
         end
         sleep 2
     end
 
     def run 
-        puts @admintool
-        puts @colladmin
         @config.fetch("admintool", {}).fetch("daily", []).each do |query|
             puts "#{query}"
             invoke_lambda(@admintool, query)
