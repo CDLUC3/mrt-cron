@@ -52,7 +52,8 @@ class ConsistencyDriver
 end
 
 puts ARGV
+defenv = ENV.fetch('SSM_ROOT_PATH', 'dev').split('/')[-1]
 driver = ConsistencyDriver.new(
-    ARGV.length > 0 ? ARGV[0] : 'dev'
+    ARGV.length > 0 ? ARGV[0] : defenv
 )
 driver.run

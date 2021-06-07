@@ -10,3 +10,11 @@ This library is part of the [Merritt Preservation System](https://github.com/CDL
 - [Nuxeo Feeds](https://github.com/CDLUC3/mrt-dashboard/tree/main/lib)
 - Zookeeper Reports
 - Storage Reports
+
+## Recommended Crons
+
+```
+# Update billing database with updates from the prior day
+0 1 * * * .../billing/daily-billing.sh
+0 2 * * * cd .../consistency-driver;ruby driver.sh 
+```
