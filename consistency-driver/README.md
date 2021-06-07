@@ -1,6 +1,15 @@
-## Consistency Driver
-
+## Dependencies
 - Clone the git repo on a host that is authorized to call `aws lambda invoke`
-- `cd consistency-driver`
-- `bundle install`
-- `ruby driver.rb [env]`
+- Ruby
+## Install
+
+```
+cd consistency-driver
+bundle install
+```
+
+## Execution
+```
+cd consistency-driver
+ruby driver.rb [env]
+```
