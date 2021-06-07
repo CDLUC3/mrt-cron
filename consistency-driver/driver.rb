@@ -1,13 +1,11 @@
 require 'yaml'
 require 'aws-sdk-lambda'
-require "base64"
 
 class ConsistencyDriver
     def initialize(mode)
         @config = YAML.load_file('reports.yml')
         region = ENV['AWS_REGION'] || 'us-west-2'
         @mode = mode
-        @tmpfile = "/tmp/adminrpt.#{@mode}.txt"
 
         @admintool = get_func_name("admintool", @mode)
         @colladmin = get_func_name("colladmin", @mode)
