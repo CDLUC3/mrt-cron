@@ -37,12 +37,14 @@ class ConsistencyDriver
         sleep 2
     end
 
-    def run 
+    def run (path)
         @config.fetch("admintool", {}).fetch("daily", []).each do |query|
+            next unless path.empty? || path == query.fetch('path', '')
             puts "#{query}"
             invoke_lambda(@admintool, query)
         end
         @config.fetch("colladmin", {}).fetch("daily", []).each do |query|
+            next unless path.empty? || path == query.fetch('path', '')
             puts "#{query}"
             invoke_lambda(@colladmin, query)
         end
@@ -54,4 +56,4 @@ defenv = ENV.fetch('SSM_ROOT_PATH', 'dev').split('/')[-1]
 driver = ConsistencyDriver.new(
     ARGV.length > 0 ? ARGV[0] : defenv
 )
-driver.run
+driver.run(ARGV.length > 1 ? ARGV[1] : '')
