@@ -37,7 +37,7 @@ admintool:
   - path: audit_processed_size
     days: '5'
 colladmin:
-  function: uc3-mrt-colladmin-img-dev
+  function: uc3-mrt-colladmin-img
   daily:
   # Look for ingest queue failures  
   - path: queues
