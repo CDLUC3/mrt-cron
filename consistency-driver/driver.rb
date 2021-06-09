@@ -9,7 +9,10 @@ class ConsistencyDriver
 
         @admintool = get_func_name("admintool", @mode)
         @colladmin = get_func_name("colladmin", @mode)
-        @lambda = Aws::Lambda::Client.new(region: region)
+        @lambda = Aws::Lambda::Client.new(
+            region: region, 
+            http_read_timeout: 180
+        )
         puts @admintool
         puts @colladmin
     end
