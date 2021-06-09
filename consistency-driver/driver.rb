@@ -18,7 +18,7 @@ class ConsistencyDriver
     end
 
     def get_func_name(key, suffix)
-        val = @config.fetch("admintool", {}).fetch("function", "na")
+        val = @config.fetch(key, {}).fetch("function", "na")
         "#{val}-#{suffix}"
     end
 
