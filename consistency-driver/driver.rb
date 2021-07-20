@@ -1,6 +1,10 @@
 require 'yaml'
 require 'aws-sdk-lambda'
 
+# bundle exec ruby driver.sh [-debug] [domain] [report-path]
+#   if domain is empty, the SSM_ROOT_PATH is utilized
+#   if report-path is empty, all reports are run
+
 class ConsistencyDriver
     def output(s)
         @output.push(s)
@@ -24,6 +28,7 @@ class ConsistencyDriver
 
     def initialize(args = [])
         @debug = false
+        @status = 'PASS'
         do_args(args)
         @output = []
         @config = YAML.load_file('reports.yml')
@@ -44,6 +49,18 @@ class ConsistencyDriver
         "#{val}-#{suffix}"
     end
 
+    def set_status(rpt)
+        return if @status == 'ERROR'
+        suff = rpt.split(".")[-1]
+        @status = 'FAIL' if suff == 'FAIL'
+        return if @status == 'FAIL'
+        @status = 'WARN' if suff == 'WARN'
+        return if @status == 'WARN'
+        @status = 'INFO' if suff == 'INFO'
+        return if @status == 'INFO'
+    end
+
+
     def invoke_lambda(arn, params)
         begin
             resp = @lambda.invoke({
@@ -56,7 +73,9 @@ class ConsistencyDriver
             rj = JSON.parse(payload.fetch("body", {}.to_json))
             rpt = rj.fetch("report_path","n/a")
             output("\t#{resp.status_code}\t#{rpt}")
+            set_status(rpt)
         rescue => e
+            @status = 'ERROR'
             output("\t#{e.message}")
         end
         sleep 2
@@ -73,7 +92,9 @@ class ConsistencyDriver
             output("#{query}")
             invoke_lambda(@colladmin, query)
         end
-        # %x{ mail -s "" 'hello....' }
+        d = `date "+%Y-%m-%d"`.chop
+        msg = "https://merritt.cdlib.org"
+        %x{ echo "#{msg}" | mail -s "#{@status}: #{@mode} Consistency Report for #{d}" dpr2 }
     end
 end
 
