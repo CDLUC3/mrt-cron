@@ -34,14 +34,16 @@ class ConsistencyDriver
         @output = []
         #@config = YAML.load_file('reports.yml')
         @config = Uc3Ssm::ConfigResolver.new.resolve_file_values(file: 'reports.yml')
+        
         region = ENV['AWS_REGION'] || 'us-west-2'
-
+        @siteurl = @config.fetch("admintool", {}).fetch("siteurl", "https://merritt.cdlib.org")
         @admintool = get_func_name("admintool", @mode)
         @colladmin = get_func_name("colladmin", @mode)
         @lambda = Aws::Lambda::Client.new(
             region: region, 
             http_read_timeout: 180
         )
+        output(@siteurl)
         output(@admintool)
         output(@colladmin)
     end
