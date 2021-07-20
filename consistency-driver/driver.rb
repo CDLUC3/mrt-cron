@@ -2,10 +2,32 @@ require 'yaml'
 require 'aws-sdk-lambda'
 
 class ConsistencyDriver
-    def initialize(mode)
+    def output(s)
+        @output.append(s)
+        puts(s) if @debug
+    end
+
+    def do_args(args)
+        pos = []
+        args.each do |s|
+            if s == "-debug"
+                @debug = true
+            elsif s == "help"
+                puts "Usage: ruby driver.rb [-debug] [mode] [report-path]"
+            else
+                pos.append(s)                
+            end
+        end
+        @mode = pos.length > 0 ? pos[0] : ENV.fetch('SSM_ROOT_PATH', 'dev').split('/')[-1]
+        @path = pos.length > 1 ? pos[1] : ''
+    end
+
+    def initialize(args = [])
+        @debug = false
+        do_args(args)
+        @output = []
         @config = YAML.load_file('reports.yml')
         region = ENV['AWS_REGION'] || 'us-west-2'
-        @mode = mode
 
         @admintool = get_func_name("admintool", @mode)
         @colladmin = get_func_name("colladmin", @mode)
@@ -13,8 +35,8 @@ class ConsistencyDriver
             region: region, 
             http_read_timeout: 180
         )
-        puts @admintool
-        puts @colladmin
+        output(@admintool)
+        output(@colladmin)
     end
 
     def get_func_name(key, suffix)
@@ -33,30 +55,27 @@ class ConsistencyDriver
             # Body of the response is serialized
             rj = JSON.parse(payload.fetch("body", {}.to_json))
             rpt = rj.fetch("report_path","n/a")
-            puts("\t#{resp.status_code}\t#{rpt}")
+            output("\t#{resp.status_code}\t#{rpt}")
         rescue => e
-            puts("\t#{e.message}")
+            output("\t#{e.message}")
         end
         sleep 2
     end
 
-    def run (path)
+    def run
         @config.fetch("admintool", {}).fetch("daily", []).each do |query|
-            next unless path.empty? || path == query.fetch('path', '')
-            puts "#{query}"
+            next unless @path.empty? || @path == query.fetch('path', '')
+            output("#{query}")
             invoke_lambda(@admintool, query)
         end
         @config.fetch("colladmin", {}).fetch("daily", []).each do |query|
-            next unless path.empty? || path == query.fetch('path', '')
-            puts "#{query}"
+            next unless @path.empty? || @path == query.fetch('path', '')
+            output("#{query}")
             invoke_lambda(@colladmin, query)
         end
+        %x{ mail -s "" 'hello....' }
     end
 end
 
-puts ARGV
-defenv = ENV.fetch('SSM_ROOT_PATH', 'dev').split('/')[-1]
-driver = ConsistencyDriver.new(
-    ARGV.length > 0 ? ARGV[0] : defenv
-)
-driver.run(ARGV.length > 1 ? ARGV[1] : '')
+driver = ConsistencyDriver.new(ARGV)
+driver.run
