@@ -98,7 +98,7 @@ class ConsistencyDriver
         end
         d = `date "+%Y-%m-%d"`.chop
         msg = "#{@siteurl}?path=report&report=consistency-reports/#{d}"
-        %x{ echo "#{msg}" | mail -s "#{@status}: #{@mode} Consistency Report for #{d}" dpr2 }
+        %x{ echo "#{msg}" | mail -s "#{@status.upcase}: #{@mode} Consistency Report for #{d}" dpr2 }
     end
 end
 
