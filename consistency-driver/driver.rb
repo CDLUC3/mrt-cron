@@ -15,7 +15,7 @@ class ConsistencyDriver
             elsif s == "help"
                 puts "Usage: ruby driver.rb [-debug] [mode] [report-path]"
             else
-                pos.append(s)                
+                pos.push(s)                
             end
         end
         @mode = pos.length > 0 ? pos[0] : ENV.fetch('SSM_ROOT_PATH', 'dev').split('/')[-1]
@@ -73,7 +73,7 @@ class ConsistencyDriver
             output("#{query}")
             invoke_lambda(@colladmin, query)
         end
-        %x{ mail -s "" 'hello....' }
+        # %x{ mail -s "" 'hello....' }
     end
 end
 
