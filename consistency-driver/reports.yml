@@ -1,5 +1,6 @@
 admintool:
   function: uc3-mrt-admintool-img
+  siteurl: {SSM! admintool/site-url}
   daily:
   # verify primary node configuration
   - path: con_primary

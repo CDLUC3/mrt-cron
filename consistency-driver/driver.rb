@@ -1,5 +1,6 @@
 require 'yaml'
 require 'aws-sdk-lambda'
+require 'uc3-ssm'
 
 # bundle exec ruby driver.sh [-debug] [domain] [report-path]
 #   if domain is empty, the SSM_ROOT_PATH is utilized
@@ -31,7 +32,8 @@ class ConsistencyDriver
         @status = 'PASS'
         do_args(args)
         @output = []
-        @config = YAML.load_file('reports.yml')
+        #@config = YAML.load_file('reports.yml')
+        @config = Uc3Ssm::ConfigResolver.new.resolve_file_values(file: 'reports.yml')
         region = ENV['AWS_REGION'] || 'us-west-2'
 
         @admintool = get_func_name("admintool", @mode)
