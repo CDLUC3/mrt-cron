@@ -3,7 +3,7 @@ require 'aws-sdk-lambda'
 
 class ConsistencyDriver
     def output(s)
-        @output.append(s)
+        @output.push(s)
         puts(s) if @debug
     end
 
