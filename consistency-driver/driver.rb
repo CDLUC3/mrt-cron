@@ -93,7 +93,6 @@ class ConsistencyDriver
             invoke_lambda(@colladmin, query)
         end
         d = `date "+%Y-%m-%d"`.chop
-        msg = "https://merritt.cdlib.org"
         %x{ echo "#{msg}" | mail -s "#{@status}: #{@mode} Consistency Report for #{d}" dpr2 }
     end
 end
