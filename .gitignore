@@ -1,4 +1,5 @@
 consistency-driver/vendor/
+consistency-driver/ruby/
 billing/daily-billing-prd.sh
 billing/daily-billing-stg.sh
 .bundle/
