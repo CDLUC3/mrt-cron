@@ -1,6 +1,7 @@
 require 'yaml'
 require 'aws-sdk-lambda'
 require 'uc3-ssm'
+require 'base64'
 
 # bundle exec ruby driver.sh [-debug] [domain] [report-path]
 #   if domain is empty, the SSM_ROOT_PATH is utilized
@@ -70,7 +71,7 @@ class ConsistencyDriver
             resp = @lambda.invoke({
                 function_name: arn, 
                 payload: params.to_json,
-                client_context: @config.fetch("context", "")
+                client_context: Base64.encode64(@config.fetch("context", ""))
             })
             # payload is serialized json
             payload = JSON.parse(resp.payload.read)
