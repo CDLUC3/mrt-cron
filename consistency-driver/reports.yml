@@ -1,3 +1,4 @@
+email: "{!SSM: batch/email}"
 context: "{!SSM: admintool/context}"
 admintool:
   function: uc3-mrt-admintool-img

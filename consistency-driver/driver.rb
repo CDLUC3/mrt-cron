@@ -1,8 +1,6 @@
 require 'yaml'
 require 'aws-sdk-lambda'
 require 'uc3-ssm'
-require 'base64'
-require 'json'
 
 # bundle exec ruby driver.sh [-debug] [domain] [report-path]
 #   if domain is empty, the SSM_ROOT_PATH is utilized
@@ -73,6 +71,7 @@ class ConsistencyDriver
                 function_name: arn, 
                 payload: params.to_json,
                 client_context: Base64.strict_encode64({
+                    # Only custom, client, and env are passed: https://github.com/aws/aws-sdk-js/issues/1388
                     custom: {
                         context_code: @config.fetch("context", "")
                     }
@@ -105,7 +104,7 @@ class ConsistencyDriver
         end
         d = `date "+%Y-%m-%d"`.chop
         msg = "#{@siteurl}?path=report&report=consistency-reports/#{d}"
-        %x{ echo "#{msg}" | mail -s "#{@status.upcase}: #{@mode} Consistency Report for #{d}" dpr2 }
+        %x{ echo "#{msg}" | mail -s "#{@status.upcase}: #{@mode} Consistency Report for #{d}" #{@config.fetch("email", "dpr2")} }
     end
 end
 
