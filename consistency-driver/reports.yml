@@ -1,3 +1,4 @@
+context: "{!SSM: admintool/context}"
 admintool:
   function: uc3-mrt-admintool-img
   siteurl: "{!SSM: admintool/site-url}"
