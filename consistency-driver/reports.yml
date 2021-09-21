@@ -1,6 +1,7 @@
 admintool:
   function: uc3-mrt-admintool-img
   siteurl: "{!SSM: admintool/site-url}"
+  context: "{!SSM: admintool/context}"
   daily:
   # verify primary node configuration
   - path: con_primary
@@ -38,6 +39,7 @@ admintool:
   - path: audit_processed_size
     days: '5'
 colladmin:
+  context: "{!SSM: admintool/context}"
   function: uc3-mrt-colladmin-img
   daily:
   # Look for ingest queue failures  
