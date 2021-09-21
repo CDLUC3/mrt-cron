@@ -72,7 +72,11 @@ class ConsistencyDriver
             resp = @lambda.invoke({
                 function_name: arn, 
                 payload: params.to_json,
-                client_context: Base64.encode64({context_code: @config.fetch("context", "")}.to_json)
+                client_context: Base64.encode64({
+                    custom: {
+                        context_code: @config.fetch("context", "")
+                    }
+                }.to_json)
             })
             # payload is serialized json
             payload = JSON.parse(resp.payload.read)
