@@ -27,7 +27,7 @@ admintool:
   # Look for outstanding replication 
   - path: con_replic
   # Look for objects linked to multiple collections 
-  - path: object_mult_coll
+  - path: mult_coll
   # Look for unexpected audit status 
   - path: audit_status
   # Check oldest unprocessed audits 
