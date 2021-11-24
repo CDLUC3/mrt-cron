@@ -1,8 +1,5 @@
 #!/bin/sh
 
-# turn on debug to trace deadlock issue
-set -x
-
 ${HOME}/bin/uc3-mysql.sh billing -- -e 'call update_billing_range();'
 ${HOME}/bin/uc3-mysql.sh billing -- -e 'call update_object_size();'
 ${HOME}/bin/uc3-mysql.sh billing -- -e 'call update_audits_processed();'
@@ -43,33 +40,5 @@ inner join object_size os
 group by 
   n.id,
   n.number;
-
-start transaction;
-
-delete from node_counts;
-
-insert into node_counts(
-  inv_node_id,
-  number,
-  object_count,
-  object_count_primary,
-  object_count_secondary,
-  file_count,
-  billable_size
-) 
-select
-  inv_node_id,
-  number,
-  object_count,
-  object_count_primary,
-  object_count_secondary,
-  file_count,
-  billable_size
-from 
-  daily_node_counts
-where
-  as_of_date = date(now());
-
-commit;
 
 EOF
