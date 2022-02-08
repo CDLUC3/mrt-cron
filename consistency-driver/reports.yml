@@ -40,8 +40,7 @@ admintool:
   - path: audit_processed_size
     days: '5'
   # Check for version clobber
-  # TODO: enable once baseline issues are resolved
-  # - path: con_versions
+  - path: con_versions
 colladmin:
   function: uc3-mrt-colladmin-img
   daily:
