@@ -41,6 +41,8 @@ admintool:
     days: '5'
   # Check for version clobber
   - path: con_versions
+  # Check for failed replications
+  - path: replic_failed
 colladmin:
   function: uc3-mrt-colladmin-img
   daily:
