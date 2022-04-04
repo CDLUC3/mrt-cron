@@ -1,5 +1,6 @@
 consistency-driver/vendor/
 consistency-driver/ruby/
+consistency-driver/Gemfile.lock
 billing/daily-billing-prd.sh
 billing/daily-billing-stg.sh
 .bundle/
