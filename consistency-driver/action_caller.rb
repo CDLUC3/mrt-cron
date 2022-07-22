@@ -2,7 +2,7 @@ require 'yaml'
 require 'aws-sdk-lambda'
 require 'uc3-ssm'
 
-# bundle exec ruby driver.sh [-debug] [domain] [report-path]
+# bundle exec raction_caller.rb label
 #   if domain is empty, the SSM_ROOT_PATH is utilized
 #   if report-path is empty, all reports are run
 
@@ -23,6 +23,7 @@ class ActionCaller
                 pos.push(s)                
             end
         end
+        @mode = ENV.fetch('SSM_ROOT_PATH', 'dev').split('/')[-1]
         @label = pos.length > 0 ? pos[0] : ''
     end
 
