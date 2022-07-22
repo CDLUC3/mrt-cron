@@ -18,13 +18,12 @@ class ActionCaller
             if s == "-debug"
                 @debug = true
             elsif s == "help"
-                puts "Usage: ruby action_caller.rb [-debug] [mode] [report-path] [params]"
+                puts "Usage: ruby action_caller.rb label"
             else
                 pos.push(s)                
             end
         end
-        @mode = pos.length > 0 ? pos[0] : ENV.fetch('SSM_ROOT_PATH', 'dev').split('/')[-1]
-        @label = pos.length > 1 ? pos[1] : ''
+        @label = pos.length > 0 ? pos[0] : ''
     end
 
     def initialize(args = [])
@@ -79,14 +78,13 @@ class ActionCaller
     end
 
     def run
-        return if @label.empty?
         @config.fetch("admintool", {}).fetch("actions", []).each do |query|
-            next unless @label.empty? || @label == query.fetch('label', '')
+            next unless @label == query.fetch('label', 'n/a')
             output("#{query}")
             invoke_lambda(@admintool, query)
         end
         @config.fetch("colladmin", {}).fetch("actions", []).each do |query|
-            next unless @label.empty? || @label == query.fetch('label', '')
+            next unless @label == query.fetch('label', 'n/a')
             output("#{query}")
             invoke_lambda(@colladmin, query)
         end
