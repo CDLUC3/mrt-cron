@@ -68,9 +68,9 @@ class ActionCaller
             payload = JSON.parse(resp.payload.read)
             # Body of the response is serialized
             rj = JSON.parse(payload.fetch("body", {}.to_json))
+            output(rj)
             rpt = rj.fetch("report_path","n/a")
             output("\t#{resp.status_code}\t#{rpt}")
-            set_status(rpt)
         rescue => e
             @status = 'ERROR'
             output("\t#{e.message}")
