@@ -45,6 +45,9 @@ admintool:
   - path: replication_failed
   # Check for stalled replications
   - path: replication_initiated
+  actions:
+  - label: test
+    path: replication_initiated
 colladmin:
   function: uc3-mrt-colladmin-img
   daily:
@@ -57,4 +60,9 @@ colladmin:
   - path: inv-queues
   # Look for access queue failures  
   - path: acc-queues
+  actions:
+  - label: dryad_node_cleanup
+    path: replic-delete-coll-batch-from-node
+    nodenum: 2001
+    coll: 420
 
