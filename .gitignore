@@ -2,7 +2,6 @@ consistency-driver/vendor/
 consistency-driver/ruby/
 billing/daily-billing-prd.sh
 billing/daily-billing-stg.sh
-.bundle/
 README.local.md
 schema/schema.prd
 schema/schema.stg
