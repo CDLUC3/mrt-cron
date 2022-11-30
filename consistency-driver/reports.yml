@@ -41,6 +41,8 @@ admintool:
     days: '5'
   # Check for version clobber
   - path: con_versions
+  # Check for missing localids
+  - path: con_localid
   # Check for failed replications
   - path: replication_failed
   # Check for stalled replications
