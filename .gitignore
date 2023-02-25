@@ -6,3 +6,6 @@ billing/daily-billing-stg.sh
 README.local.md
 schema/schema.prd
 schema/schema.stg
+palmu_match/inventory.txt
+palmu_match/pm.loaded.txt
+palmu_match/match.json
