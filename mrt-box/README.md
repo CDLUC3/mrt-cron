@@ -1,0 +1,1 @@
+# mrt-box installation directory
