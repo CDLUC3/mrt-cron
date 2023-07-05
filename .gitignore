@@ -10,3 +10,4 @@ palmu_match/inventory.txt
 palmu_match/pm.loaded.txt
 palmu_match/match.json
 mrt-box/*.jar
+viz/billing.ndjson
