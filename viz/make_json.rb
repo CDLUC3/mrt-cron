@@ -13,6 +13,6 @@ ARGF.each_with_index do |line, i|
       d = Time.parse(col).strftime("%Y-%m-%d %H:%M:%S %z") if col =~ %r[^\d\d\d\d\-\d\d\-\d\d$]
       rec[headers[j]] = d
     end
-    puts rec.to_json unless rec["date_added"] < "2022-07-01"
+    puts rec.to_json
   end
 end
