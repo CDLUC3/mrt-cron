@@ -62,6 +62,7 @@ colladmin:
   - path: inv-queues
   # Look for access queue failures  
   - path: acc-queues
+  - path: consistency-report-cleanup
   actions:
   - label: dryad_node_cleanup
     path: replic-delete-coll-batch-from-node
