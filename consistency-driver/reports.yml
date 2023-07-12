@@ -47,6 +47,8 @@ admintool:
   - path: replication_failed
   # Check for stalled replications
   - path: replication_initiated
+  # Check for storage nodes over allocation
+  - path: nodes
   actions:
   - label: test
     path: replication_initiated
