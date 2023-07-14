@@ -64,7 +64,10 @@ colladmin:
   - path: inv-queues
   # Look for access queue failures  
   - path: acc-queues
+  # Remove old consistency report results
   - path: consistency-report-cleanup
+  # Check that all SSM variables are documented
+  - path: ssm-describe
   actions:
   - label: dryad_node_cleanup
     path: replic-delete-coll-batch-from-node
