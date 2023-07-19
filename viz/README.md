@@ -24,3 +24,38 @@ MySQL [billing]> describe owner_coll_mime_use_details;
 ## Code
 - [SQL script](billing_viz.sh)
 - [Convert to Json](make_json.rb)
+
+## Logstash Filters
+```
+filter {
+  json {
+    skip_on_invalid_json => true
+    source => "message"
+    target => "json_data"
+    add_tag => [ "_message_json_parsed" ]
+  }
+}
+
+filter {
+  date {
+    locale => en
+    match => [ "[json_data][date_added]", "yyyy-MM-dd HH:mm:ss Z" ]
+    target => "@timestamp"
+  }
+}
+```
+
+## Send to OpenSearch - All 10 years in a single file
+_See https://github.com/CDLUC3/opensearch-tutorial/blob/main/README.md to launch tutorial in docker_
+
+```
+output {
+  opensearch {
+    hosts => ["https://opensearch:9200"]
+    user => "admin"
+    password => "admin"
+    ssl_certificate_verification => false
+    index => "data-billing"
+  }
+}
+```
