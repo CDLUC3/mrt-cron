@@ -1,4 +1,6 @@
-time uc3-mysql.sh > mimefiles.tsv << HERE
+mkdir -p out
+
+uc3-mysql.sh > out/mimefiles.tsv << HERE
 select
   c.mnemonic,
   f.mime_type,
@@ -21,4 +23,4 @@ order by
 ;
 HERE
 
-ruby mimefilelist.rb mimefiles.tsv
+ruby mimefilelist.rb out/mimefiles.tsv
