@@ -2,59 +2,39 @@ require "json"
 
 @collcount = {}
 @colls = {}
-@currec = []
-@notes = {content: "content", std_metadata: "std_metadata"}
 
-@lastmnemonic = ""
+def get_rec(columns)
+  rec = {
+    id: columns[0],
+    mnemonic: columns[1],
+    mime: columns[2],
+    ark: columns[3],
+    path: columns[4].gsub(%r[^producer\/],""),
+    created: columns[5],
+    billable_size: columns[6].to_i,
+    campus: columns[7],
+    owner: columns[8],
+    mime_group: columns[9],
+    note: "content"
+  }
+  rec[:note] = "std_metadata" if rec[:path] =~ %r[^(mrt-datacite\.xml|mrt-oaidc\.xml|stash-wrapper\.xml)$]
+  rec[:note] = "std_metadata" if rec[:path] =~ %r[^(nuxeo\.cdlib\.org/Merritt/.*\.xml)$]
+  rec
+end
 
-def write_file
-  return if @lastmnemonic.empty? || @lastmnemonic.nil?
-  puts @lastmnemonic
-  if @currec.length > 0 && @lastmnemonic !~ %r[_sla$]
-    File.open("out/#{@lastmnemonic}.out.json", "w") do |f|
-      curmimes = {}
-      @colls[@lastmnemonic].sort_by {|k,v| -v}.each do|m,v|
-        curmimes[m] = "#{sprintf('%05.1f', (v * 100.0) / @collcount[@lastmnemonic])}: #{m}: #{v}"
-        puts "\t#{m}\t#{curmimes[m]}"
-      end
-      f.write("var filterMimes = #{curmimes.to_json};")
-      f.write("const DATA = ")
-      f.write(@currec.to_json)
-      f.write(";")
-    end
-    File.open("out/#{@lastmnemonic}.out.ndjson", "w") do |f|
-      @currec.each do |r|
-        f.write(r.to_json)
-        f.write("\n")
-      end
-    end  
+File.open("out/out.ndjson", "w") do |f|
+  ARGF.each_with_index do |line, i|
+    next if line =~ %r[^id]
+    rec = get_rec(line.strip!.split("\t"))
+    next if rec[:mnemonic] =~ %r[(_sla|_service_level_agreement)$]
+    coll = @colls.fetch(rec[:mnemonic], {})
+    coll[rec[:mime]] = coll.fetch(rec[:mime], 0) + 1
+    @colls[rec[:mnemonic]] = coll
+    @collcount[rec[:mnemonic]] = @collcount.fetch(rec[:mnemonic], 0) + 1
+    f.write(rec.to_json)
+    f.write("\n")
   end
-  @currec = []
 end
-
-def get_rec(mnemonic, mime, ark, path)
-  path.gsub!(%r[^producer\/],"")
-  note = "content"
-  note = "std_metadata" if path =~ %r[^(mrt-datacite\.xml|mrt-oaidc\.xml|stash-wrapper\.xml)$]
-  note = "std_metadata" if path =~ %r[^(nuxeo\.cdlib\.org/Merritt/.*\.xml)$]
-  {mnemonic: mnemonic, mime: mime, ark: ark, path: path, note: note}
-end
-
-ARGF.each_with_index do |line, i|
-  next if i == 0
-  columns = line.strip!.split("\t")
-  mnemonic = columns[0]
-  next if mnemonic.empty? || mnemonic.nil?
-  mime = columns[1]
-  write_file unless @lastmnemonic == mnemonic 
-  @lastmnemonic = mnemonic
-  @currec.push(get_rec(mnemonic, mime, columns[2], columns[3]))
-  coll = @colls.fetch(mnemonic,{})
-  coll[mime] = coll.fetch(mime, 0) + 1
-  @colls[mnemonic] = coll
-  @collcount[mnemonic] = @collcount.fetch(mnemonic, 0) + 1
-end
-write_file 
 
 @colls.sort_by {|k,v| k}.each do |c, coll|
   coll.sort_by{|k,v| -v}.each do |m,v|

@@ -45,25 +45,41 @@ Extractions to perform (https://github.com/CDLUC3/mrt-doc/issues/1544)
 select * from owner_coll_mime_use_details;
 ```
 
-## Producer File Extract
+Sample record (126K records)
+```json
+{
+  "ogroup":"CDL",
+  "own_name":"CDL Publishing",
+  "collection_name":"eScholarship",
+  "mnemonic":"escholarship",
+  "date_added":"2013-05-22 00:00:00 -0700",
+  "mime_type":"application/pdf",
+  "mime_group":"text",
+  "inv_owner_id":1,
+  "inv_collection_id":1,
+  "source":"producer",
+  "count_files":7,
+  "full_size":2699600,
+  "billable_size":2564025
+}
 ```
-select
-  f.id,
-  c.mnemonic,
-  f.mime_type,
-  o.ark,
-  f.pathname,
-  f.created
-from 
-  inv.inv_collections c
-inner join inv.inv_collections_inv_objects icio 
-  on c.id = icio.inv_collection_id 
-inner join inv.inv_objects o 
-  on o.id = icio.inv_object_id
-inner join inv.inv_files f 
-  on f.inv_object_id = icio.inv_object_id and source = 'producer' and f.billable_size = f.full_size
-order by 
-  f.id
-limit 1000000
-;
+
+## Producer File Extract
+- [Extract Script](mimefilelist.sh)
+
+Sample Record (20M+ records)
+```json
+{
+  "id":"7",
+  "mnemonic":"escholarship",
+  "mime":"application/pdf",
+  "ark":"ark:/13030/qt4wp3r2t0",
+  "path":"content/qt4wp3r2t0.pdf",
+  "created":"2013-05-22 09:47:25",
+  "billable_size":135575,
+  "campus":"CDL",
+  "owner":"CDL Publishing",
+  "mime_group":"text",
+  "note":"content"
+}
 ```
