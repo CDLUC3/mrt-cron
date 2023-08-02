@@ -7,8 +7,8 @@
       INV_DB[(Inventory Database)]
       INV_DB-->Bulk_Extract;
       INV_DB-->Daily_Extract;
-      TSV_Files[[TSV SQL Extract Files*]]
-      JSON_Files[[JSON Files*]]
+      TSV_Files[[TSV SQL Extract Files - ZFS or Local]]
+      JSON_Files[[JSON Files - ZFS or Local]]
       Bulk_Extract(Bulk Extract Process);
       Bulk_Extract-->TSV_Files;
       Daily_Extract(Daily Extract Process);
@@ -23,11 +23,6 @@
 ```
 
 ```
-INV DB --> Bulk Extract  --> TSV Files* --> Analysis Prog --> JSON Files* --> OpenSearch 
-INV DB --> Daily Extract --> TSV Files* --> Analysis Prog --> JSON Files* --> OpenSearch 
-
-*Question: store locally or on ZFS?  With the bulk extract process, the files could be re-created if needed.
-
 Extractions to perform (https://github.com/CDLUC3/mrt-doc/issues/1544)
 - Daily Billing Summary (if needed)
   - unique id (for replacement) - does not currently exist; replace the entire index instead
