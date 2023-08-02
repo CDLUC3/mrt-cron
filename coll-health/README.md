@@ -2,6 +2,26 @@
 
 ## System Design
 
+```mermaid
+  graph TD;
+      INV_DB[(Inventory Database)]
+      INV_DB-->Bulk_Extract;
+      INV_DB-->Daily_Extract;
+      TSV_Files[[TSV SQL Extract Files*]]
+      JSON_Files[[JSON Files*]]
+      Bulk_Extract(Bulk Extract Process);
+      Bulk_Extract-->TSV_Files;
+      Daily_Extract(Daily Extract Process);
+      Daily_Extract-->TSV_Files;
+      TSV_Files-->Analysis_Prog;
+      Analysis_Prog[(Data Analysis Program)]
+      Analysis_Prog-->JSON_Files;
+      RuleFile[[Rule Files - Yaml]]
+      RuleFile-->Analysis_Prog
+      OpenSearch((Open Search))
+      JSON_Files-->OpenSearch;
+```
+
 ```
 INV DB --> Bulk Extract  --> TSV Files* --> Analysis Prog --> JSON Files* --> OpenSearch 
 INV DB --> Daily Extract --> TSV Files* --> Analysis Prog --> JSON Files* --> OpenSearch 
