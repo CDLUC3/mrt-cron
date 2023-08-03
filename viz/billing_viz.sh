@@ -1,6 +1,6 @@
 #! /bin/sh
 
-# COLLHDATA=/dpr2/apps/mrt-cron/coll_health/data billing_viz.sh
+# COLLHDATA=/dpr2/apps/mrt-cron/coll_health/data ./billing_viz.sh
 #
 # In dev...
 # COLLHDATA=$PWD billing_viz.sh

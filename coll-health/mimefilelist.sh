@@ -1,5 +1,5 @@
 #! /bin/sh
-# export COLLHDATA=/dpr2/apps/mrt-cron/coll_health/data; mimefilelist.sh
+# export COLLHDATA=/dpr2/apps/mrt-cron/coll_health/data; ./mimefilelist.sh
 #
 # In dev...
 # export COLLHDATA=$PWD; ./mimefilelist.sh
