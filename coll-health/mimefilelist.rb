@@ -22,7 +22,7 @@ def get_rec(columns)
   rec
 end
 
-File.open("out/out.ndjson", "w") do |f|
+File.open("#{COLLHDATA}/files_details.ndjson", "w") do |f|
   ARGF.each_with_index do |line, i|
     next if line =~ %r[^id]
     rec = get_rec(line.strip!.split("\t"))

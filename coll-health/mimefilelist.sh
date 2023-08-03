@@ -1,5 +1,11 @@
+#! /bin/sh
+# export COLLHDATA=/dpr2/apps/mrt-cron/coll_health/data; mimefilelist.sh
+#
+# In dev...
+# export COLLHDATA=$PWD; ./mimefilelist.sh
+
 getmimes() {
-uc3-mysql.sh >> out/mimefiles.tsv << HERE
+uc3-mysql.sh >> ${COLLHDATA}/mimefiles.tsv << HERE
 select
   f.id,
   c.mnemonic,
@@ -39,8 +45,6 @@ where
 and source = 'producer' and f.billable_size = f.full_size
 ;
 HERE
-cnt=`wc -l out/mimefiles.tsv`
-echo "$1 $cnt $(date)"
 }
 
 getallmimes() {
@@ -54,8 +58,7 @@ getallmimes() {
   done
 }
 
-mkdir -p out
-cat /dev/null > out/mimefiles.tsv
+cat /dev/null > ${COLLHDATA}/mimefiles.tsv
 getallmimes
 
-#ruby mimefilelist.rb out/mimefiles.tsv
+ruby mimefilelist.rb ${COLLHDATA}/mimefiles.tsv
