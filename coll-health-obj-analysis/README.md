@@ -107,7 +107,36 @@ In general, most objects should not have an annotation.  This tool would be used
 
 ```
 
-## Object Analysis Schema
+## Candidate Tests
+
+### Relational Tests
+- File level
+  - Mime type sustainability
+  - Filename validation
+  - Empty file detection
+- Object level
+  - Object has content files
+  - Object has sidecar metadata
+  - Object has content + sidecar metadata
+  - Object has meaningful ERC metadata
+  - Object has local id
+- Contextual checks (repo)
+  - Unique file checksum
+- Contextual checks (collection)
+  - File name conforms to naming standards for collection
+  - Local id conforms to naming standards for collection
+  - ERC metadata conforms to naming standards for collection
+  - File size is within typical size range for the collection
+
+### Bitstream Tests
+- PII scan using AWS service
+- Virus scan - ClamAV, Other?
+- Format Identification Scan
+  - Format matches mime type
+  - Format valid
+  - Format profile validation (examine use of optional features within a format)
+
+## Prototype Object Analysis Schema
 
 ```yaml
 object:
@@ -151,20 +180,26 @@ object:
             result: "PASS"
             details: {}
             last-run: "2023-01-01 11:22:33"
-analysis-test-log:
-- test-name: "cccc"
-  # test-type
-  #   file-metadata: tests that rely only on file metadata
-  #   file-bitstream: tests that rely on scanning file bitstream content 
-  #   object-metadata: tests that rely only on object metadata
-  #   object-composition: tests that analyze the combination of files
-  #   collection-consistency: tests based on collection expectation and collection configuration files
-  test-type: "xxx"
-  test-result: "WARN"
-  result: "PASS"
-  details: {}
-  last-run: "2023-01-01 11:22:33"
-  # each test will have an inherent expiration... when does it need to run again
-  expiration: "..."
-
+  analysis-test-log:
+  - test-name: "cccc"
+    # test-type
+    #   file-metadata: tests that rely only on file metadata
+    #   file-bitstream: tests that rely on scanning file bitstream content 
+    #   object-metadata: tests that rely only on object metadata
+    #   object-composition: tests that analyze the combination of files
+    #   collection-consistency: tests based on collection expectation and collection configuration files
+    test-type: "xxx"
+    test-result: "WARN"
+    result: "PASS"
+    details: {}
+    last-run: "2023-01-01 11:22:33"
+    # each test will have an inherent expiration... when does it need to run again
+    expiration: "..."
+  annotation-notes:
+  - date: ""
+    note: ""
+  test-excetpions:
+  - test-type: "xxx"
+    exception-status: "SKIP"
+    exception-note: "..."
 ```
