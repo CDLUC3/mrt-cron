@@ -47,8 +47,8 @@ and source = 'producer' and f.billable_size = f.full_size
 HERE
 }
 
-getallmimes() {
-  d='2013-05-22'
+get_mimes_since_date() {
+  d=$1
   dd=`date -d "+1 day" "+%Y-%m-%d"`
   while [[ $d < $dd ]]
   do 
@@ -58,7 +58,16 @@ getallmimes() {
   done
 }
 
-cat /dev/null > ${COLLHDATA}/mimefiles.tsv
-getallmimes
-
-ruby mimefilelist.rb ${COLLHDATA}/mimefiles.tsv
+if [ "$1" == "all" ]
+then
+  cat /dev/null > ${COLLHDATA}/mimefiles.tsv
+  start='2013-05-22 00:00:00'
+elif [ "$1" == "" ]
+then
+  start="$(tail -1 ${COLLHDATA}/mimefiles.tsv | cut -f6)"
+else 
+  start=$1
+fi
+echo "START=$start"
+get_mimes_since_date "$start" 2> /dev/null
+ruby mimefilelist.rb "$start" ${COLLHDATA}/mimefiles.tsv

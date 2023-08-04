@@ -1,9 +1,14 @@
 require "json"
 
+# usage ruby mimefilelist.rb date_time file
+
+@start_date=ARGV.shift
+@start_date="2013-05-22 00:00:00" if @start_date.empty?
 @collcount = {}
 @colls = {}
 
 def get_rec(columns)
+  return if columns.length < 10
   rec = {
     id: columns[0],
     mnemonic: columns[1],
@@ -26,6 +31,8 @@ File.open("#{ENV['COLLHDATA']}/files_details.ndjson", "w") do |f|
   ARGF.each_with_index do |line, i|
     next if line =~ %r[^id]
     rec = get_rec(line.strip!.split("\t"))
+    next if rec.nil?
+    next if rec[:created] < @start_date
     next if rec[:mnemonic] =~ %r[(_sla|_service_level_agreement)$]
     coll = @colls.fetch(rec[:mnemonic], {})
     coll[rec[:mime]] = coll.fetch(rec[:mime], 0) + 1
