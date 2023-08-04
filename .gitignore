@@ -12,3 +12,5 @@ palmu_match/match.json
 mrt-box/*.jar
 viz/billing.ndjson
 coll-health/mimefiles.tsv
+coll-health/files_details.prod.ndjson
+viz/billing.prod.ndjson
