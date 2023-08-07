@@ -3,7 +3,12 @@ require "json"
 # usage ruby mimefilelist.rb date_time file
 
 @start_date=ARGV.shift
-@start_date="2013-05-22 00:00:00" if @start_date.empty?
+# append to prior output file unless re-creating the entire dataset
+@mode="a"
+if @start_date.empty? || @start_date == "all" || @start_date == '2013-05-22 00:00:00'
+  @start_date="2013-05-22 00:00:00"
+  @mode="w"
+end
 @collcount = {}
 @colls = {}
 
@@ -27,7 +32,7 @@ def get_rec(columns)
   rec
 end
 
-File.open("#{ENV['COLLHDATA']}/files_details.ndjson", "w") do |f|
+File.open("#{ENV['COLLHDATA']}/files_details.ndjson", @mode) do |f|
   ARGF.each_with_index do |line, i|
     next if line =~ %r[^id]
     rec = get_rec(line.strip!.split("\t"))
