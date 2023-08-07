@@ -8,16 +8,14 @@ The purpose of this repository is to house crons for the Merritt system that can
 - [Merritt Billing Scripts](https://github.com/CDLUC3/mrt-admin-lambda/tree/main/merrit-billing)
   - Depends on https://github.com/CDLUC3/uc3-aws-cli
 - [Merritt Consistency Reports](https://github.com/CDLUC3/mrt-admin-lambda)
+- Merritt Collection Health
+  - [Initial prototype using billing data](viz) 
+  - [Prototype using 20M file records](coll-health)
+  - [Collection Health Comprehensive Design](coll-health-obj-analysis)
 
-## Code to be invoked by this repository
-- [Nuxeo Feeds](https://github.com/CDLUC3/mrt-dashboard/tree/main/lib)
-- Zookeeper Reports
-- Storage Reports
+## Code under development
+- [schema extract code](schema) - code to keep the integration test schema files consistent with our production schema
 
-## Recommended Crons
+## External Code running on the same server
+- [Nuxeo Processing](https://github.com/CDLUC3/mrt-atom)
 
-```
-# Update billing database with updates from the prior day
-0 1 * * * .../billing/daily-billing.sh
-0 2 * * * cd .../consistency-driver;ruby driver.sh 
-```
