@@ -18,4 +18,5 @@ The purpose of this repository is to house crons for the Merritt system that can
 
 ## External Code running on the same server
 - [Nuxeo Processing](https://github.com/CDLUC3/mrt-atom)
+- [Nuxeo Scripts](https://github.com/CDLUC3/mrt-atom)
 
