@@ -1,5 +1,5 @@
-require "json"
-require "date"
+require 'json'
+require 'date'
 
 # usage ruby mimefilelist.rb date_time file
 
@@ -21,7 +21,7 @@ def get_rec(columns)
     mime: columns[2],
     ark: columns[3],
     path: columns[4].gsub(%r[^producer\/],""),
-    '@timestamp': DateTime("#{columns[5]} -0700").to_s,
+    '@timestamp': DateTime.new("#{columns[5]} -0700").to_s,
     billable_size: columns[6].to_i,
     campus: columns[7],
     owner: columns[8],
