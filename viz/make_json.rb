@@ -12,7 +12,7 @@ ARGF.each_with_index do |line, i|
       d = Integer(col) if col =~ %r[^\d+$]
       if col =~ %r[^\d\d\d\d\-\d\d\-\d\d$]
         d = Time.parse(col).strftime("%Y-%m-%dT%H:%M:%S%z")
-        rec['@timestamp'] = d
+        rec[:@timestamp] = d
       else
         rec[headers[j]] = d
       end
