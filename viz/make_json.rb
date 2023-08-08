@@ -10,8 +10,12 @@ ARGF.each_with_index do |line, i|
     line.strip!.split("\t").each_with_index do |col, j|
       d = col
       d = Integer(col) if col =~ %r[^\d+$]
-      d = Time.parse(col).strftime("%Y-%m-%d %H:%M:%S %z") if col =~ %r[^\d\d\d\d\-\d\d\-\d\d$]
-      rec[headers[j]] = d
+      if col =~ %r[^\d\d\d\d\-\d\d\-\d\d$]
+        d = Time.parse(col).strftime("%Y-%m-%dT%H:%M:%S%z")
+        rec['@timestamp'] = d
+      else
+        rec[headers[j]] = d
+      end
     end
     puts rec.to_json
   end
