@@ -18,13 +18,13 @@ def get_rec(columns)
   rec = {
     id: columns[0],
     mnemonic: columns[1],
-    mime: columns[2],
+    mime_type: columns[2],
     ark: columns[3],
     path: columns[4].gsub(%r[^producer\/],""),
     '@timestamp': DateTime.parse("#{columns[5]} -0700").to_s,
     billable_size: columns[6].to_i,
     campus: columns[7],
-    owner: columns[8],
+    own_name: columns[8],
     mime_group: columns[9],
     note: "content"
   }
@@ -41,7 +41,7 @@ File.open("#{ENV['COLLHDATA']}/files_details.ndjson", @mode) do |f|
     next if rec[:@timestamp] <= @start_date
     next if rec[:mnemonic] =~ %r[(_sla|_service_level_agreement)$]
     coll = @colls.fetch(rec[:mnemonic], {})
-    coll[rec[:mime]] = coll.fetch(rec[:mime], 0) + 1
+    coll[rec[:mime_type]] = coll.fetch(rec[:mime_type], 0) + 1
     @colls[rec[:mnemonic]] = coll
     @collcount[rec[:mnemonic]] = @collcount.fetch(rec[:mnemonic], 0) + 1
     f.write(rec.to_json)
