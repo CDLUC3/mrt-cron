@@ -23,7 +23,7 @@ def get_rec(columns)
     path: columns[4].gsub(%r[^producer\/],""),
     '@timestamp': DateTime.parse("#{columns[5]} -0700").to_s,
     billable_size: columns[6].to_i,
-    campus: columns[7],
+    ogroup: columns[7],
     own_name: columns[8],
     mime_group: columns[9],
     note: "content"
