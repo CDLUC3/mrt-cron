@@ -1,4 +1,4 @@
-# Merritt Collection Health Report
+# Merritt Collection Health Report - Files Dataset
 
 ## System Design
 
@@ -14,14 +14,40 @@
       Daily_Extract(Daily Extract Process);
       Daily_Extract-->TSV_Files;
       TSV_Files-->Analysis_Prog;
-      Analysis_Prog[(Data Analysis Program)]
+      Analysis_Prog[(Convert to JSON)]
       Analysis_Prog-->JSON_Files;
-      RuleFile[[Rule Files - Yaml]]
-      RuleFile-->Analysis_Prog
       OpenSearch((Open Search))
       JSON_Files-->OpenSearch;
 ```
 
+## Code
+- [Extract Script with SQL](mimefilelist.sh)
+- [Ruby Code to Convert TSV to Json](mimefilelist.rb)
+
+## Invocation
+
+Set environment
+```
+export COLLHDATA=/dpr2/apps/mrt-cron/coll_health/data
+cd {merrit-cron-install}/coll-health
+```
+
+Recreate file using data since 2013
+```
+./mimefilelist.sh all
+```
+
+Append to file since last execution
+
+_This process looks at the date of the last extracted record._
+```
+./mimefilelist.sh
+```
+
+## Internal Documentation
+
+- [Logstash and Cron Config](https://github.com/CDLUC3/uc3-ops-puppet-hiera/blob/main/fqsn/uc3-mrt-batch-prd.yaml)
+- [Recreate OpenSearch Data Stream](https://github.com/CDLUC3/mrt-doc-private/blob/main/docs/system-recovery/open-search-dataset-management.md)
 ```
 Extractions to perform (https://github.com/CDLUC3/mrt-doc/issues/1544)
 - Daily Billing Summary (if needed)
