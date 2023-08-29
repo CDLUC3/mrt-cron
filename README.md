@@ -7,11 +7,11 @@ The purpose of this repository is to house crons for the Merritt system that can
 ## Code invoked by this repository
 - [Merritt Billing Scripts](https://github.com/CDLUC3/mrt-admin-lambda/tree/main/merrit-billing)
   - Depends on https://github.com/CDLUC3/uc3-aws-cli
-- [Merritt Consistency Reports](https://github.com/CDLUC3/mrt-admin-lambda)
+- [Merritt Consistency Reports](consistency-driver/README.md)
 - Merritt Collection Health
-  - [Initial prototype using billing data](viz) 
-  - [Prototype using 20M file records](coll-health)
-  - [Collection Health Comprehensive Design](coll-health-obj-analysis)
+  - [Extract Merritt Billing Data for OpenSearch](viz/README.md) 
+  - [Extract Merritt File Data for OpenSearch](coll-health/README.md)
+  - [Collection Health Comprehensive Design](coll-health-obj-analysis/README.md)
 
 ## Code under development
 - [schema extract code](schema) - code to keep the integration test schema files consistent with our production schema
