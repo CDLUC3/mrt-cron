@@ -22,40 +22,30 @@ MySQL [billing]> describe owner_coll_mime_use_details;
 ```
 
 ## Code
-- [SQL script](billing_viz.sh)
-- [Convert to Json](make_json.rb)
+- [Extract Script with SQL](billing_viz.sh)
+- [Ruby Code to Convert TSV to Json](make_json.rb)
 
-## Logstash Filters
+## Invocation
+
+Set environment
 ```
-filter {
-  json {
-    skip_on_invalid_json => true
-    source => "message"
-    target => "json_data"
-    add_tag => [ "_message_json_parsed" ]
-  }
-}
-
-filter {
-  date {
-    locale => en
-    match => [ "[json_data][date_added]", "yyyy-MM-dd HH:mm:ss Z" ]
-    target => "@timestamp"
-  }
-}
+export COLLHDATA=/dpr2/apps/mrt-cron/coll_health/data
+cd {merrit-cron-install}/viz
 ```
 
-## Send to OpenSearch - All 10 years in a single file
-_See https://github.com/CDLUC3/opensearch-tutorial/blob/main/README.md to launch tutorial in docker_
+Recreate file using data since 2013
+```
+./billing_viz.sh all
+```
 
+Append to file since last execution
+
+_This process looks at the date of the last extracted record._
 ```
-output {
-  opensearch {
-    hosts => ["https://opensearch:9200"]
-    user => "admin"
-    password => "admin"
-    ssl_certificate_verification => false
-    index => "data-billing"
-  }
-}
+./billing_viz.sh
 ```
+
+## Internal Documentation
+
+- [Logstash and Cron Config](https://github.com/CDLUC3/uc3-ops-puppet-hiera/blob/main/fqsn/uc3-mrt-batch-prd.yaml)
+- [Recreate OpenSearch Data Stream](https://github.com/CDLUC3/mrt-doc-private/blob/main/docs/system-recovery/open-search-dataset-management.md)
