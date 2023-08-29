@@ -1,6 +1,12 @@
 require 'json'
 require 'time'
 
+@start_date=ARGV.shift
+# append to prior output file unless re-creating the entire dataset
+if @start_date.empty? || @start_date == "all" 
+  @start_date="2013-05-22 00:00:00"
+end
+
 headers = []
 ARGF.each_with_index do |line, i|
   if i == 0
@@ -17,6 +23,6 @@ ARGF.each_with_index do |line, i|
         rec[headers[j]] = d
       end
     end
-    puts rec.to_json
+    puts rec.to_json if rec[:@timestamp][0,10] > @start_date
   end
 end
