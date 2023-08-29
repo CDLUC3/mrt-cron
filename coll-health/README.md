@@ -4,6 +4,8 @@ This process will create one JSON record for every Merritt producer file created
 
 This dataset will allow the user to construct cumulative counts for the whole Merritt system.
 
+Inidividual filenames can be discovered in this dataset.
+
 Note: if files have been deleted from Merritt, they will be removed from this dataset if the dataset is regenerated.
 
 ## System Design
