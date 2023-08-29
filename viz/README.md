@@ -1,4 +1,4 @@
-# Create Json Files from Merritt Billing Database
+# Merritt Collection Health Reports - Billing Dataset
 
 This process will create one JSON record for every Merritt billing record.  
 
