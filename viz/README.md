@@ -1,4 +1,16 @@
-## Create Json Files from Merritt Billing Database
+# Create Json Files from Merritt Billing Database
+
+This process will create one JSON record for every Merritt billing record.  
+
+A billing record is a combination of date + collection + mimetype.  Aggregate totals are computed on a daily basis.
+
+This dataset will allow the user to construct cumulative counts for the whole Merritt system.
+
+TODO: if files have been deleted from Merritt, negative totals should be added into the billing dataset on the date of removal.
+
+Inidividual filenames cannot be discovered in this dataset.
+
+## Table Schema
 ```
 MySQL [billing]> describe owner_coll_mime_use_details;
 +-------------------+--------------------------------------+------+-----+---------+-------+
