@@ -23,6 +23,6 @@ ARGF.each_with_index do |line, i|
         rec[headers[j]] = d
       end
     end
-    puts rec.to_json if rec[:@timestamp][0,10] > @start_date
+    puts rec.to_json if rec.fetch(:@timestamp,'')[0,10] > @start_date
   end
 end
