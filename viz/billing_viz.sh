@@ -18,6 +18,6 @@ else
   start=$1
 fi
 echo ${start}
-uc3-mysql.sh billing -- -e "select * from owner_coll_mime_use_details where date_added > '${start}' order by date_added;" >> ${COLLHDATA}/billing.tsv
+${HOME}/bin/uc3-mysql.sh billing -- -e "select * from owner_coll_mime_use_details where date_added > '${start}' order by date_added;" >> ${COLLHDATA}/billing.tsv
 
 ruby make_json.rb "$start" ${COLLHDATA}/billing.tsv >> ${COLLHDATA}/billing.ndjson
