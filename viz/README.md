@@ -61,3 +61,22 @@ _This process looks at the date of the last extracted record._
 
 - [Logstash and Cron Config](https://github.com/CDLUC3/uc3-ops-puppet-hiera/blob/main/fqsn/uc3-mrt-batch-prd.yaml)
 - [Recreate OpenSearch Data Stream](https://github.com/CDLUC3/mrt-doc-private/blob/main/docs/system-recovery/open-search-dataset-management.md)
+
+
+## Create placeholder values
+
+```
+insert into daily_mime_use_details (
+  date_added, mime_type, inv_owner_id, inv_collection_id, source, count_files, full_size, billable_size
+)
+select date(now()), a.*
+from (
+  select distinct mime_type, inv_owner_id, inv_collection_id, 'producer', 0 count_files, 0 full_size, 0 billable_size
+  from daily_mime_use_details
+) as a;
+```
+
+Process
+- iterate over tsv
+- collect unique keys
+- output with zero values

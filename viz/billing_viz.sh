@@ -21,3 +21,4 @@ echo ${start}
 ${HOME}/bin/uc3-mysql.sh billing -- -e "select * from owner_coll_mime_use_details where date_added > '${start}' order by date_added;" >> ${COLLHDATA}/billing.tsv
 
 ruby make_json.rb "$start" ${COLLHDATA}/billing.tsv >> ${COLLHDATA}/billing.ndjson
+# ruby placeholder_json.rb ${COLLHDATA}/billing.tsv >> ${COLLHDATA}/billing.ndjson
