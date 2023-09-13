@@ -15,8 +15,10 @@ end
 
 def get_rec(columns, start)
   return if columns.length < 10
+  return if columns[0] == 'id'
   ts = DateTime.parse("#{columns[5]} -0700").to_s
-  return nil if ts <= start
+  return if ts <= start 
+  return if columns[1] =~ %r[(_sla|_service_level_agreement)$] 
   rec = {
     id: columns[0],
     mnemonic: columns[1],
@@ -39,13 +41,11 @@ File.open("#{ENV['COLLHDATA']}/files_details.ndjson", @mode) do |f|
   skip = 0
   ARGF.each_with_index do |line, i|
     puts "#{i}; skip=#{skip}" if i % 1000000 == 0
-    next if line =~ %r[^id]
     rec = get_rec(line.strip!.split("\t"), @start_date)
     if rec.nil?
       skip += 1
       next
     end
-    next if rec[:mnemonic] =~ %r[(_sla|_service_level_agreement)$]
     coll = @colls.fetch(rec[:mnemonic], {})
     coll[rec[:mime_type]] = coll.fetch(rec[:mime_type], 0) + 1
     @colls[rec[:mnemonic]] = coll
