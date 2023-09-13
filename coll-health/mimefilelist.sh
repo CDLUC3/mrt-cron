@@ -69,5 +69,8 @@ else
   start=$1
 fi
 echo "START=$start"
-get_mimes_since_date "$start" 2> /dev/null
+echo "Run query: $(date)"
+# get_mimes_since_date "$start" 2> /dev/null
+get_mimes_since_date "$start" 
+echo "Make Json: $(date)"
 ruby mimefilelist.rb "$start" ${COLLHDATA}/mimefiles.tsv
