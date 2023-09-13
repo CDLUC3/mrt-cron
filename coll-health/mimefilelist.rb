@@ -44,7 +44,7 @@ File.open("#{ENV['COLLHDATA']}/files_details.ndjson", @mode) do |f|
     if rec.nil?
       skip += 1
       next
-    exit
+    end
     next if rec[:mnemonic] =~ %r[(_sla|_service_level_agreement)$]
     coll = @colls.fetch(rec[:mnemonic], {})
     coll[rec[:mime_type]] = coll.fetch(rec[:mime_type], 0) + 1
