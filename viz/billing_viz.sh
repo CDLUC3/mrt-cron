@@ -6,8 +6,11 @@
 # export COLLHDATA=$PWD; ./billing_viz.sh
 
 # uc3-mysql.sh billing -- -e "select * from owner_coll_mime_use_details;" | ruby make_json.rb > ${COLLHDATA}/billing.ndjson
+
+opt='-N'
 if [ "$1" == "all" ]
 then
+  opt=''
   cat /dev/null > ${COLLHDATA}/billing.tsv
   cat /dev/null > ${COLLHDATA}/billing.ndjson
   start='2013-05-22 00:00:00'
@@ -18,7 +21,12 @@ else
   start=$1
 fi
 echo ${start}
-${HOME}/bin/uc3-mysql.sh billing -- -e "select * from owner_coll_mime_use_details where date_added > '${start}' order by date_added;" >> ${COLLHDATA}/billing.tsv
+
+${HOME}/bin/uc3-mysql.sh billing -- $opt -e "select * from owner_coll_mime_use_details where date_added > '${start}' order by date_added;" >> ${COLLHDATA}/billing.tsv
 
 ruby make_json.rb "$start" ${COLLHDATA}/billing.tsv >> ${COLLHDATA}/billing.ndjson
-# ruby placeholder_json.rb ${COLLHDATA}/billing.tsv >> ${COLLHDATA}/billing.ndjson
+
+if [ "$2" == "placeholder" ]
+then
+  ruby placeholder_json.rb ${COLLHDATA}/billing.tsv >> ${COLLHDATA}/billing.ndjson
+fi

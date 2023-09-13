@@ -11,7 +11,7 @@ headers = []
 ARGF.each_with_index do |line, i|
   if i == 0
     headers = line.strip!.split("\t") 
- else
+  else
     rec = {}
     line.strip!.split("\t").each_with_index do |col, j|
       d = col
