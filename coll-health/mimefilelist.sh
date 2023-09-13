@@ -53,7 +53,7 @@ get_mimes_since_date() {
   while [[ $d < $dd ]]
   do 
     nd=`date -d "$d +1 day" "+%Y-%m-%d"`
-    getmimes $d $nd 
+    getmimes `date -d "$d" "+%Y-%m-%d"` $nd 
     d=$nd
   done
 }

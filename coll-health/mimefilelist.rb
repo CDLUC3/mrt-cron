@@ -16,7 +16,7 @@ end
 def get_rec(columns, start)
   return if columns.length < 10
   ts = DateTime.parse("#{columns[5]} -0700").to_s
-  return nil if ts < start
+  return nil if ts <= start
   rec = {
     id: columns[0],
     mnemonic: columns[1],
