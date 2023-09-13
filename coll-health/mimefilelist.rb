@@ -36,11 +36,15 @@ def get_rec(columns, start)
 end
 
 File.open("#{ENV['COLLHDATA']}/files_details.ndjson", @mode) do |f|
+  skip = 0
   ARGF.each_with_index do |line, i|
-    puts i if i % 1000000 == 0
+    puts "#{i}; skip=#{skip}" if i % 1000000 == 0
     next if line =~ %r[^id]
     rec = get_rec(line.strip!.split("\t"), @start_date)
-    next if rec.nil?
+    if rec.nil?
+      skip += 1
+      next
+    exit
     next if rec[:mnemonic] =~ %r[(_sla|_service_level_agreement)$]
     coll = @colls.fetch(rec[:mnemonic], {})
     coll[rec[:mime_type]] = coll.fetch(rec[:mime_type], 0) + 1
