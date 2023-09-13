@@ -38,14 +38,9 @@ def get_rec(columns, start)
 end
 
 File.open("#{ENV['COLLHDATA']}/files_details.ndjson", @mode) do |f|
-  skip = 0
   ARGF.each_with_index do |line, i|
-    puts "#{i}; skip=#{skip}" if i % 1000000 == 0
     rec = get_rec(line.strip!.split("\t"), @start_date)
-    if rec.nil?
-      skip += 1
-      next
-    end
+    next if rec.nil?
     coll = @colls.fetch(rec[:mnemonic], {})
     coll[rec[:mime_type]] = coll.fetch(rec[:mime_type], 0) + 1
     @colls[rec[:mnemonic]] = coll
