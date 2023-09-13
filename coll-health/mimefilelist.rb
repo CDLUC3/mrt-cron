@@ -37,6 +37,7 @@ end
 
 File.open("#{ENV['COLLHDATA']}/files_details.ndjson", @mode) do |f|
   ARGF.each_with_index do |line, i|
+    puts i if i % 1000000 == 0
     next if line =~ %r[^id]
     rec = get_rec(line.strip!.split("\t"), @start_date)
     next if rec.nil?

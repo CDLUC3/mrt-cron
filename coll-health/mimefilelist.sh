@@ -74,3 +74,4 @@ echo "Run query: $(date)"
 get_mimes_since_date "$start" 
 echo "Make Json: $(date)"
 ruby mimefilelist.rb "$start" ${COLLHDATA}/mimefiles.tsv
+echo "Done: $(date)"
