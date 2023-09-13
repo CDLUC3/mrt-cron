@@ -13,15 +13,17 @@ end
 @collcount = {}
 @colls = {}
 
-def get_rec(columns)
+def get_rec(columns, start)
   return if columns.length < 10
+  ts = DateTime.parse("#{columns[5]} -0700").to_s
+  return nil if ts < start
   rec = {
     id: columns[0],
     mnemonic: columns[1],
     mime_type: columns[2],
     ark: columns[3],
     path: columns[4].gsub(%r[^producer\/],""),
-    '@timestamp': DateTime.parse("#{columns[5]} -0700").to_s,
+    '@timestamp': ts,
     billable_size: columns[6].to_i,
     ogroup: columns[7],
     own_name: columns[8],
@@ -36,9 +38,8 @@ end
 File.open("#{ENV['COLLHDATA']}/files_details.ndjson", @mode) do |f|
   ARGF.each_with_index do |line, i|
     next if line =~ %r[^id]
-    rec = get_rec(line.strip!.split("\t"))
+    rec = get_rec(line.strip!.split("\t"), @start_date)
     next if rec.nil?
-    next if rec[:@timestamp] <= @start_date
     next if rec[:mnemonic] =~ %r[(_sla|_service_level_agreement)$]
     coll = @colls.fetch(rec[:mnemonic], {})
     coll[rec[:mime_type]] = coll.fetch(rec[:mime_type], 0) + 1

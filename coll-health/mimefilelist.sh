@@ -5,7 +5,7 @@
 # export COLLHDATA=$PWD; ./mimefilelist.sh
 
 getmimes() {
-uc3-mysql.sh >> ${COLLHDATA}/mimefiles.tsv << HERE
+${HOME}/bin/uc3-mysql.sh >> ${COLLHDATA}/mimefiles.tsv << HERE
 select
   f.id,
   c.mnemonic,
