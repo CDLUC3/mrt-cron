@@ -119,9 +119,18 @@ In general, most objects should not have an annotation.  This tool would be used
 
 ### Relational Tests
 - File level
+  - Extension matches mime type
+    - If format identification has over-ruled the extension, make note of that. 
   - Mime type sustainability
+    - Compare file extention (or known mime type) to a list of sustainable mime types.
   - Filename validation
+    - Rule varies by collection
+    - Some default pattern matches for meaningless file names 
   - Empty file detection
+    - Check file size
+  - Unusual file size
+    - Compare file size to expectations for an extension type.  Re-compute based on the corpus.
+    - Determine some standard deviation rule to flag items.
 - Object level
   - Object has content files
   - Object has sidecar metadata
