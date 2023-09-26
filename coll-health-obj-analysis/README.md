@@ -131,14 +131,21 @@ In general, most objects should not have an annotation.  This tool would be used
   - Unusual file size
     - Compare file size to expectations for an extension type.  Re-compute based on the corpus.
     - Determine some standard deviation rule to flag items.
+  - Classify file as content, metadata, other
+    - Look at mime type, file size, file name  
 - Object level
   - Object has content files
+    - Scan file entries (separate test may not be needed) 
   - Object has sidecar metadata
+    - Scan file entries (separate test may not be needed) 
   - Object has content + sidecar metadata
+    - Scan file entries (separate test may not be needed) 
   - Object has meaningful ERC metadata
+    - pattern match erc fields
   - Object has local id
+    - pattern match local id 
 - Contextual checks (repo)
-  - Unique file checksum
+  - Unique file checksum - what is the correct scope?
 - Contextual checks (collection)
   - File name conforms to naming standards for collection
   - Local id conforms to naming standards for collection
