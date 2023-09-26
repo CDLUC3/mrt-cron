@@ -18,13 +18,15 @@
       New_Extract-->New_Doc;
       Daily_Extract(Daily Extract Process);
       Daily_Extract-->Change_log;
-      Publish(Publish New Doc to NoSQL)
-      New_Doc-->Publish
+      New_Doc-->SaveJson
       MergeUpdate(Merge and Update NoSQL Docs)
       Change_log-->MergeUpdate
+      JsonRepo((JSON Repo))
+      SaveJson-->JsonRepo
+      MergeUpdate<-->JsonRepo
       NoSQL((NoSQL Repo))
+      JsonRepo-->Publish
       Publish-->NoSQL
-      MergeUpdate<-->NoSQL
       NoSQLViewer(NoSQL Viewer)
       NoSQL-->NoSQLViewer
       Users[Merritt Team Member]
@@ -36,9 +38,12 @@ Test results are probably not worth storing in MySQL.
 
 ```mermaid
   graph TD;
+      JsonRepo((JSON Repo))
       NoSQL((NoSQL Repo))
       RelationalTests(Relational Tests)
-      NoSQL<-->RelationalTests
+      JsonRepo<-->RelationalTests
+      JsonRepo-->Publish
+      Publish-->NoSQL
       TestConfig[[Test Configuration Files - Yaml]]
       TestConfig-->RelationalTests
       NoSQLViewer(NoSQL Viewer)
@@ -52,9 +57,12 @@ Because tests are expensive to execute, test results should be recoded in the in
 ```mermaid
   graph TD;
       INV_DB((Inventory Database))
+      JsonRepo((JSON Repo))
       NoSQL((NoSQL Repo))
       BitstreamTests(Bitstream Tests)
-      NoSQL<-->BitstreamTests
+      JsonRepo<-->BitstreamTests
+      JsonRepo-->Publish
+      Publish-->NoSQL
       TestConfig[[Test Configuration Files - Yaml]]
       TestConfig-->BitstreamTests
       NoSQLViewer(NoSQL Viewer)
