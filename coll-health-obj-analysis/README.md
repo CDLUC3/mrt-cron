@@ -143,7 +143,9 @@ In general, most objects should not have an annotation.  This tool would be used
   - Object has meaningful ERC metadata
     - pattern match erc fields
   - Object has local id
-    - pattern match local id 
+    - pattern match local id
+  - Has embargo / had embargo
+    - Look at files and date  
 - Contextual checks (repo)
   - Unique file checksum - what is the correct scope?
 - Contextual checks (collection)
