@@ -15,3 +15,4 @@ viz/billing.tsv
 coll-health/mimefiles.tsv
 coll-health/files_details.prod.ndjson
 coll-health/files_details.ndjson
+coll-health-obj-analysis/vendor/
