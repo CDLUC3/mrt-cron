@@ -144,7 +144,10 @@ class ObjectHealth
         erc_where: r.fetch('erc_where', ''),
         sidecar: sidecar
       }
-      obj[:modified] = r.fetch('modified', '')
+      modt = r.fetch('modified', '')
+      ts = DateTime.parse("#{modt} -0700").to_s
+      obj['@timestamp'] = ts
+      obj[:modified] = ts
       obj[:embargo_end_date] = r.fetch('embargo_end_date', '')
     end
 
