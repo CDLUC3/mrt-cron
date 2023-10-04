@@ -8,3 +8,7 @@ default:
     port: 3306
     username: "{!SSM: billing/readwrite/db-user}"
     password: "{!SSM: billing/readwrite/db-password}"
+  tests:
+    aaa:
+    bbb:
+    ccc:
