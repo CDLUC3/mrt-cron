@@ -115,7 +115,7 @@ class ObjectHealth
         ark: r.fetch('ark', ''),
         localids: loc.split(',')
       }
-      obj[:identifiers] = {
+      obj[:containers] = {
         owner_ark: r.fetch('owner_ark', ''),
         coll_ark: r.fetch('coll_ark', ''),
         mnemonic: r.fetch('mnemonic', '')
