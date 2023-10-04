@@ -10,5 +10,8 @@ default:
     password: "{!SSM: billing/readwrite/db-password}"
   tests:
     aaa:
+      name: Test AAA
     bbb:
+      name: Test BB
     ccc:
+      name: Test C
