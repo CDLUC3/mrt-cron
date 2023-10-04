@@ -2,6 +2,28 @@ require 'json'
 require 'yaml'
 require 'uc3-ssm'
 require 'mysql2'
+require 'nokogiri'
+
+#https://stackoverflow.com/questions/6478005/how-to-convert-nokogiri-document-object-into-json
+class Nokogiri::XML::Node
+  def to_json(*a)
+    {"$name"=>name}.tap do |h|
+      kids = children.to_a
+      h.merge!(attributes)
+      h.merge!("$text"=>text) unless text.empty?
+      h.merge!("$kids"=>kids) unless kids.empty?
+    end.to_json(*a)
+  end
+end
+class Nokogiri::XML::Document
+  def to_json(*a); root.to_json(*a); end
+end
+class Nokogiri::XML::Text
+  def to_json(*a); text.to_json(*a); end
+end
+class Nokogiri::XML::Attr
+  def to_json(*a); value.to_json(*a); end
+end
 
 class ObjectHealth
   def initialize
@@ -38,9 +60,10 @@ class ObjectHealth
         c.id = icio.inv_collection_id
       where 
         c.mnemonic = 'merritt_demo'
+      and exists (select 1 from inv.inv_metadatas where inv_object_id=o.id)
       order by 
-        o.modified
-      limit 1
+        o.modified desc
+      limit 10
     }
     stmt = get_db_cli.prepare(sql)
     stmt.execute().each do |r|
@@ -64,7 +87,8 @@ class ObjectHealth
           o.erc_where,
           o.modified,
           (select group_concat(ifnull(local_id, '')) from inv.inv_localids where inv_object_ark = o.ark) as localids,
-          (select ifnull(embargo_end_date, '') from inv.inv_embargoes where inv_object_id = o.id) as embargo_end_date
+          (select ifnull(embargo_end_date, '') from inv.inv_embargoes where inv_object_id = o.id) as embargo_end_date,
+          (select value from inv.inv_metadatas where inv_object_id=o.id limit 1) as metadata
         from
           inv.inv_objects o
         inner join
@@ -85,20 +109,40 @@ class ObjectHealth
     }
     stmt = get_db_cli.prepare(sql)
     stmt.execute(*[id]).each do |r|
+      loc = r.fetch('localids', '')
+      loc = '' if loc.nil?
       obj[:identifiers] = {
         ark: r.fetch('ark', ''),
-        localids: r.fetch('localids', '').split(',')
+        localids: loc.split(',')
       }
       obj[:identifiers] = {
         owner_ark: r.fetch('owner_ark', ''),
         coll_ark: r.fetch('coll_ark', ''),
         mnemonic: r.fetch('mnemonic', '')
       }
+
+      sidecarText = ''
+      sidecar = {}
+      begin
+        sidecarText = r.values[12].nil? ? '' : r.values[12]
+        #sidecar = {text: sidecarText}
+        sidecar = {}
+        unless sidecarText.empty?
+          xml = Nokogiri::XML(sidecarText).remove_namespaces!
+          xml.xpath("//*[not(descendant::*)]").each do |n|
+            sidecar[n.name] = sidecar.fetch(n.name, []).append(n.text)
+          end
+        end
+      rescue => exception
+        puts exception
+      end
+      
       obj[:metadata] = {
         erc_who: r.fetch('erc_who', ''),
         erc_what: r.fetch('erc_what', ''),
         erc_when: r.fetch('erc_when', ''),
-        erc_where: r.fetch('erc_where', '')  
+        erc_where: r.fetch('erc_where', ''),
+        sidecar: sidecar
       }
       obj[:modified] = r.fetch('modified', '')
       obj[:embargo_end_date] = r.fetch('embargo_end_date', '')
@@ -152,6 +196,10 @@ class ObjectHealth
     }
     stmt = get_db_cli.prepare(sql)
     stmt.execute(*[id, obj.to_json])
+    File.open("#{ENV['COLLHDATA']}/objects_details.ndjson", 'a') do |f|
+      f.write(obj.to_json)
+      f.write("\n")
+    end
   end
 end
 

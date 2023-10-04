@@ -1,5 +1,18 @@
 # Collection Heath Object Analysis
 
+## Invocation
+
+Set environment (DEV)
+```
+export COLLHDATA=$PWD
+```
+
+Set environment
+```
+export COLLHDATA=/dpr2/apps/mrt-cron/coll_health/data
+cd {merrit-cron-install}/coll-health-object-analysis
+```
+
 ## System Design
 
 ### Analysis Preparation
