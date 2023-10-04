@@ -1,17 +1,27 @@
 # Collection Heath Object Analysis
 
-## Invocation
 
-Set environment (DEV)
+## Set environment (DEV)
 ```
 export COLLHDATA=$PWD
 ```
 
-Set environment
+## Set environment
 ```
 export COLLHDATA=/dpr2/apps/mrt-cron/coll_health/data
 cd {merrit-cron-install}/coll-health-object-analysis
 ```
+
+## Install
+```
+bundle install
+```
+
+## Invocation
+```
+bundle exec ruby object_health.rb
+```
+
 
 ## System Design
 
