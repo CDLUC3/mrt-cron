@@ -3,8 +3,17 @@ require 'mysql2'
 require 'nokogiri'
 
 class ObjectHealthDb
-  def initialize(dbconf)
-    @dbconf = dbconf
+  def initialize(config)
+    @config = config
+    @dbconf = @config.fetch('dbconf', {})
+    gather = @config.fetch('gather-ids', {})
+    select = gather.fetch('select', 'select 1 where 1=1')
+    exclusion = gather.fetch('exclusion', 'limit ?')
+    @queries = []
+    gather.fetch('queries', []).each do |q|
+      @queries.append("#{select} #{q} #{exclusion}")
+    end
+    @limit = gather.fetch('limit', 10)
   end
 
   def get_db_cli
@@ -19,37 +28,14 @@ class ObjectHealthDb
     )
   end
   
-  def get_objects_sql
-    %{
-      select
-        o.id
-      from
-        inv.inv_objects o
-      inner join
-        inv.inv_collections_inv_objects icio
-      on
-        icio.inv_object_id = o.id
-      inner join
-        inv.inv_collections c
-      on 
-        c.id = icio.inv_collection_id
-      
-      where 
-        c.mnemonic = 'merritt_demo'
-      and 
-        exists (select 1 from inv.inv_metadatas where inv_object_id=o.id)
-      
-      order by 
-        o.modified desc
-      limit 10
-    }
-  end
-
   def get_object_list
     list = []
-    stmt = get_db_cli.prepare(get_objects_sql)
-    stmt.execute().each do |r|
-      list.append(r.values[0])
+    @queries.each do |q|
+      stmt = get_db_cli.prepare(q)
+      stmt.execute(*[@limit]).each do |r|
+        list.append(r.values[0])
+      end
+      break unless list.empty?
     end
     list
   end

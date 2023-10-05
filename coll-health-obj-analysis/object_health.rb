@@ -8,7 +8,7 @@ class ObjectHealth
   def initialize
     config_file = 'config/database.ssm.yml'
     @config = Uc3Ssm::ConfigResolver.new.resolve_file_values(file: config_file, resolve_key: 'default', return_key: 'default')
-    @obj_health_db = ObjectHealthDb.new(@config.fetch('dbconf', {}))
+    @obj_health_db = ObjectHealthDb.new(@config)
     @obj_health_tests = ObjectHealthTests.new(@config)
   end
 
