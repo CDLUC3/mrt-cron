@@ -40,9 +40,6 @@ default:
       - application/pdf
       - application/atom+xml
       - image/gif
-      SKIP:
-      - plain/turtle
-      - application/rdf+xml
       - text/csv
       - application/x-gzip
       - text/html
@@ -61,6 +58,9 @@ default:
       - video/quicktime
       - application/vnd.openxmlformats-officedocument.presentationml.presentation
       - application/vnd.ms-powerpoint
+      SKIP:
+      - plain/turtle
+      - application/rdf+xml
       FAIL:
       WARN:
       - application/octet-stream
