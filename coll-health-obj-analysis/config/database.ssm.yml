@@ -62,13 +62,19 @@ default:
       - plain/turtle
       - application/rdf+xml
       FAIL:
+      # x-pkcs: Public-Key Cryptography Standards files provide for certificate storage
       - application/x-pkcs12
+      - application/x-pkcs7-certificates
+      # binary.macroenabled.12: Binary Excel spreadsheet with macros enabled
       - application/vnd.ms-excel.sheet.binary.macroenabled.12
+      # appledouble: Apple dual-forked file typically excluded from containers
       - multipart/appledouble
       WARN:
       - application/octet-stream
-      - application/vnd.ms-excel.sheet.macroenabled.12
       - application/vnd.chipnuts.karaoke-mmd
+      - application/vnd.ms-excel.sheet.macroenabled.12
+      - application/vnd.ms-powerpoint.presentation.macroenabled.12
+      - application/vnd.ms-word.document.macroenabled.12
       - application/x-stata-dta
       - application/x-stata-dta; version=13
       - application/x-stata-dta; version=14
@@ -138,7 +144,6 @@ default:
       - application/vnd.oasis.opendocument.text
       - text/x-csrc
       - application/vnd.ms-outlook
-      - application/x-pkcs7-certificates
       - text/x-c++src
       - application/vnd.google-earth.kmz
       - text/css
@@ -177,7 +182,6 @@ default:
       - application/x-stuffit
       - application/vnd.apple.numbers
       - application/vnd.rn-realmedia
-      - application/vnd.ms-word.document.macroenabled.12
       - application/x-msaccess
       - application/rss+xml
       - text/sgml
@@ -242,7 +246,6 @@ default:
       - message/x-emlx
       - application/msword5
       - text/x-common-lisp
-      - application/vnd.ms-powerpoint.presentation.macroenabled.12
       - text/x-aspectj
       - application/vnd.oasis.opendocument.chart
       - application/x-executable
