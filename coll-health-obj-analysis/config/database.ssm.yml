@@ -62,8 +62,17 @@ default:
       - plain/turtle
       - application/rdf+xml
       FAIL:
+      - application/x-pkcs12
+      - application/vnd.ms-excel.sheet.binary.macroenabled.12
+      - multipart/appledouble
       WARN:
       - application/octet-stream
+      - application/vnd.ms-excel.sheet.macroenabled.12
+      - application/vnd.chipnuts.karaoke-mmd
+      - application/x-stata-dta
+      - application/x-stata-dta; version=13
+      - application/x-stata-dta; version=14
+      - text/x-stsrc
       INFO:
       - application/x-hdf
       - application/x-matlab-data
@@ -100,7 +109,6 @@ default:
       - video/x-m4v
       - application/x-sh
       - application/x-dosexec
-      - multipart/appledouble
       - application/java-vm
       - image/x-ms-bmp
       - text/x-objcsrc
@@ -133,7 +141,6 @@ default:
       - application/x-pkcs7-certificates
       - text/x-c++src
       - application/vnd.google-earth.kmz
-      - application/x-stata-dta; version=14
       - text/css
       - application/x-elc
       - application/x-tex
@@ -148,9 +155,7 @@ default:
       - chemical/x-cif
       - application/vnd.ms-works
       - application/mathematica
-      - application/vnd.ms-excel.sheet.binary.macroenabled.12
       - application/vnd.wordperfect
-      - application/vnd.ms-excel.sheet.macroenabled.12
       - application/x-sas
       - application/x-bplist
       - application/zlib
@@ -178,8 +183,6 @@ default:
       - text/sgml
       - application/x-erdas-hfa
       - text/x-coldfusion
-      - application/x-stata-dta
-      - application/x-stata-dta; version=13
       - application/vnd.adobe.xfl
       - image/x-portable-bitmap
       - application/x-sas-audit
@@ -244,7 +247,6 @@ default:
       - application/vnd.oasis.opendocument.chart
       - application/x-executable
       - application/vnd.oasis.opendocument.presentation
-      - application/x-pkcs12
       - text/x-modula
       - image/wmf
       - text/calendar
@@ -252,14 +254,12 @@ default:
       - application/x-xfig
       - chemical/x-cdx
       - application/vnd.openxmlformats-officedocument.spreadsheetml.template
-      - application/vnd.chipnuts.karaoke-mmd
       - text/prs.lines.tag
       - application/pgp-signature
       - text/x-groovy
       - application/vnd.tcpdump.pcap
       - text/x-haml
       - application/vnd.mif
-      - text/x-stsrc
       - application/x-emf
       - application/vnd.ms-cab-compressed
       - image/vnd.dwg
