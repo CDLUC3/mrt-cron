@@ -54,8 +54,7 @@ class ObjectHealthDb
         o.erc_where,
         o.modified,
         (select group_concat(ifnull(local_id, '')) from inv.inv_localids where inv_object_ark = o.ark) as localids,
-        (select ifnull(embargo_end_date, '') from inv.inv_embargoes where inv_object_id = o.id) as embargo_end_date,
-        (select value from inv.inv_metadatas where inv_object_id=o.id limit 1) as metadata
+        (select ifnull(embargo_end_date, '') from inv.inv_embargoes where inv_object_id = o.id) as embargo_end_date
       from
         inv.inv_objects o
       inner join
@@ -73,6 +72,12 @@ class ObjectHealthDb
       where 
         o.id = ?
       ;
+    }
+  end
+
+  def get_object_sidecar_sql
+    %{
+      select value from inv.inv_metadatas where inv_object_id = ?;
     }
   end
 
@@ -118,12 +123,21 @@ class ObjectHealthDb
         erc_who: r.fetch('erc_who', ''),
         erc_what: r.fetch('erc_what', ''),
         erc_when: r.fetch('erc_when', ''),
-        erc_where: r.fetch('erc_where', ''),
-        sidecar: make_sidecar(r.fetch('metadata', ''))
+        erc_where: r.fetch('erc_where', '')
       }
       obj['@timestamp'] = make_opensearch_date(r.fetch('modified', ''))
       obj[:modified] = make_opensearch_date(r.fetch('modified', ''))
       obj[:embargo_end_date] = make_opensearch_date(r.fetch('embargo_end_date', ''))
+    end
+    obj
+  end
+
+  def process_object_sidecar(id, obj)
+    sql = get_object_sidecar_sql
+    stmt = get_db_cli.prepare(sql)
+    obj[:sidecar] = []
+    stmt.execute(*[id]).each do |r|
+      obj[:sidecar].append(make_sidecar(r.fetch('value', '')))
     end
     obj
   end
@@ -186,9 +200,26 @@ class ObjectHealthDb
     stmt.execute(*[id, obj.to_json])
   end
 
-  def get_object(id)
+  def get_object_json(id)
+    sql = %{
+      select cast(object_health as binary) from object_health_json where inv_object_id = ?;
+    }
+    obj = {}
+    stmt = get_db_cli.prepare(sql)
+    stmt.execute(*[id]).each do |r|
+      obj = JSON.parse(r.values[0])
+    end
+    obj
+  end
+
+  def build_object(id)
     obj = process_object_metadata(id)
+    obj = process_object_sidecar(id, obj)
     obj = process_object_files(id, obj)
     obj
+  end
+
+  def get_object(id)
+    get_object_json(id)
   end
 end

@@ -15,6 +15,7 @@ class ObjectHealthTests
       obj[:tests][status] += 1
       obj[:tests][:failures].append(v.fetch('name', k)) if status == :FAIL
     end
+    puts obj[:tests]
     obj
   end
 end

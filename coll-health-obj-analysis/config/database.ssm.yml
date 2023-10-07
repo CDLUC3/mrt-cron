@@ -17,7 +17,7 @@ default:
       inner join inv.inv_collections c on c.id = icio.inv_collection_id
       where 1=1
     exclusion: |
-      and not exists (select 1 from object_health_json h where h.inv_object_id = o.id)
+      /*and not exists (select 1 from object_health_json h where h.inv_object_id = o.id)*/
       order by o.modified desc
       limit ?
     # prioritized set of queries to use to find work to be performed.  If one query returns no results, the next one will be run
