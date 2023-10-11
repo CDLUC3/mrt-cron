@@ -207,7 +207,7 @@ class ObjectHealthDb
     obj = {}
     stmt = get_db_cli.prepare(sql)
     stmt.execute(*[id]).each do |r|
-      obj = JSON.parse(r.values[0])
+      obj = JSON.parse(r.values[0], symbolize_names: true)
     end
     obj
   end

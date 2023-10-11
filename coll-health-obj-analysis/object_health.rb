@@ -7,6 +7,7 @@ require_relative 'object_health_tests'
 
 class ObjectHealth
   def initialize(argv)
+    @collhdata = ENV.fetch('COLLHDATA', ENV['PWD'])
     @options = make_options(argv)
     puts @options
     config_file = 'config/database.ssm.yml'
@@ -43,7 +44,7 @@ class ObjectHealth
   end
 
   def export_object(obj)
-    File.open("#{ENV['COLLHDATA']}/objects_details.ndjson", 'a') do |f|
+    File.open("#{@collhdata}/objects_details.ndjson", 'a') do |f|
       f.write(obj.to_json)
       f.write("\n")
     end
@@ -54,7 +55,6 @@ class ObjectHealth
     if @options[:build_objects]
       puts "build #{id}"
       obj = @obj_health_db.build_object(id)
-      @obj_health_db.update_object(id, obj)
     else
       puts "get #{id}"
       obj = @obj_health_db.get_object(id)
@@ -62,10 +62,14 @@ class ObjectHealth
 
     if @options[:test_objects]
       puts "test #{id}"
+      puts obj[:tests]
       obj = @obj_health_tests.run_tests(obj)
+      puts obj[:tests]
     end
 
     if @options[:build_objects] || @options[:test_objects]
+      puts "save #{id}"
+      @obj_health_db.update_object(id, obj)
       puts "export #{id}"
       export_object(obj)
     end
