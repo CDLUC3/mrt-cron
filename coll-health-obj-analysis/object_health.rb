@@ -4,6 +4,7 @@ require 'uc3-ssm'
 require 'optparse'
 require_relative 'object_health_db'
 require_relative 'object_health_tests'
+require_relative 'analysis_tasks'
 
 class ObjectHealth
   def initialize(argv)
@@ -13,7 +14,12 @@ class ObjectHealth
     config_file = 'config/database.ssm.yml'
     @config = Uc3Ssm::ConfigResolver.new.resolve_file_values(file: config_file, resolve_key: 'default', return_key: 'default')
     @obj_health_db = ObjectHealthDb.new(@config)
-    @obj_health_tests = ObjectHealthTests.new(@config)
+    @analysis_tasks = AnalysisTasks.new(self, @config)
+    @obj_health_tests = ObjectHealthTests.new(self, @config)
+  end
+
+  def self.status_values
+    [:SKIP, :PASS, :INFO, :WARN, :FAIL]
   end
 
   def make_options(argv)
@@ -26,6 +32,9 @@ class ObjectHealth
       end
       opts.on('-b', '--build', 'Build Objects') do
         options[:build_objects] = true
+      end
+      opts.on('-a', '--analyze', 'Analyze Objects') do
+        options[:analyze_objects] = true
       end
       opts.on('-t', '--test', 'Test Objects') do
         options[:test_objects] = true
@@ -60,14 +69,17 @@ class ObjectHealth
       obj = @obj_health_db.get_object(id)
     end
 
-    if @options[:test_objects]
-      puts "test #{id}"
-      puts obj[:tests]
-      obj = @obj_health_tests.run_tests(obj)
-      puts obj[:tests]
+    if @options[:analyze_objects] && !obj.nil?
+      puts "analyze #{id}"
+      obj = @analysis_tasks.run_tasks(obj)
     end
 
-    if @options[:build_objects] || @options[:test_objects]
+    if @options[:test_objects] && !obj.nil?
+      puts "test #{id}"
+      obj = @obj_health_tests.run_tests(obj)
+    end
+
+    if !obj.nil? && (@options[:build_objects] || @options[:test_objects] || @options[:analysis_tasks])
       puts "save #{id}"
       @obj_health_db.update_object(id, obj)
       puts "export #{id}"

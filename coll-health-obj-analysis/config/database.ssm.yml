@@ -29,8 +29,9 @@ default:
     # find items in merritt_demo
     - |
       and c.mnemonic = 'merritt_demo'
-  analysis:
+  analysis-json:
     mime:
+      class: MimeTask
       PASS:
       - text/plain
       - application/xml
@@ -269,20 +270,18 @@ default:
       - application/vnd.adobe.fxp
       - application/x-font-linux-psf
       - application/mbox
-      - text/x-c++hdr      -       -       -       -       -       -       -      | software   |      - 1 |
+      - text/x-c++hdr
+    # write analysis->classify->content->[type]->[fileid]
+    # write analysis->classify->metadata->[type]->[fileid]
+    # write analysis->classify->other->[type]->[fileid]
+    classify:
+  analysis-bitstream:
+    format-id:
+    virus-scan:
+    pii-scan:
   tests:
-    aaa:
-      name: Test AAA
-    bbb:
-      name: Test BB
-    ccc:
-      name: Test C
-  x-tests:
-    extension-mime-match:
-      name: File Extension matches mime type
-      description: If format identification has over-ruled the extension, make note of that.
-      skip: true
     sustainable-mime:
+      class: MimeTest
       name: Mime type sustainability
       description: Compare file extention (or known mime type) to a list of sustainable mime types.
     filename-valid:
@@ -303,20 +302,23 @@ default:
       name: Object has sidecar metadata
     has-content-and-sidecar-metadata:
       name: Object has content + sidecar metadata
-    has-meaningful=erc:
+    has-meaningful-erc:
       name: Object has meaningful ERC metadata
     has-local-id:
       name: Object has local id
     has-embargo:
-      name: Has embargo / had embargo
-    has-duplicate-checksum:
-      name: Has duplicate checksum
+      name: "Has embargo / had embargo"
     localid-valid:
       name: Local id conforms to naming standards for collection
     erc-valid:
       name: ERC metadata conforms to naming standards for collection
     filesize-valid:
       name: File size is within typical size range for the collection
+  x-tests-bitstream:
+    extension-mime-match:
+      name: File Extension matches mime type
+      description: If format identification has over-ruled the extension, make note of that.
+      skip: true
     pii-detected:
       name: PII detected
       description: BITSTREAM SCAN assumes we could plug in such a service
@@ -326,3 +328,6 @@ default:
     format-id-scan:
       name: Format Identification Issue
       description: BITSTREAM SCAN
+  x-tests-db:
+    has-duplicate-checksum:
+      name: Has duplicate checksum
