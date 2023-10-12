@@ -30,13 +30,15 @@ class ObjectHealthDb
   
   def get_object_list
     list = []
+    conn = get_db_cli
     @queries.each do |q|
-      stmt = get_db_cli.prepare(q)
+      stmt = conn.prepare(q)
       stmt.execute(*[@limit]).each do |r|
         list.append(r.values[0])
       end
       break unless list.empty?
     end
+    conn.close
     list
   end
 
@@ -105,7 +107,8 @@ class ObjectHealthDb
   def process_object_metadata(id)
     obj = {id: id}
     sql = get_object_sql
-    stmt = get_db_cli.prepare(sql)
+    conn = get_db_cli
+    stmt = conn.prepare(sql)
     stmt.execute(*[id]).each do |r|
       loc = r.fetch('localids', '')
       loc = '' if loc.nil?
@@ -129,16 +132,19 @@ class ObjectHealthDb
       obj[:modified] = make_opensearch_date(r.fetch('modified', ''))
       obj[:embargo_end_date] = make_opensearch_date(r.fetch('embargo_end_date', ''))
     end
+    conn.close
     obj
   end
 
   def process_object_sidecar(id, obj)
     sql = get_object_sidecar_sql
-    stmt = get_db_cli.prepare(sql)
+    conn = get_db_cli
+    stmt = conn.prepare(sql)
     obj[:sidecar] = []
     stmt.execute(*[id]).each do |r|
       obj[:sidecar].append(make_sidecar(r.fetch('value', '')))
     end
+    conn.close
     obj
   end
 
@@ -175,7 +181,8 @@ class ObjectHealthDb
 
     obj[:system] = []
     obj[:producer] = []
-    stmt = get_db_cli.prepare(sql)
+    conn = get_db_cli
+    stmt = conn.prepare(sql)
     stmt.execute(*[id]).each do |r|
       source = r.fetch('source', 'na').to_sym
       obj[source].push({
@@ -188,6 +195,7 @@ class ObjectHealthDb
         created: r.fetch('created', '')
       })
     end
+    conn.close
     obj
   end
 
@@ -196,8 +204,10 @@ class ObjectHealthDb
       replace into object_health_json(inv_object_id, object_health)
       values(?, ?);
     }
-    stmt = get_db_cli.prepare(sql)
+    conn = get_db_cli
+    stmt = conn.prepare(sql)
     stmt.execute(*[id, obj.to_json])
+    conn.close
   end
 
   def get_object_json(id)
@@ -205,10 +215,12 @@ class ObjectHealthDb
       select cast(object_health as binary) from object_health_json where inv_object_id = ?;
     }
     obj = {}
-    stmt = get_db_cli.prepare(sql)
+    conn = get_db_cli
+    stmt = conn.prepare(sql)
     stmt.execute(*[id]).each do |r|
       obj = JSON.parse(r.values[0], symbolize_names: true)
     end
+    conn.close
     obj
   end
 

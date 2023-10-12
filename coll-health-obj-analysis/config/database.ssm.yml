@@ -9,7 +9,7 @@ default:
     username: "{!SSM: billing/readwrite/db-user}"
     password: "{!SSM: billing/readwrite/db-password}"
   gather-ids:
-    limit: 10
+    limit: 500
     select: |
       select o.id
       from inv.inv_objects o
@@ -23,9 +23,9 @@ default:
     # prioritized set of queries to use to find work to be performed.  If one query returns no results, the next one will be run
     queries:
     # find items with inv_metadatas in merritt_demo
-    - |
-      and c.mnemonic = 'merritt_demo'
-      and exists (select 1 from inv.inv_metadatas where inv_object_id=o.id)
+    # - |
+    #   and c.mnemonic = 'merritt_demo'
+    #   and exists (select 1 from inv.inv_metadatas where inv_object_id=o.id)
     # find items in merritt_demo
     - |
       and c.mnemonic = 'merritt_demo'
