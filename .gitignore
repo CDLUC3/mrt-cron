@@ -18,3 +18,4 @@ coll-health/files_details.ndjson
 coll-health-obj-analysis/vendor/
 coll-health-obj-analysis/objects_details.ndjson
 coll-health-obj-analysis/objects_details.*.json
+coll-health-obj-analysis/scratch.json

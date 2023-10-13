@@ -24,7 +24,7 @@ class ObjectHealthTests
     obj[:tests][:test_run_log] = obj[:tests].fetch(:test_run_log, []).append(Time.now.to_s)
     @tests.each do |test|
       status = test.run_test(obj)
-      obj[:tests][test.name] = status
+      obj[:tests][test.name.to_sym] = status
       obj[:tests][status] += 1
       obj[:tests][:failures] = obj[:tests].fetch(:failures, []).append(test.name) if status == :FAIL
     end

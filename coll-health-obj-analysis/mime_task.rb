@@ -19,7 +19,7 @@ class MimeTask < ObjHealthTask
     ObjectHealth.status_values.each do |stat|
       objmap[stat] = []
     end
-    obj.fetch(:mimes, []).each do |mime|
+    obj.fetch(:mimes, {}).each do |mime,v|
       map[mime] = @statmap.fetch(mime, :SKIP) unless mime.empty?
     end
     map.each do |k,v|

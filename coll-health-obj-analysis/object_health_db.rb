@@ -104,14 +104,14 @@ class ObjectHealthDb
     DateTime.parse("#{modt} -0700").to_s
   end
 
-  def process_object_metadata(id)
-    obj = {id: id}
+  def process_object_metadata(id, obj)
     sql = get_object_sql
     conn = get_db_cli
     stmt = conn.prepare(sql)
     stmt.execute(*[id]).each do |r|
       loc = r.fetch('localids', '')
       loc = '' if loc.nil?
+      obj[:loaded] = true
       obj[:identifiers] = {
         ark: r.fetch('ark', ''),
         localids: loc.split(',')
@@ -128,7 +128,7 @@ class ObjectHealthDb
         erc_when: r.fetch('erc_when', ''),
         erc_where: r.fetch('erc_where', '')
       }
-      obj['@timestamp'] = make_opensearch_date(r.fetch('modified', ''))
+      obj[:@timestamp] = make_opensearch_date(r.fetch('modified', ''))
       obj[:modified] = make_opensearch_date(r.fetch('modified', ''))
       obj[:embargo_end_date] = make_opensearch_date(r.fetch('embargo_end_date', ''))
     end
@@ -222,7 +222,7 @@ class ObjectHealthDb
     sql = %{
       select cast(object_health as binary) from object_health_json where inv_object_id = ?;
     }
-    obj = {}
+    obj = {id: id, loaded: false}
     conn = get_db_cli
     stmt = conn.prepare(sql)
     stmt.execute(*[id]).each do |r|
@@ -233,7 +233,8 @@ class ObjectHealthDb
   end
 
   def build_object(id)
-    obj = process_object_metadata(id)
+    obj = get_object_json(id)
+    obj = process_object_metadata(id, obj)
     obj = process_object_sidecar(id, obj)
     obj = process_object_files(id, obj)
     obj

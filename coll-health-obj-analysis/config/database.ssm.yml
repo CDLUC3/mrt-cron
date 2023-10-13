@@ -1,4 +1,11 @@
 default:
+  opensearch:
+    host: 'https://localhost:9200'
+    user: 'admin'
+    password: 'admin'
+    transport_options:
+      ssl: 
+        verify: false
   dbconf:
     adapter: mysql2
     encoding: utf8mb4
@@ -9,7 +16,7 @@ default:
     username: "{!SSM: billing/readwrite/db-user}"
     password: "{!SSM: billing/readwrite/db-password}"
   gather-ids:
-    limit: 10
+    limit: 500
     select: |
       select o.id
       from inv.inv_objects o

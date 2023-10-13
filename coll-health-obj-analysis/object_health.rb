@@ -2,8 +2,10 @@ require 'json'
 require 'yaml'
 require 'uc3-ssm'
 require 'optparse'
+require 'opensearch'
 require_relative 'object_health_db'
 require_relative 'object_health_tests'
+require_relative 'object_health_opensearch'
 require_relative 'analysis_tasks'
 
 class ObjectHealth
@@ -17,6 +19,7 @@ class ObjectHealth
     @obj_health_db = ObjectHealthDb.new(@config)
     @analysis_tasks = AnalysisTasks.new(self, @config)
     @obj_health_tests = ObjectHealthTests.new(self, @config)
+    @opensrch = ObjectHealthOpenSearch.new(self, @config)
   end
 
   def self.status_values
@@ -54,23 +57,20 @@ class ObjectHealth
   end
 
   def export_object(obj)
-    File.open("#{@collhdata}/objects_details.ndjson", 'a') do |f|
-      f.write(obj.to_json)
-      f.write("\n")
-    end
     if @options[:debug]
       if @debug[:export_count] < @debug[:export_max]
-        File.open("#{@collhdata}/objects_details.#{obj[:id]}.json", 'a') do |f|
+        File.open("#{@collhdata}/objects_details.#{obj[:id]}.json", 'w') do |f|
           f.write(JSON.pretty_generate(obj))
         end
         @debug[:export_count] += 1
         puts @debug
       end
     end
+    @opensrch.export(obj)
   end
 
   def processObject(id)
-    obj = nil
+    obj = {loaded: false}
     if @options[:build_objects]
       puts "build #{id}"
       obj = @obj_health_db.build_object(id)
@@ -79,17 +79,17 @@ class ObjectHealth
       obj = @obj_health_db.get_object(id)
     end
 
-    if @options[:analyze_objects] && !obj.nil?
+    if @options[:analyze_objects] && obj[:loaded]
       puts "analyze #{id}"
       obj = @analysis_tasks.run_tasks(obj)
     end
 
-    if @options[:test_objects] && !obj.nil?
+    if @options[:test_objects] && obj[:loaded]
       puts "test #{id}"
       obj = @obj_health_tests.run_tests(obj)
     end
 
-    if !obj.nil? && (@options[:build_objects] || @options[:test_objects] || @options[:analysis_tasks])
+    if obj[:loaded] && (@options[:build_objects] || @options[:test_objects] || @options[:analysis_tasks])
       puts "save #{id}"
       @obj_health_db.update_object(id, obj)
       puts "export #{id}"
