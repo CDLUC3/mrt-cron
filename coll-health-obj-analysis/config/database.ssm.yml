@@ -9,7 +9,7 @@ default:
     username: "{!SSM: billing/readwrite/db-user}"
     password: "{!SSM: billing/readwrite/db-password}"
   gather-ids:
-    limit: 500
+    limit: 10
     select: |
       select o.id
       from inv.inv_objects o

@@ -178,22 +178,30 @@ class ObjectHealthDb
 
   def process_object_files(id, obj)
     sql = get_object_files_sql
+    obj[:file_counts] = {}
+    obj[:mimes] = {}
 
-    obj[:system] = []
-    obj[:producer] = []
     conn = get_db_cli
     stmt = conn.prepare(sql)
     stmt.execute(*[id]).each do |r|
       source = r.fetch('source', 'na').to_sym
-      obj[source].push({
-        version: r.fetch('number', 0),
-        pathname: r.fetch('pathname', ''),
-        billable_size: r.fetch('billable_size', 0),
-        mime_type: r.fetch('mime_type', ''),
-        digest_type: r.fetch('digest_type', ''),
-        digest_value: r.fetch('digest_value', ''),
-        created: r.fetch('created', '')
-      })
+      obj[source] = [] unless obj.key?(source)
+      obj[:file_counts][source] = obj[:file_counts].fetch(source, 0) + 1
+      mime = r.fetch('mime_type', '')
+      if obj[:file_counts][source] <= 1000
+        obj[source].push({
+          version: r.fetch('number', 0),
+          pathname: r.fetch('pathname', ''),
+          billable_size: r.fetch('billable_size', 0),
+          mime_type: mime,
+          digest_type: r.fetch('digest_type', ''),
+          digest_value: r.fetch('digest_value', ''),
+          created: r.fetch('created', '')
+        })
+      end
+      if source == :producer and !mime.empty?
+        obj[:mimes][mime] = obj[:mimes].fetch(mime, 0) + 1
+      end
     end
     conn.close
     obj

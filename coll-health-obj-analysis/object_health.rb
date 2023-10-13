@@ -10,6 +10,7 @@ class ObjectHealth
   def initialize(argv)
     @collhdata = ENV.fetch('COLLHDATA', ENV['PWD'])
     @options = make_options(argv)
+    @debug = {export_count: 0, export_max: 5, print_count: 0, print_max: 1}
     puts @options
     config_file = 'config/database.ssm.yml'
     @config = Uc3Ssm::ConfigResolver.new.resolve_file_values(file: config_file, resolve_key: 'default', return_key: 'default')
@@ -57,6 +58,15 @@ class ObjectHealth
       f.write(obj.to_json)
       f.write("\n")
     end
+    if @options[:debug]
+      if @debug[:export_count] < @debug[:export_max]
+        File.open("#{@collhdata}/objects_details.#{obj[:id]}.json", 'a') do |f|
+          f.write(JSON.pretty_generate(obj))
+        end
+        @debug[:export_count] += 1
+        puts @debug
+      end
+    end
   end
 
   def processObject(id)
@@ -87,7 +97,10 @@ class ObjectHealth
     end
 
     if @options[:debug]
-      puts obj
+      if @debug[:print_count] < @debug[:print_max]
+        puts JSON.pretty_generate(obj)
+        @debug[:print_count] += 1
+      end
     end
   end
 end

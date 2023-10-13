@@ -17,3 +17,4 @@ coll-health/files_details.prod.ndjson
 coll-health/files_details.ndjson
 coll-health-obj-analysis/vendor/
 coll-health-obj-analysis/objects_details.ndjson
+coll-health-obj-analysis/objects_details.*.json
