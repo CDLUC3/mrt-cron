@@ -21,7 +21,7 @@ class ObjHealthTask
   end
 
   def run_task(obj)
-    obj
+    obj.get_analysis
   end
 end
 

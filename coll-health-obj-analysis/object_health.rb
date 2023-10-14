@@ -3,23 +3,47 @@ require 'yaml'
 require 'uc3-ssm'
 require 'optparse'
 require 'opensearch'
+require 'time'
 require_relative 'object_health_db'
 require_relative 'object_health_tests'
 require_relative 'object_health_opensearch'
 require_relative 'analysis_tasks'
+require_relative 'oh_object'
+
+# Inputs
+# - Merritt Inventory Database
+# - Configuration Yaml
+# - TBD: Periodic Queries (rebuilt weekly by cron) 
+#   - Duplicate Checksum File 
+#   - Median File Size for mime type
+# - TBD: Bitstream Analysis Processes
+#   - Should output go to RDS or to S3? (inv_object_id, inv_file_id, analysis_name, analysis_date, analysis_status, analysis_result)
+#
+# Outputs
+# - Merritt Billing Database (working storage for object json)
+# - OpenSearch
 
 class ObjectHealth
   def initialize(argv)
     @collhdata = ENV.fetch('COLLHDATA', ENV['PWD'])
     @options = make_options(argv)
-    @debug = {export_count: 0, export_max: 5, print_count: 0, print_max: 1}
     puts @options
     config_file = 'config/database.ssm.yml'
     @config = Uc3Ssm::ConfigResolver.new.resolve_file_values(file: config_file, resolve_key: 'default', return_key: 'default')
+    @debug = {
+      export_count: 0, 
+      export_max: @config.fetch('debug', {}).fetch('export_max', 5), 
+      print_count: 0, 
+      print_max: @config.fetch('debug', {}).fetch('print_max', 1)
+    }
     @obj_health_db = ObjectHealthDb.new(@config)
     @analysis_tasks = AnalysisTasks.new(self, @config)
     @obj_health_tests = ObjectHealthTests.new(self, @config)
     @opensrch = ObjectHealthOpenSearch.new(self, @config)
+    now = Time.now.strftime("%Y-%m-%d %H:%M:%S")
+    @dt_build = @config.fetch('config-dateime', {}).fetch('build', now)
+    @dt_analysis = @config.fetch('config-dateime', {}).fetch('analysis', now)
+    @dt_tests = @config.fetch('config-dateime', {}).fetch('tests', now)
   end
 
   def self.status_values
@@ -59,8 +83,8 @@ class ObjectHealth
   def export_object(obj)
     if @options[:debug]
       if @debug[:export_count] < @debug[:export_max]
-        File.open("#{@collhdata}/objects_details.#{obj[:id]}.json", 'w') do |f|
-          f.write(JSON.pretty_generate(obj))
+        File.open("#{@collhdata}/objects_details.#{obj.id}.json", 'w') do |f|
+          f.write(obj.pretty_json)
         end
         @debug[:export_count] += 1
         puts @debug
@@ -70,13 +94,13 @@ class ObjectHealth
   end
 
   def processObject(id)
-    obj = {loaded: false}
+    obj = ObjectHealthObject.new(id)
     if @options[:build_objects]
       puts "build #{id}"
-      obj = @obj_health_db.build_object(id)
+      @obj_health_db.build_object(obj)
     else
       puts "get #{id}"
-      obj = @obj_health_db.get_object(id)
+      @obj_health_db.load_object_json(obj)
     end
 
     if @options[:analyze_objects] && obj[:loaded]
@@ -86,12 +110,12 @@ class ObjectHealth
 
     if @options[:test_objects] && obj[:loaded]
       puts "test #{id}"
-      obj = @obj_health_tests.run_tests(obj)
+      @obj_health_tests.run_tests(obj)
     end
 
     if obj[:loaded] && (@options[:build_objects] || @options[:test_objects] || @options[:analysis_tasks])
       puts "save #{id}"
-      @obj_health_db.update_object(id, obj)
+      @obj_health_db.update_object(obj)
       puts "export #{id}"
       export_object(obj)
     end

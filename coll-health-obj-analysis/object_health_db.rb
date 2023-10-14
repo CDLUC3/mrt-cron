@@ -1,6 +1,7 @@
 require 'json'
 require 'mysql2'
 require 'nokogiri'
+require_relative 'oh_object'
 
 class ObjectHealthDb
   def initialize(config)
@@ -83,72 +84,32 @@ class ObjectHealthDb
     }
   end
 
-  def make_sidecar(sidecarText)
-    sidecar = {}
-    return sidecar if sidecarText.nil?
-    return sidecar if sidecarText.empty?
-    begin
-      xml = Nokogiri::XML(sidecarText).remove_namespaces!
-      xml.xpath("//*[not(descendant::*)]").each do |n|
-        sidecar[n.name] = sidecar.fetch(n.name, []).append(n.text)
-      end
-    rescue => exception
-      puts exception
-    end
-    sidecar
-  end
 
-  def make_opensearch_date(modt)
-    return '' if modt.nil?
-    return '' if modt.to_s.empty?
-    DateTime.parse("#{modt} -0700").to_s
-  end
 
-  def process_object_metadata(id, obj)
+  def process_object_metadata(obj)
     sql = get_object_sql
     conn = get_db_cli
     stmt = conn.prepare(sql)
-    stmt.execute(*[id]).each do |r|
-      loc = r.fetch('localids', '')
-      loc = '' if loc.nil?
-      obj[:loaded] = true
-      obj[:identifiers] = {
-        ark: r.fetch('ark', ''),
-        localids: loc.split(',')
-      }
-      obj[:containers] = {
-        owner_ark: r.fetch('owner_ark', ''),
-        coll_ark: r.fetch('coll_ark', ''),
-        mnemonic: r.fetch('mnemonic', '')
-      }
-
-      obj[:metadata] = {
-        erc_who: r.fetch('erc_who', ''),
-        erc_what: r.fetch('erc_what', ''),
-        erc_when: r.fetch('erc_when', ''),
-        erc_where: r.fetch('erc_where', '')
-      }
-      obj[:@timestamp] = make_opensearch_date(r.fetch('modified', ''))
-      obj[:modified] = make_opensearch_date(r.fetch('modified', ''))
-      obj[:embargo_end_date] = make_opensearch_date(r.fetch('embargo_end_date', ''))
+    stmt.execute(*[obj.id]).each do |r|
+      obj.build_object_representation(r)
     end
     conn.close
     obj
   end
 
-  def process_object_sidecar(id, obj)
+  def process_object_sidecar(obj)
     sql = get_object_sidecar_sql
     conn = get_db_cli
     stmt = conn.prepare(sql)
-    obj[:sidecar] = []
-    stmt.execute(*[id]).each do |r|
-      obj[:sidecar].append(make_sidecar(r.fetch('value', '')))
+    stmt.execute(*[obj.id]).each do |r|
+      obj.set_sidecar(r.fetch('value', ''))
     end
     conn.close
     obj
   end
 
   def get_object_files_sql
+    # TODO: Identify deletions - file not in the current version
     %{
       select
         v.number,
@@ -176,71 +137,47 @@ class ObjectHealthDb
     }
   end
 
-  def process_object_files(id, obj)
+  def process_object_files(obj)
+    # TODO: Identify deletions - file not in the current version
     sql = get_object_files_sql
-    obj[:file_counts] = {}
-    obj[:mimes] = {}
 
     conn = get_db_cli
     stmt = conn.prepare(sql)
-    stmt.execute(*[id]).each do |r|
-      source = r.fetch('source', 'na').to_sym
-      obj[source] = [] unless obj.key?(source)
-      obj[:file_counts][source] = obj[:file_counts].fetch(source, 0) + 1
-      mime = r.fetch('mime_type', '')
-      if obj[:file_counts][source] <= 1000
-        obj[source].push({
-          version: r.fetch('number', 0),
-          pathname: r.fetch('pathname', ''),
-          billable_size: r.fetch('billable_size', 0),
-          mime_type: mime,
-          digest_type: r.fetch('digest_type', ''),
-          digest_value: r.fetch('digest_value', ''),
-          created: r.fetch('created', '')
-        })
-      end
-      if source == :producer and !mime.empty?
-        obj[:mimes][mime] = obj[:mimes].fetch(mime, 0) + 1
-      end
+    stmt.execute(*[obj.id]).each do |r|
+      obj.process_object_file(r)
     end
     conn.close
     obj
   end
 
-  def update_object(id, obj)
+  def update_object(obj)
     sql = %{
       replace into object_health_json(inv_object_id, object_health)
       values(?, ?);
     }
     conn = get_db_cli
     stmt = conn.prepare(sql)
-    stmt.execute(*[id, obj.to_json])
+    stmt.execute(*[obj.id, obj.to_json])
     conn.close
   end
 
-  def get_object_json(id)
+  def load_object_json(obj)
     sql = %{
       select cast(object_health as binary) from object_health_json where inv_object_id = ?;
     }
-    obj = {id: id, loaded: false}
     conn = get_db_cli
     stmt = conn.prepare(sql)
-    stmt.execute(*[id]).each do |r|
-      obj = JSON.parse(r.values[0], symbolize_names: true)
+    stmt.execute(*[obj.id]).each do |r|
+      obj.set_json(r.values[0])
     end
     conn.close
-    obj
   end
 
-  def build_object(id)
-    obj = get_object_json(id)
-    obj = process_object_metadata(id, obj)
-    obj = process_object_sidecar(id, obj)
-    obj = process_object_files(id, obj)
-    obj
+  def build_object(obj)
+    load_object_json(obj)
+    process_object_metadata(obj)
+    process_object_sidecar(obj)
+    process_object_files(obj)
   end
 
-  def get_object(id)
-    get_object_json(id)
-  end
 end

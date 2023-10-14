@@ -1,6 +1,8 @@
 require 'json'
 require 'opensearch'
 
+# https://opensearch.org/docs/latest/clients/ruby/
+
 class ObjectHealthOpenSearch
   def initialize(oh, config)
     @INDEX = 'objhealth'
@@ -17,8 +19,8 @@ class ObjectHealthOpenSearch
   def export(obj)
     resp = @osclient.index(
       index: @INDEX,
-      body: obj,
-      id: obj[:id],
+      body: obj.get_obj,
+      id: obj.id,
       refresh: true
     )
     puts "RESP: #{resp['result']} #{resp['_version']}"
