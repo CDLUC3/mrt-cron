@@ -17,7 +17,8 @@ class AnalysisTasks
   def run_tasks(obj)
     obj.init_analysis
     @tasks.each do |task|
-      obj.set_analysis(task.run_task(obj))
+      task.run_task(obj)
+      obj.set_analysis(obj.get_analysis)
     end
     obj
   end

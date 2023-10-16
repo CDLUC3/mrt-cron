@@ -103,26 +103,30 @@ class ObjectHealth
       @obj_health_db.load_object_json(obj)
     end
 
-    if @options[:analyze_objects] && obj[:loaded]
+    if @options[:analyze_objects] && obj.loaded?
       puts "analyze #{id}"
       obj = @analysis_tasks.run_tasks(obj)
     end
 
-    if @options[:test_objects] && obj[:loaded]
+    if @options[:test_objects] && obj.loaded?
       puts "test #{id}"
       @obj_health_tests.run_tests(obj)
     end
 
-    if obj[:loaded] && (@options[:build_objects] || @options[:test_objects] || @options[:analysis_tasks])
+    if obj.loaded? && (@options[:build_objects] || @options[:test_objects] || @options[:analysis_tasks])
       puts "save #{id}"
       @obj_health_db.update_object(obj)
       puts "export #{id}"
-      export_object(obj)
+      begin
+        export_object(obj.get_obj)
+      rescue => e 
+        puts "Export failed #{e}"
+      end
     end
 
     if @options[:debug]
       if @debug[:print_count] < @debug[:print_max]
-        puts JSON.pretty_generate(obj)
+        puts JSON.pretty_generate(obj.get_obj)
         @debug[:print_count] += 1
       end
     end

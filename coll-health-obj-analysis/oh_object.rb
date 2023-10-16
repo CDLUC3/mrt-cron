@@ -60,7 +60,7 @@ class ObjectHealthObject
 
   def process_object_file(r)
     @obj[:file_counts] = @obj.fetch(:file_counts, {})
-    @obj[:mimes] = @obj.fetch(:mimes, {})
+    @obj[:mimes] = get_object_mimes
     source = r.fetch('source', 'na').to_sym
     @obj[source] = [] unless @obj.key?(source)
     @obj[:file_counts][source] = @obj[:file_counts].fetch(source, 0) + 1
@@ -77,7 +77,7 @@ class ObjectHealthObject
       })
     end
     if source == :producer and !mime.empty?
-      @obj[:mimes][mime] = @obj[:mimes].fetch(mime, 0) + 1
+      get_object_mimes[mime] = get_object_mimes.fetch(mime, 0) + 1
     end
   end
 
@@ -88,9 +88,13 @@ class ObjectHealthObject
   def get_obj
     @obj
   end
+
+  def get_object_mimes
+    @obj.fetch(:mimes, {})
+  end
     
   def init_analysis
-    @obj[:analysis] = @obj.fetch(:analysis, {})
+    set_analysis(get_analysis)
   end
 
   def get_analysis
@@ -98,7 +102,7 @@ class ObjectHealthObject
   end
 
   def set_analysis(analysis)
-    @obj[:analysis] = analysis
+    get_obj[:analysis] = analysis
   end
 
   def init_tests
@@ -106,8 +110,8 @@ class ObjectHealthObject
     ObjectHealth.status_values.each do |stat|
       tres[stat] = 0
     end
-    @obj[:tests] = obj.fetch(:tests, tres)
-    @obj[:tests][:test_run_log] = obj[:tests].fetch(:test_run_log, []).append(Time.now.to_s)
+    @obj[:tests] = @obj.fetch(:tests, tres)
+    @obj[:tests][:test_run_log] = @obj[:tests].fetch(:test_run_log, []).append(Time.now.to_s)
   end
        
   def record_test(name, status)
@@ -126,5 +130,9 @@ class ObjectHealthObject
 
   def pretty_json
     JSON.pretty_generate(get_obj)
+  end
+
+  def loaded?
+    @obj.fetch(:loaded, false)
   end
 end
