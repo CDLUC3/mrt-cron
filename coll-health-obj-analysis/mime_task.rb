@@ -13,19 +13,19 @@ class MimeTask < ObjHealthTask
     end
   end
 
-  def run_task(obj)
+  def run_task(ohobj)
     map = {}
     objmap = {}
     ObjectHealth.status_values.each do |stat|
       objmap[stat] = []
     end
-    obj.get_obj.fetch(:mimes, {}).each do |mime,v|
-      map[mime] = @statmap.fetch(mime, :SKIP) unless mime.empty?
+    ohobj.get_obj.fetch(:mimes, {}).each do |mime,v|
+      map[mime.to_sym] = @statmap.fetch(mime.to_sym, :SKIP) unless mime.empty?
     end
     map.each do |k,v|
       objmap[v].append(k)
     end
-    obj.get_analysis[:mimes] = objmap
-    obj
+    ohobj.get_analysis[:mimes] = objmap
+    ohobj
   end
 end

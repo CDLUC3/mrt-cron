@@ -77,7 +77,7 @@ class ObjectHealthObject
       })
     end
     if source == :producer and !mime.empty?
-      get_object_mimes[mime] = get_object_mimes.fetch(mime, 0) + 1
+      get_object_mimes[mime.to_sym] = get_object_mimes.fetch(mime.to_sym, 0) + 1
     end
   end
 
@@ -94,7 +94,11 @@ class ObjectHealthObject
   end
     
   def init_analysis
-    set_analysis(get_analysis)
+    a = {}
+    get_analysis.each do |k,v|
+      a[k.to_sym] = v 
+    end
+    set_analysis(a)
   end
 
   def get_analysis

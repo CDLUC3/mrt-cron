@@ -15,12 +15,12 @@ class ObjectHealthTests
 
   end
 
-  def run_tests(obj)
-    obj.init_tests
+  def run_tests(ohobj)
+    ohobj.init_tests
     @tests.each do |test|
-      status = test.run_test(obj)
-      obj.record_test(test.name, status)
+      status = test.run_test(ohobj)
+      ohobj.record_test(test.name, status)
     end
-    obj
+    ohobj
   end
 end

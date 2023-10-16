@@ -14,13 +14,13 @@ class AnalysisTasks
     end
   end
 
-  def run_tasks(obj)
-    obj.init_analysis
+  def run_tasks(ohobj)
+    ohobj.init_analysis
     @tasks.each do |task|
-      task.run_task(obj)
-      obj.set_analysis(obj.get_analysis)
+      task.run_task(ohobj)
+      ohobj.set_analysis(ohobj.get_analysis)
     end
-    obj
+    ohobj
   end
     
 end

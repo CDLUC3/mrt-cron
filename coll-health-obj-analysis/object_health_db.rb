@@ -86,26 +86,26 @@ class ObjectHealthDb
 
 
 
-  def process_object_metadata(obj)
+  def process_object_metadata(ohobj)
     sql = get_object_sql
     conn = get_db_cli
     stmt = conn.prepare(sql)
-    stmt.execute(*[obj.id]).each do |r|
-      obj.build_object_representation(r)
+    stmt.execute(*[ohobj.id]).each do |r|
+      ohobj.build_object_representation(r)
     end
     conn.close
-    obj
+    ohobj
   end
 
-  def process_object_sidecar(obj)
+  def process_object_sidecar(ohobj)
     sql = get_object_sidecar_sql
     conn = get_db_cli
     stmt = conn.prepare(sql)
-    stmt.execute(*[obj.id]).each do |r|
-      obj.set_sidecar(r.fetch('value', ''))
+    stmt.execute(*[ohobj.id]).each do |r|
+      ohobj.set_sidecar(r.fetch('value', ''))
     end
     conn.close
-    obj
+    ohobj
   end
 
   def get_object_files_sql
@@ -137,47 +137,47 @@ class ObjectHealthDb
     }
   end
 
-  def process_object_files(obj)
+  def process_object_files(ohobj)
     # TODO: Identify deletions - file not in the current version
     sql = get_object_files_sql
 
     conn = get_db_cli
     stmt = conn.prepare(sql)
-    stmt.execute(*[obj.id]).each do |r|
-      obj.process_object_file(r)
+    stmt.execute(*[ohobj.id]).each do |r|
+      ohobj.process_object_file(r)
     end
     conn.close
-    obj
+    ohobj
   end
 
-  def update_object(obj)
+  def update_object(ohobj)
     sql = %{
       replace into object_health_json(inv_object_id, object_health)
       values(?, ?);
     }
     conn = get_db_cli
     stmt = conn.prepare(sql)
-    stmt.execute(*[obj.id, obj.to_json])
+    stmt.execute(*[ohobj.id, ohobj.to_json])
     conn.close
   end
 
-  def load_object_json(obj)
+  def load_object_json(ohobj)
     sql = %{
       select cast(object_health as binary) from object_health_json where inv_object_id = ?;
     }
     conn = get_db_cli
     stmt = conn.prepare(sql)
-    stmt.execute(*[obj.id]).each do |r|
-      obj.set_json(r.values[0])
+    stmt.execute(*[ohobj.id]).each do |r|
+      ohobj.set_json(r.values[0])
     end
     conn.close
   end
 
-  def build_object(obj)
-    load_object_json(obj)
-    process_object_metadata(obj)
-    process_object_sidecar(obj)
-    process_object_files(obj)
+  def build_object(ohobj)
+    load_object_json(ohobj)
+    process_object_metadata(ohobj)
+    process_object_sidecar(ohobj)
+    process_object_files(ohobj)
   end
 
 end

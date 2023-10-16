@@ -80,53 +80,55 @@ class ObjectHealth
     end
   end
 
-  def export_object(obj)
+  def export_object(ohobj)
     if @options[:debug]
       if @debug[:export_count] < @debug[:export_max]
-        File.open("#{@collhdata}/objects_details.#{obj.id}.json", 'w') do |f|
-          f.write(obj.pretty_json)
+        File.open("#{@collhdata}/objects_details.#{ohobj.id}.json", 'w') do |f|
+          f.write(ohobj.pretty_json)
         end
         @debug[:export_count] += 1
         puts @debug
       end
     end
-    @opensrch.export(obj)
+    @opensrch.export(ohobj)
   end
 
   def processObject(id)
-    obj = ObjectHealthObject.new(id)
+    ohobj = ObjectHealthObject.new(id)
     if @options[:build_objects]
       puts "build #{id}"
-      @obj_health_db.build_object(obj)
+      @obj_health_db.build_object(ohobj)
     else
       puts "get #{id}"
-      @obj_health_db.load_object_json(obj)
+      @obj_health_db.load_object_json(ohobj)
     end
 
-    if @options[:analyze_objects] && obj.loaded?
+    if @options[:analyze_objects] && ohobj.loaded?
       puts "analyze #{id}"
-      obj = @analysis_tasks.run_tasks(obj)
+      @analysis_tasks.run_tasks(ohobj)
     end
 
-    if @options[:test_objects] && obj.loaded?
+    if @options[:test_objects] && ohobj.loaded?
       puts "test #{id}"
-      @obj_health_tests.run_tests(obj)
+      @obj_health_tests.run_tests(ohobj)
     end
 
-    if obj.loaded? && (@options[:build_objects] || @options[:test_objects] || @options[:analysis_tasks])
+    if ohobj.loaded? && (@options[:build_objects] || @options[:test_objects] || @options[:analysis_tasks])
       puts "save #{id}"
-      @obj_health_db.update_object(obj)
+      @obj_health_db.update_object(ohobj)
       puts "export #{id}"
       begin
-        export_object(obj.get_obj)
+        export_object(ohobj)
       rescue => e 
         puts "Export failed #{e}"
+        puts ohobj.pretty_json
+        exit
       end
     end
 
     if @options[:debug]
       if @debug[:print_count] < @debug[:print_max]
-        puts JSON.pretty_generate(obj.get_obj)
+        puts JSON.pretty_generate(ohobj.get_obj)
         @debug[:print_count] += 1
       end
     end

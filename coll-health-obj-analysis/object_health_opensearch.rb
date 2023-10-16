@@ -16,11 +16,11 @@ class ObjectHealthOpenSearch
     end
   end
 
-  def export(obj)
+  def export(ohobj)
     resp = @osclient.index(
       index: @INDEX,
-      body: obj.get_obj,
-      id: obj.id,
+      body: ohobj.get_obj,
+      id: ohobj.id,
       refresh: true
     )
     puts "RESP: #{resp['result']} #{resp['_version']}"

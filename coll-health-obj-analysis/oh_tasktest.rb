@@ -20,8 +20,8 @@ class ObjHealthTask
     end
   end
 
-  def run_task(obj)
-    obj.get_analysis
+  def run_task(ohobj)
+    ohobj.get_analysis
   end
 end
 
@@ -30,7 +30,7 @@ class ObjHealthTest < ObjHealthTask
     super(oh, taskdef, name)
   end
 
-  def run_test(obj)
+  def run_test(ohobj)
     #Random.new.rand(4) == 0 ? :FAIL : :PASS
     :SKIP
   end
