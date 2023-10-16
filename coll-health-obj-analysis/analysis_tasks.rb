@@ -18,7 +18,6 @@ class AnalysisTasks
     ohobj.init_analysis
     @tasks.each do |task|
       task.run_task(ohobj)
-      ohobj.set_analysis(ohobj.get_analysis)
     end
     ohobj
   end

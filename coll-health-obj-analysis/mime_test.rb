@@ -9,7 +9,7 @@ class MimeTest < ObjHealthTest
 
   def run_test(ohobj)
     status = :SKIP
-    m = ohobj.get_analysis.fetch(:mimes, {})
+    m = ohobj.get_analysis_mimes
     ObjectHealth.status_values.each do |stat|
       status = stat if m.fetch(stat, []).length > 0
     end

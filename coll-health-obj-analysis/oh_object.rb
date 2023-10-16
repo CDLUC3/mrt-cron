@@ -60,7 +60,7 @@ class ObjectHealthObject
 
   def process_object_file(r)
     @obj[:file_counts] = @obj.fetch(:file_counts, {})
-    @obj[:mimes] = get_object_mimes
+    init_object_mimes
     source = r.fetch('source', 'na').to_sym
     @obj[source] = [] unless @obj.key?(source)
     @obj[:file_counts][source] = @obj[:file_counts].fetch(source, 0) + 1
@@ -77,7 +77,7 @@ class ObjectHealthObject
       })
     end
     if source == :producer and !mime.empty?
-      get_object_mimes[mime.to_sym] = get_object_mimes.fetch(mime.to_sym, 0) + 1
+      count_mime(mime)
     end
   end
 
@@ -92,7 +92,15 @@ class ObjectHealthObject
   def get_object_mimes
     @obj.fetch(:mimes, {})
   end
-    
+
+  def init_object_mimes
+    @obj[:mimes] = get_object_mimes
+  end
+
+  def count_mime(mime)
+    get_object_mimes[mime.to_sym] = get_object_mimes.fetch(mime.to_sym, 0) + 1
+  end
+
   def init_analysis
     a = {}
     get_analysis.each do |k,v|
@@ -106,8 +114,17 @@ class ObjectHealthObject
   end
 
   def set_analysis(analysis)
-    get_obj[:analysis] = analysis
+    @obj[:analysis] = analysis
   end
+
+  def get_analysis_mimes
+    get_analysis.fetch(:mimes, {})
+  end
+
+  def set_analysis_mimes(objmap)
+    @obj[:analysis][:mimes] = objmap
+  end
+
 
   def init_tests
     tres = {failures: [], summary: '', test_run_log: []}
