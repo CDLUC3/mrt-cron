@@ -19,7 +19,7 @@ class ObjectHealthOpenSearch
   def export(ohobj)
     resp = @osclient.index(
       index: @INDEX,
-      body: ohobj.get_obj,
+      body: ohobj.get_osobj,
       id: ohobj.id,
       refresh: true
     )

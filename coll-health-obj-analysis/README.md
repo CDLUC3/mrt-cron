@@ -12,6 +12,25 @@ export COLLHDATA=/dpr2/apps/mrt-cron/coll_health/data
 cd {merrit-cron-install}/coll-health-object-analysis
 ```
 
+## New Database Table
+_Copy to https://github.com/CDLUC3/mrt-admin-lambda/blob/main/merrit-billing/schema.sql when complete._
+
+```sql
+/*
+DROP TABLE IF EXISTS object_health_json;
+*/
+CREATE TABLE object_health_json (
+  inv_object_id int,
+  updated datetime default now(),
+  build json,
+  build_updated datetime,
+  analysis json,
+  analysis_updated datetime,
+  tests json,
+  tests_updated datetime,
+  UNIQUE INDEX object_id(inv_object_id)
+);
+```
 ## Install
 ```
 bundle install

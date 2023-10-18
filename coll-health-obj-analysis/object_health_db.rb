@@ -150,25 +150,79 @@ class ObjectHealthDb
     ohobj
   end
 
-  def update_object(ohobj)
+  def update_object_build(ohobj)
+    loaded = false
+    sql = %{select 1 from object_health_json where inv_object_id=?}
+    conn = get_db_cli
+    stmt = conn.prepare(sql)
+    stmt.execute(*[ohobj.id]).each do |r|
+      loaded = true
+    end
+    conn.close
+
+    if loaded
+      sql = %{
+        update object_health_json
+        set build=?, build_updated = now()
+        where inv_object_id = ?;
+      }
+      conn = get_db_cli
+      stmt = conn.prepare(sql)
+      stmt.execute(*[ohobj.get_build.to_json, ohobj.id])
+      conn.close
+    else
+      sql = %{
+        insert into object_health_json(inv_object_id, build, build_updated)
+        values(?, ?, now());
+      }
+      conn = get_db_cli
+      stmt = conn.prepare(sql)
+      stmt.execute(*[ohobj.id, ohobj.get_build.to_json])
+      conn.close
+      end
+  end
+
+  def update_object_analysis(ohobj)
     sql = %{
-      replace into object_health_json(inv_object_id, object_health)
-      values(?, ?);
+      update object_health_json
+      set analysis=?, analysis_updated = now()
+      where inv_object_id = ?;
     }
     conn = get_db_cli
     stmt = conn.prepare(sql)
-    stmt.execute(*[ohobj.id, ohobj.to_json])
+    stmt.execute(*[ohobj.get_analysis.to_json, ohobj.id])
+    conn.close
+  end
+
+  def update_object_tests(ohobj)
+    sql = %{
+      update object_health_json
+      set tests=?, tests_updated = now()
+      where inv_object_id = ?;
+    }
+    conn = get_db_cli
+    stmt = conn.prepare(sql)
+    stmt.execute(*[ohobj.get_tests.to_json, ohobj.id])
     conn.close
   end
 
   def load_object_json(ohobj)
     sql = %{
-      select cast(object_health as binary) from object_health_json where inv_object_id = ?;
+      select 
+        cast(build as binary) build,
+        build_updated,
+        cast(analysis as binary) analysis,
+        analysis_updated,
+        cast(tests as binary) tests,
+        tests_updated
+      from object_health_json where inv_object_id = ?;
     }
     conn = get_db_cli
     stmt = conn.prepare(sql)
     stmt.execute(*[ohobj.id]).each do |r|
-      ohobj.set_json(r.values[0])
+      ohobj.set_build_json(r.values[0])
+      ohobj.set_analysis_json(r.values[2])
+      ohobj.set_tests_json(r.values[4])
     end
     conn.close
   end

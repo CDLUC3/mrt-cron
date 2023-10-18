@@ -1,11 +1,14 @@
 class ObjectHealthObject
   def initialize(id)
-    @obj = {
-      id: id, 
-      loaded: false, 
-      processing: {}
+    @osobj = {
+      id: id,
+      '@timestamp': Time.now.strftime("%Y-%m-%dT%H:%M:%S%z"),
+      build: default_build(id),
+      analysis: default_analysis,
+      tests: default_tests
     }
   end
+
 
   def self.make_opensearch_date(modt)
     return '' if modt.nil?
@@ -16,26 +19,26 @@ class ObjectHealthObject
   def build_object_representation(r)
     loc = r.fetch('localids', '')
     loc = '' if loc.nil?
-    @obj[:loaded] = true
-    @obj[:identifiers] = {
+    @osobj[:build][:loaded] = true
+    @osobj[:build][:identifiers] = {
       ark: r.fetch('ark', ''),
       localids: loc.split(',')
     }
-    @obj[:containers] = {
+    @osobj[:build][:containers] = {
       owner_ark: r.fetch('owner_ark', ''),
       coll_ark: r.fetch('coll_ark', ''),
       mnemonic: r.fetch('mnemonic', '')
     }
   
-    @obj[:metadata] = {
+    @osobj[:build][:metadata] = {
       erc_who: r.fetch('erc_who', ''),
       erc_what: r.fetch('erc_what', ''),
       erc_when: r.fetch('erc_when', ''),
       erc_where: r.fetch('erc_where', '')
     }
-    @obj[:@timestamp] = ObjectHealthObject.make_opensearch_date(r.fetch('modified', ''))
-    @obj[:modified] = ObjectHealthObject.make_opensearch_date(r.fetch('modified', ''))
-    @obj[:embargo_end_date] = ObjectHealthObject.make_opensearch_date(r.fetch('embargo_end_date', ''))
+    
+    @osobj[:build][:modified] = ObjectHealthObject.make_opensearch_date(r.fetch('modified', ''))
+    @osobj[:build][:embargo_end_date] = ObjectHealthObject.make_opensearch_date(r.fetch('embargo_end_date', ''))
   end
 
   def self.make_sidecar(sidecarText)
@@ -54,19 +57,19 @@ class ObjectHealthObject
   end
 
   def set_sidecar(text)
-    @obj[:sidecar] = @obj.fetch(:sidecar, [])
-    @obj[:sidecar].append(make_sidecar(text))
+    @osobj[:build][:sidecar] = get_build.fetch(:sidecar, [])
+    @osobj[:build][:sidecar].append(make_sidecar(text))
   end
 
   def process_object_file(r)
-    @obj[:file_counts] = @obj.fetch(:file_counts, {})
+    @osobj[:build][:file_counts] = get_build.fetch(:file_counts, {})
     init_object_mimes
     source = r.fetch('source', 'na').to_sym
-    @obj[source] = [] unless @obj.key?(source)
-    @obj[:file_counts][source] = @obj[:file_counts].fetch(source, 0) + 1
+    @osobj[:build][source] = [] unless get_build.key?(source)
+    @osobj[:build][:file_counts][source] = get_build[:file_counts].fetch(source, 0) + 1
     mime = r.fetch('mime_type', '')
-    if @obj[:file_counts][source] <= 1000
-      @obj[source].push({
+    if get_build[:file_counts][source] <= 1000
+      @osobj[:build][source].push({
         version: r.fetch('number', 0),
         pathname: r.fetch('pathname', ''),
         billable_size: r.fetch('billable_size', 0),
@@ -82,78 +85,116 @@ class ObjectHealthObject
   end
 
   def to_json
-    @obj.to_json
+    @osobj.to_json
   end
 
-  def get_obj
-    @obj
+  def get_build
+    @osobj[:build]
+  end
+
+  def get_osobj
+    @osobj
   end
 
   def get_object_mimes
-    @obj.fetch(:mimes, {})
+    get_build.fetch(:mimes, {})
   end
 
   def init_object_mimes
-    @obj[:mimes] = get_object_mimes
+    @osobj[:build][:mimes] = get_object_mimes
   end
 
   def count_mime(mime)
     get_object_mimes[mime.to_sym] = get_object_mimes.fetch(mime.to_sym, 0) + 1
   end
 
+  def default_analysis
+    {}
+  end
+
   def init_analysis
-    a = {}
-    get_analysis.each do |k,v|
-      a[k.to_sym] = v 
-    end
-    set_analysis(a)
+    set_analysis(default_analysis)
   end
 
   def get_analysis
-    get_obj.fetch(:analysis, {})
+    @osobj[:analysis]
   end
 
   def set_analysis(analysis)
-    @obj[:analysis] = analysis
+    @osobj[:analysis] = default_analysis
+    analysis.each do |k,v|
+      @osobj[:analysis][k.to_sym] = v
+    end
   end
+
+  def set_analysis_json(json)
+    set_analysis(JSON.parse(json, symbolize_names: true)) unless json.nil?
+  end
+
 
   def get_analysis_mimes
     get_analysis.fetch(:mimes, {})
   end
 
   def set_analysis_mimes(objmap)
-    @obj[:analysis][:mimes] = objmap
+    @osobj[:analysis][:mimes] = objmap
   end
 
-
-  def init_tests
+  def default_tests
     tres = {failures: [], summary: '', test_run_log: []}
     ObjectHealth.status_values.each do |stat|
       tres[stat] = 0
     end
-    @obj[:tests] = @obj.fetch(:tests, tres)
-    @obj[:tests][:test_run_log] = @obj[:tests].fetch(:test_run_log, []).append(Time.now.to_s)
+    tres
+  end
+
+  def init_tests
+    set_tests(@osobj.fetch(:tests, default_tests))
+  end
+
+  def set_tests(tests)
+    @osobj[:tests] = tests
+  end
+
+  def set_tests_json(json)
+    set_tests(JSON.parse(json, symbolize_names: true)) unless json.nil?
+  end
+
+
+  def get_tests
+    @osobj[:tests]
   end
        
   def record_test(name, status)
-    @obj[:tests][name.to_sym] = status
-    @obj[:tests][status] += 1
-    @obj[:tests][:failures] = @obj[:tests].fetch(:failures, []).append(name) if status == :FAIL
+    @osobj[:tests][name.to_sym] = status
+    @osobj[:tests][status] += 1
+    @osobj[:tests][:failures] = @tests.fetch(:failures, []).append(name) if status == :FAIL
   end
 
   def id
-    @obj.fetch(:id, 0)
+    @osobj.fetch(:id, 0)
   end
 
-  def set_json(json)
-    @obj = JSON.parse(json, symbolize_names: true)
+  def default_build(id)
+    {
+      id: id, 
+      loaded: false
+    }
+  end
+
+  def set_build(build)
+    @osobj[:build] = build
+  end
+
+  def set_build_json(json)
+    set_build(JSON.parse(json, symbolize_names: true)) unless json.nil?
   end
 
   def pretty_json
-    JSON.pretty_generate(get_obj)
+    JSON.pretty_generate(get_build)
   end
 
   def loaded?
-    @obj.fetch(:loaded, false)
+    get_build.fetch(:loaded, false)
   end
 end
