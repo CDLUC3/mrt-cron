@@ -91,7 +91,7 @@ class ObjectHealthDb
     conn = get_db_cli
     stmt = conn.prepare(sql)
     stmt.execute(*[ohobj.id]).each do |r|
-      ohobj.build_object_representation(r)
+      ohobj.build.build_object_representation(r)
     end
     conn.close
     ohobj
@@ -102,7 +102,7 @@ class ObjectHealthDb
     conn = get_db_cli
     stmt = conn.prepare(sql)
     stmt.execute(*[ohobj.id]).each do |r|
-      ohobj.set_sidecar(r.fetch('value', ''))
+      ohobj.build.set_sidecar(r.fetch('value', ''))
     end
     conn.close
     ohobj
@@ -144,7 +144,7 @@ class ObjectHealthDb
     conn = get_db_cli
     stmt = conn.prepare(sql)
     stmt.execute(*[ohobj.id]).each do |r|
-      ohobj.process_object_file(r)
+      ohobj.build.process_object_file(r)
     end
     conn.close
     ohobj
@@ -168,7 +168,7 @@ class ObjectHealthDb
       }
       conn = get_db_cli
       stmt = conn.prepare(sql)
-      stmt.execute(*[ohobj.get_build.to_json, ohobj.id])
+      stmt.execute(*[ohobj.build.to_json, ohobj.id])
       conn.close
     else
       sql = %{
@@ -177,9 +177,9 @@ class ObjectHealthDb
       }
       conn = get_db_cli
       stmt = conn.prepare(sql)
-      stmt.execute(*[ohobj.id, ohobj.get_build.to_json])
+      stmt.execute(*[ohobj.id, ohobj.build.to_json])
       conn.close
-      end
+    end
   end
 
   def update_object_analysis(ohobj)
@@ -190,7 +190,7 @@ class ObjectHealthDb
     }
     conn = get_db_cli
     stmt = conn.prepare(sql)
-    stmt.execute(*[ohobj.get_analysis.to_json, ohobj.id])
+    stmt.execute(*[ohobj.analysis.to_json, ohobj.id])
     conn.close
   end
 
@@ -202,7 +202,7 @@ class ObjectHealthDb
     }
     conn = get_db_cli
     stmt = conn.prepare(sql)
-    stmt.execute(*[ohobj.get_tests.to_json, ohobj.id])
+    stmt.execute(*[ohobj.tests.to_json, ohobj.id])
     conn.close
   end
 
@@ -220,9 +220,9 @@ class ObjectHealthDb
     conn = get_db_cli
     stmt = conn.prepare(sql)
     stmt.execute(*[ohobj.id]).each do |r|
-      ohobj.set_build_json(r.values[0])
-      ohobj.set_analysis_json(r.values[2])
-      ohobj.set_tests_json(r.values[4])
+      ohobj.build.set_object_from_json(r.values[0])
+      ohobj.analysis.set_object_from_json(r.values[2])
+      ohobj.tests.set_object_from_json(r.values[4])
     end
     conn.close
   end

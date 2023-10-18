@@ -15,7 +15,7 @@ class AnalysisTasks
   end
 
   def run_tasks(ohobj)
-    ohobj.init_analysis
+    ohobj.analysis.init_object
     @tasks.each do |task|
       task.run_task(ohobj)
     end

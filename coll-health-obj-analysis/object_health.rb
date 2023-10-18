@@ -9,6 +9,7 @@ require_relative 'object_health_tests'
 require_relative 'object_health_opensearch'
 require_relative 'analysis_tasks'
 require_relative 'oh_object'
+require_relative 'oh_object_component'
 
 # Inputs
 # - Merritt Inventory Database
@@ -83,8 +84,8 @@ class ObjectHealth
   def export_object(ohobj)
     if @options[:debug]
       if @debug[:export_count] < @debug[:export_max]
-        File.open("#{@collhdata}/objects_details.#{ohobj.id}.json", 'w') do |f|
-          f.write(ohobj.pretty_json)
+        File.open("#{@collhdata}/debug/objects_details.#{ohobj.id}.json", 'w') do |f|
+          f.write(ohobj.build.pretty_json)
         end
         @debug[:export_count] += 1
         puts @debug
@@ -95,6 +96,7 @@ class ObjectHealth
 
   def processObject(id)
     ohobj = ObjectHealthObject.new(id)
+    ohobj.init_components
     if @options[:build_objects]
       puts "build #{id}"
       @obj_health_db.build_object(ohobj)
@@ -105,19 +107,19 @@ class ObjectHealth
       @obj_health_db.load_object_json(ohobj)
     end
 
-    if @options[:analyze_objects] && ohobj.loaded?
+    if @options[:analyze_objects] && ohobj.build.loaded?
       puts "analyze #{id}"
       @analysis_tasks.run_tasks(ohobj)
       @obj_health_db.update_object_analysis(ohobj)
     end
 
-    if @options[:test_objects] && ohobj.loaded?
+    if @options[:test_objects] && ohobj.build.loaded?
       puts "test #{id}"
       @obj_health_tests.run_tests(ohobj)
       @obj_health_db.update_object_tests(ohobj)
     end
 
-    if ohobj.loaded? && (@options[:build_objects] || @options[:test_objects] || @options[:analysis_tasks])
+    if ohobj.build.loaded? && (@options[:build_objects] || @options[:test_objects] || @options[:analysis_tasks])
       puts "export #{id}"
       begin
         export_object(ohobj)
@@ -128,7 +130,7 @@ class ObjectHealth
 
     if @options[:debug]
       if @debug[:print_count] < @debug[:print_max]
-        puts JSON.pretty_generate(ohobj.get_build)
+        puts ohobj.build.pretty_json
         @debug[:print_count] += 1
       end
     end

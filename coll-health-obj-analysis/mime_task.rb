@@ -19,13 +19,13 @@ class MimeTask < ObjHealthTask
     ObjectHealth.status_values.each do |stat|
       objmap[stat] = []
     end
-    ohobj.get_object_mimes.each do |mime,v|
+    ohobj.build.get_mimes.each do |mime,v|
       map[mime.to_sym] = @statmap.fetch(mime.to_sym, :SKIP) unless mime.empty?
     end
     map.each do |k,v|
       objmap[v].append(k)
     end
-    ohobj.set_analysis_mimes(objmap)
+    ohobj.analysis.set_mimes(objmap)
     ohobj
   end
 end

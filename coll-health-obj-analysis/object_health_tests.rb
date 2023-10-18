@@ -16,10 +16,10 @@ class ObjectHealthTests
   end
 
   def run_tests(ohobj)
-    ohobj.init_tests
+    ohobj.tests.init_object
     @tests.each do |test|
       status = test.run_test(ohobj)
-      ohobj.record_test(test.name, status)
+      ohobj.tests.record_test(test.name, status)
     end
     ohobj
   end
