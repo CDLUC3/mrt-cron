@@ -14,14 +14,12 @@ class AnalysisTasks
     end
   end
 
-  def run_tasks(obj)
-    ares = {}
-    obj[:analysis] = obj.fetch(:analysis, ares)
+  def run_tasks(ohobj)
+    ohobj.init_analysis
     @tasks.each do |task|
-      obj = task.run_task(obj)
+      task.run_task(ohobj)
     end
-    puts obj[:analysis]
-    obj
+    ohobj
   end
     
 end

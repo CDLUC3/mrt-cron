@@ -15,8 +15,17 @@ default:
     port: 3306
     username: "{!SSM: billing/readwrite/db-user}"
     password: "{!SSM: billing/readwrite/db-password}"
+  config-dateime:
+    build: '2023-10-13 16:00:00'
+    analysis: '2023-10-13 16:00:00'
+    test: '2023-10-13 16:00:00'
+  debug:
+    export_max: 5
+    print_max: 1
+  batch:
+    process-max: 50
   gather-ids:
-    limit: 500
+    limit: 10
     select: |
       select o.id
       from inv.inv_objects o

@@ -1,6 +1,7 @@
 require 'json'
 require 'mysql2'
 require 'nokogiri'
+require_relative 'oh_object'
 
 class ObjectHealthDb
   def initialize(config)
@@ -83,72 +84,32 @@ class ObjectHealthDb
     }
   end
 
-  def make_sidecar(sidecarText)
-    sidecar = {}
-    return sidecar if sidecarText.nil?
-    return sidecar if sidecarText.empty?
-    begin
-      xml = Nokogiri::XML(sidecarText).remove_namespaces!
-      xml.xpath("//*[not(descendant::*)]").each do |n|
-        sidecar[n.name] = sidecar.fetch(n.name, []).append(n.text)
-      end
-    rescue => exception
-      puts exception
-    end
-    sidecar
-  end
 
-  def make_opensearch_date(modt)
-    return '' if modt.nil?
-    return '' if modt.to_s.empty?
-    DateTime.parse("#{modt} -0700").to_s
-  end
 
-  def process_object_metadata(id, obj)
+  def process_object_metadata(ohobj)
     sql = get_object_sql
     conn = get_db_cli
     stmt = conn.prepare(sql)
-    stmt.execute(*[id]).each do |r|
-      loc = r.fetch('localids', '')
-      loc = '' if loc.nil?
-      obj[:loaded] = true
-      obj[:identifiers] = {
-        ark: r.fetch('ark', ''),
-        localids: loc.split(',')
-      }
-      obj[:containers] = {
-        owner_ark: r.fetch('owner_ark', ''),
-        coll_ark: r.fetch('coll_ark', ''),
-        mnemonic: r.fetch('mnemonic', '')
-      }
-
-      obj[:metadata] = {
-        erc_who: r.fetch('erc_who', ''),
-        erc_what: r.fetch('erc_what', ''),
-        erc_when: r.fetch('erc_when', ''),
-        erc_where: r.fetch('erc_where', '')
-      }
-      obj[:@timestamp] = make_opensearch_date(r.fetch('modified', ''))
-      obj[:modified] = make_opensearch_date(r.fetch('modified', ''))
-      obj[:embargo_end_date] = make_opensearch_date(r.fetch('embargo_end_date', ''))
+    stmt.execute(*[ohobj.id]).each do |r|
+      ohobj.build_object_representation(r)
     end
     conn.close
-    obj
+    ohobj
   end
 
-  def process_object_sidecar(id, obj)
+  def process_object_sidecar(ohobj)
     sql = get_object_sidecar_sql
     conn = get_db_cli
     stmt = conn.prepare(sql)
-    obj[:sidecar] = []
-    stmt.execute(*[id]).each do |r|
-      obj[:sidecar].append(make_sidecar(r.fetch('value', '')))
+    stmt.execute(*[ohobj.id]).each do |r|
+      ohobj.set_sidecar(r.fetch('value', ''))
     end
     conn.close
-    obj
+    ohobj
   end
 
   def get_object_files_sql
+    # TODO: Identify deletions - file not in the current version
     %{
       select
         v.number,
@@ -176,71 +137,101 @@ class ObjectHealthDb
     }
   end
 
-  def process_object_files(id, obj)
+  def process_object_files(ohobj)
+    # TODO: Identify deletions - file not in the current version
     sql = get_object_files_sql
-    obj[:file_counts] = {}
-    obj[:mimes] = {}
 
     conn = get_db_cli
     stmt = conn.prepare(sql)
-    stmt.execute(*[id]).each do |r|
-      source = r.fetch('source', 'na').to_sym
-      obj[source] = [] unless obj.key?(source)
-      obj[:file_counts][source] = obj[:file_counts].fetch(source, 0) + 1
-      mime = r.fetch('mime_type', '')
-      if obj[:file_counts][source] <= 1000
-        obj[source].push({
-          version: r.fetch('number', 0),
-          pathname: r.fetch('pathname', ''),
-          billable_size: r.fetch('billable_size', 0),
-          mime_type: mime,
-          digest_type: r.fetch('digest_type', ''),
-          digest_value: r.fetch('digest_value', ''),
-          created: r.fetch('created', '')
-        })
-      end
-      if source == :producer and !mime.empty?
-        obj[:mimes][mime] = obj[:mimes].fetch(mime, 0) + 1
-      end
+    stmt.execute(*[ohobj.id]).each do |r|
+      ohobj.process_object_file(r)
     end
     conn.close
-    obj
+    ohobj
   end
 
-  def update_object(id, obj)
+  def update_object_build(ohobj)
+    loaded = false
+    sql = %{select 1 from object_health_json where inv_object_id=?}
+    conn = get_db_cli
+    stmt = conn.prepare(sql)
+    stmt.execute(*[ohobj.id]).each do |r|
+      loaded = true
+    end
+    conn.close
+
+    if loaded
+      sql = %{
+        update object_health_json
+        set build=?, build_updated = now()
+        where inv_object_id = ?;
+      }
+      conn = get_db_cli
+      stmt = conn.prepare(sql)
+      stmt.execute(*[ohobj.get_build.to_json, ohobj.id])
+      conn.close
+    else
+      sql = %{
+        insert into object_health_json(inv_object_id, build, build_updated)
+        values(?, ?, now());
+      }
+      conn = get_db_cli
+      stmt = conn.prepare(sql)
+      stmt.execute(*[ohobj.id, ohobj.get_build.to_json])
+      conn.close
+      end
+  end
+
+  def update_object_analysis(ohobj)
     sql = %{
-      replace into object_health_json(inv_object_id, object_health)
-      values(?, ?);
+      update object_health_json
+      set analysis=?, analysis_updated = now()
+      where inv_object_id = ?;
     }
     conn = get_db_cli
     stmt = conn.prepare(sql)
-    stmt.execute(*[id, obj.to_json])
+    stmt.execute(*[ohobj.get_analysis.to_json, ohobj.id])
     conn.close
   end
 
-  def get_object_json(id)
+  def update_object_tests(ohobj)
     sql = %{
-      select cast(object_health as binary) from object_health_json where inv_object_id = ?;
+      update object_health_json
+      set tests=?, tests_updated = now()
+      where inv_object_id = ?;
     }
-    obj = {id: id, loaded: false}
     conn = get_db_cli
     stmt = conn.prepare(sql)
-    stmt.execute(*[id]).each do |r|
-      obj = JSON.parse(r.values[0], symbolize_names: true)
+    stmt.execute(*[ohobj.get_tests.to_json, ohobj.id])
+    conn.close
+  end
+
+  def load_object_json(ohobj)
+    sql = %{
+      select 
+        cast(build as binary) build,
+        build_updated,
+        cast(analysis as binary) analysis,
+        analysis_updated,
+        cast(tests as binary) tests,
+        tests_updated
+      from object_health_json where inv_object_id = ?;
+    }
+    conn = get_db_cli
+    stmt = conn.prepare(sql)
+    stmt.execute(*[ohobj.id]).each do |r|
+      ohobj.set_build_json(r.values[0])
+      ohobj.set_analysis_json(r.values[2])
+      ohobj.set_tests_json(r.values[4])
     end
     conn.close
-    obj
   end
 
-  def build_object(id)
-    obj = get_object_json(id)
-    obj = process_object_metadata(id, obj)
-    obj = process_object_sidecar(id, obj)
-    obj = process_object_files(id, obj)
-    obj
+  def build_object(ohobj)
+    load_object_json(ohobj)
+    process_object_metadata(ohobj)
+    process_object_sidecar(ohobj)
+    process_object_files(ohobj)
   end
 
-  def get_object(id)
-    get_object_json(id)
-  end
 end

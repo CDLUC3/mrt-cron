@@ -15,20 +15,12 @@ class ObjectHealthTests
 
   end
 
-  def run_tests(obj)
-    tres = {failures: [], summary: '', test_run_log: []}
-    ObjectHealth.status_values.each do |stat|
-      tres[stat] = 0
-    end
-    obj[:tests] = obj.fetch(:tests, tres)
-    obj[:tests][:test_run_log] = obj[:tests].fetch(:test_run_log, []).append(Time.now.to_s)
+  def run_tests(ohobj)
+    ohobj.init_tests
     @tests.each do |test|
-      status = test.run_test(obj)
-      obj[:tests][test.name.to_sym] = status
-      obj[:tests][status] += 1
-      obj[:tests][:failures] = obj[:tests].fetch(:failures, []).append(test.name) if status == :FAIL
+      status = test.run_test(ohobj)
+      ohobj.record_test(test.name, status)
     end
-    puts obj[:tests]
-    obj
+    ohobj
   end
 end
