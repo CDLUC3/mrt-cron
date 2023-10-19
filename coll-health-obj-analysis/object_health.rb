@@ -36,7 +36,7 @@ class ObjectHealth
       print_count: 0, 
       print_max: @config.fetch('debug', {}).fetch('print_max', 1)
     }
-    @obj_health_db = ObjectHealthDb.new(@config, mode)
+    @obj_health_db = ObjectHealthDb.new(@config, mode, @options[:query_params])
     @analysis_tasks = AnalysisTasks.new(self, @config)
     @obj_health_tests = ObjectHealthTests.new(self, @config)
     @opensrch = ObjectHealthOpenSearch.new(self, @config)
@@ -51,7 +51,7 @@ class ObjectHealth
   end
 
   def make_options(argv)
-    options = {}
+    options = {query_params: {}}
     OptionParser.new do |opts|
       opts.banner = "Usage: ruby object_health.rb [--help] [--build] [--test]"
       opts.on('-h', '--help', 'Show help and exit') do
@@ -78,6 +78,9 @@ class ObjectHealth
       end
       opts.on('--clear-tests', 'Clear Tests Records') do
         options[:clear_tests] = true
+      end
+      opts.on('--mnemonic=MNEMONIC', 'Set Query Param Mnemonic') do |n|
+        options[:query_params][:MNEMONIC] = n
       end
     end.parse(ARGV)
     options    

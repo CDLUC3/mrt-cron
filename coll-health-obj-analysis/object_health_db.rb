@@ -1,23 +1,27 @@
 require 'json'
 require 'mysql2'
 require 'nokogiri'
+require 'mustache'
 require_relative 'oh_object'
 
 class ObjectHealthDb
-  def initialize(config, mode)
+  def initialize(config, mode, cliparams)
+    nullquery = 'and 0 = 1 limit ?'
     @config = config
     @dbconf = @config.fetch('dbconf', {})
     gather = @config.fetch('gather-ids', {})
     select = gather.fetch('select', 'select 1 where 1=1')
-    exclusion = gather.fetch('default-exclusion', 'and 0 = 1 limit ?')
+    exclusion = gather.fetch('default-exclusion', nullquery)
     exclusion = gather.fetch('build-exclusion', 'limit ?') if mode == :build
     exclusion = gather.fetch('analysis-exclusion', 'limit ?') if mode == :analysis
     exclusion = gather.fetch('tests-exclusion', 'limit ?') if mode == :tests
+    defq = gather.fetch('default-query', 'collection')
     @queries = []
-    gather.fetch('queries', []).each do |q|
-      sql = "#{select} #{q} #{exclusion}"
-      @queries.append(sql)
-    end
+    q = gather.fetch('queries', {}).fetch(defq, nullquery)
+    params = cliparams.empty? ? gather.fetch('default-params', {}) : cliparams
+    q = Mustache.render(q, params)
+    sql = "#{select} #{q} #{exclusion}"
+    @queries.append(sql)
     @limit = gather.fetch('limit', 10)
   end
 
@@ -37,6 +41,7 @@ class ObjectHealthDb
     list = []
     conn = get_db_cli
     @queries.each do |q|
+      puts q
       stmt = conn.prepare(q)
       stmt.execute(*[@limit]).each do |r|
         list.append(r.values[0])

@@ -60,14 +60,12 @@ default:
       order by o.modified desc
       limit ?
     # prioritized set of queries to use to find work to be performed.  If one query returns no results, the next one will be run
+    default-query: collection
+    default-params: 
+      MNEMONIC: merritt_demo
     queries:
-    # find items with inv_metadatas in merritt_demo
-    # - |
-    #   and c.mnemonic = 'merritt_demo'
-    #   and exists (select 1 from inv.inv_metadatas where inv_object_id=o.id)
-    # find items in merritt_demo
-    - |
-      and c.mnemonic = 'merritt_demo'
+      collection: |
+        and c.mnemonic = '{{MNEMONIC}}'
   analysis-json:
     mime:
       class: MimeTask
