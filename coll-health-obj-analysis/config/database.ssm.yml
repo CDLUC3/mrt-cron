@@ -32,8 +32,31 @@ default:
       inner join inv.inv_collections_inv_objects icio on icio.inv_object_id = o.id
       inner join inv.inv_collections c on c.id = icio.inv_collection_id
       where 1=1
-    exclusion: |
-      /*and not exists (select 1 from object_health_json h where h.inv_object_id = o.id)*/
+    default-exclustion: |
+      and 0 = 1
+      limit ?
+    build-exclusion: |
+      and not exists (
+        select 1 from object_health_json h where h.inv_object_id = o.id and h.build_updated > o.modified
+      )
+      order by o.modified desc
+      limit ?
+    analysis-exclusion: |
+      and exists(
+        select 1 from object_health_json h where h.inv_object_id = o.id and h.build is not null
+      )
+      and not exists (
+        select 1 from object_health_json h where h.inv_object_id = o.id and h.analysis_updated >= h.build_updated
+      )
+      order by o.modified desc
+      limit ?
+    tests-exclusion: |
+      and exists(
+        select 1 from object_health_json h where h.inv_object_id = o.id and h.analysis is not null
+      )
+      and not exists (
+        select 1 from object_health_json h where h.inv_object_id = o.id and h.tests_updated >= h.analysis_updated
+      )
       order by o.modified desc
       limit ?
     # prioritized set of queries to use to find work to be performed.  If one query returns no results, the next one will be run

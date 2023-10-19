@@ -21,7 +21,6 @@ DROP TABLE IF EXISTS object_health_json;
 */
 CREATE TABLE object_health_json (
   inv_object_id int,
-  updated datetime default now(),
   build json,
   build_updated datetime,
   analysis json,

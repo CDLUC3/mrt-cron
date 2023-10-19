@@ -1,7 +1,9 @@
 require 'json'
+require 'time'
 
 class ObjectHealthObjectComponent
   def initialize(ohobj, key)
+    @updated = nil
     @ohobj = ohobj
     @compkey = key
     @ohobj.get_osobj[@compkey] = default_object
@@ -27,8 +29,9 @@ class ObjectHealthObjectComponent
     set_object(default_object)
   end
 
-  def set_object_from_json(json)
+  def set_object_from_json(json, updated)
     set_object(JSON.parse(json, symbolize_names: true)) unless json.nil?
+    @updated = ObjectHealthObject.make_opensearch_date(updated)
   end
 
   def pretty_json
@@ -50,6 +53,10 @@ class ObjectHealthObjectComponent
   def increment_subkey(key, subkey)
     @ohobj.increment_subkey(@compkey, key, subkey)
   end
+
+  def loaded?
+    !@updated.nil?
+  end
 end
 
 class ObjectHealthObjectBuild < ObjectHealthObjectComponent
@@ -59,19 +66,13 @@ class ObjectHealthObjectBuild < ObjectHealthObjectComponent
 
   def default_object
     {
-      id: @ohobj.id, 
-      loaded: false
+      id: @ohobj.id
     }
-  end
-
-  def loaded?
-    get_object.fetch(:loaded, false)
   end
 
   def build_object_representation(r)
     loc = r.fetch('localids', '')
     loc = '' if loc.nil?
-    set_key(:loaded, true)
     set_key(:identifiers, {
       ark: r.fetch('ark', ''),
       localids: loc.split(',')
@@ -89,6 +90,7 @@ class ObjectHealthObjectBuild < ObjectHealthObjectComponent
     })
     set_key(:modified, ObjectHealthObject.make_opensearch_date(r.fetch('modified', '')))
     set_key(:embargo_end_date, ObjectHealthObject.make_opensearch_date(r.fetch('embargo_end_date', '')))
+    @updated = DateTime.now.to_s
   end
 
   def self.make_sidecar(sidecarText)
@@ -107,7 +109,7 @@ class ObjectHealthObjectBuild < ObjectHealthObjectComponent
   end
     
   def set_sidecar(text)
-    append_key(:sidecar, make_sidecar(text))
+    append_key(:sidecar, ObjectHealthObjectBuild.make_sidecar(text))
   end
     
   def process_object_file(r)

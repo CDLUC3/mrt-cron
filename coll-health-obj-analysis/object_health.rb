@@ -28,7 +28,6 @@ class ObjectHealth
   def initialize(argv)
     @collhdata = ENV.fetch('COLLHDATA', ENV['PWD'])
     @options = make_options(argv)
-    puts @options
     config_file = 'config/database.ssm.yml'
     @config = Uc3Ssm::ConfigResolver.new.resolve_file_values(file: config_file, resolve_key: 'default', return_key: 'default')
     @debug = {
@@ -37,7 +36,7 @@ class ObjectHealth
       print_count: 0, 
       print_max: @config.fetch('debug', {}).fetch('print_max', 1)
     }
-    @obj_health_db = ObjectHealthDb.new(@config)
+    @obj_health_db = ObjectHealthDb.new(@config, mode)
     @analysis_tasks = AnalysisTasks.new(self, @config)
     @obj_health_tests = ObjectHealthTests.new(self, @config)
     @opensrch = ObjectHealthOpenSearch.new(self, @config)
@@ -71,13 +70,29 @@ class ObjectHealth
       opts.on('-d', '--debug', 'Debug') do
         options[:debug] = true
       end
+      opts.on('--clear-build', 'Clear Build Records') do
+        options[:clear_build] = true
+      end
+      opts.on('--clear-analysis', 'Clear Analysis Records') do
+        options[:clear_analysis] = true
+      end
+      opts.on('--clear-tests', 'Clear Tests Records') do
+        options[:clear_tests] = true
+      end
     end.parse(ARGV)
     options    
   end
 
-  def processObjects
+  def preliminary_tasks
+    puts @options
+    @obj_health_db.clear_object_health(:build) if @options[:clear_build]
+    @obj_health_db.clear_object_health(:analysis) if @options[:clear_analysis]
+    @obj_health_db.clear_object_health(:tests) if @options[:clear_tests]
+  end
+
+  def process_objects
     @obj_health_db.get_object_list.each do |id|
-      processObject(id)
+      process_object(id)
     end
   end
 
@@ -94,7 +109,7 @@ class ObjectHealth
     @opensrch.export(ohobj)
   end
 
-  def processObject(id)
+  def process_object(id)
     ohobj = ObjectHealthObject.new(id)
     ohobj.init_components
     if @options[:build_objects]
@@ -119,7 +134,7 @@ class ObjectHealth
       @obj_health_db.update_object_tests(ohobj)
     end
 
-    if ohobj.build.loaded? && (@options[:build_objects] || @options[:test_objects] || @options[:analysis_tasks])
+    if ohobj.build.loaded? && (@options[:build_objects] || @options[:test_objects] || @options[:analyze_objects])
       puts "export #{id}"
       begin
         export_object(ohobj)
@@ -135,7 +150,15 @@ class ObjectHealth
       end
     end
   end
+
+  def mode
+    return :build if @options[:build_objects]
+    return :analysis if @options[:analyze_objects]
+    return :tests if @options[:test_objects]
+    return :na
+  end
 end
 
 oh = ObjectHealth.new(ARGV)
-oh.processObjects
+oh.preliminary_tasks
+oh.process_objects

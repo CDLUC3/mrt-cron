@@ -1,10 +1,15 @@
 ## TODO
+- Params
+  - name object select query
+  - object select query params such as mnemonic
+- Workflow
+  - [x] Build if not built
+  - [x] Rebuild if modified > build
+  - [x] Analyze if not analyze
+  - [x] Analyze if build > analyzed
+  - [ ] Update analyzed date if change created (what to set if checked but not found?)
+  - [x] Run tests if not tested
+  - [x] Test if analyzed > tested
+  - [ ] Do not update test if no change
 - Database
   - detect file delete
-  - track dates
-    - build_datetime
-      - rebuild if inv_objects.modified > object_health_json.build_dateime || config.build_datetime > object_health_json.build_dateime
-    - analysis_datetime
-      - re-run if object_health_json.build_dateime > object_health_json.analysis_dateime || config.analysis_datetime > object_health_json.analysis_dateime
-    - test_datetime
-      - re-run if object_health_json.build_dateime > object_health_json.analysis_dateime || config.test_datetime > object_health_json.analysis_dateime

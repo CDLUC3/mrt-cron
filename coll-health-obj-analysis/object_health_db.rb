@@ -4,15 +4,19 @@ require 'nokogiri'
 require_relative 'oh_object'
 
 class ObjectHealthDb
-  def initialize(config)
+  def initialize(config, mode)
     @config = config
     @dbconf = @config.fetch('dbconf', {})
     gather = @config.fetch('gather-ids', {})
     select = gather.fetch('select', 'select 1 where 1=1')
-    exclusion = gather.fetch('exclusion', 'limit ?')
+    exclusion = gather.fetch('default-exclusion', 'and 0 = 1 limit ?')
+    exclusion = gather.fetch('build-exclusion', 'limit ?') if mode == :build
+    exclusion = gather.fetch('analysis-exclusion', 'limit ?') if mode == :analysis
+    exclusion = gather.fetch('tests-exclusion', 'limit ?') if mode == :tests
     @queries = []
     gather.fetch('queries', []).each do |q|
-      @queries.append("#{select} #{q} #{exclusion}")
+      sql = "#{select} #{q} #{exclusion}"
+      @queries.append(sql)
     end
     @limit = gather.fetch('limit', 10)
   end
@@ -206,6 +210,36 @@ class ObjectHealthDb
     conn.close
   end
 
+  def clear_object_health(mode)
+    sql = ""
+    if mode == :build
+      sql = %{
+        update object_health_json
+        set build=null, build_updated=null, analysis=null, analysis_updated=null, tests=null, tests_updated=null
+      }
+    end
+    if mode == :analysis
+      sql = %{
+        update object_health_json
+        set analysis=null, analysis_updated=null, tests=null, tests_updated=null
+      }
+    end
+    if mode == :tests
+      sql = %{
+        update object_health_json
+        set tests=null, tests_updated=null
+      }
+    end
+    unless sql.empty?
+      puts sql
+      conn = get_db_cli
+      stmt = conn.prepare(sql)
+      stmt.execute(*[])
+      conn.close
+    end
+  end
+
+
   def load_object_json(ohobj)
     sql = %{
       select 
@@ -220,9 +254,9 @@ class ObjectHealthDb
     conn = get_db_cli
     stmt = conn.prepare(sql)
     stmt.execute(*[ohobj.id]).each do |r|
-      ohobj.build.set_object_from_json(r.values[0])
-      ohobj.analysis.set_object_from_json(r.values[2])
-      ohobj.tests.set_object_from_json(r.values[4])
+      ohobj.build.set_object_from_json(r.values[0], r.values[1])
+      ohobj.analysis.set_object_from_json(r.values[2], r.values[3])
+      ohobj.tests.set_object_from_json(r.values[4], r.values[5])
     end
     conn.close
   end
