@@ -365,6 +365,9 @@ default:
     format-id-scan:
       name: Format Identification Issue
       description: BITSTREAM SCAN
+    file-accessibility-scan:
+      name: File Accessibility Issue
+      description: BITSTREAM SCAN
   x-tests-db:
     has-duplicate-checksum:
       name: Has duplicate checksum

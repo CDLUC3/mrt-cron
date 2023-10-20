@@ -111,27 +111,62 @@ class ObjectHealthObjectBuild < ObjectHealthObjectComponent
   def set_sidecar(text)
     append_key(:sidecar, ObjectHealthObjectBuild.make_sidecar(text))
   end
-    
-  def process_object_file(r)
-    set_key(:file_counts, get_object.fetch(:file_counts, {}))
-    init_object_mimes
-    source = r.fetch('source', 'na').to_sym
-    increment_subkey(:file_counts, source)
-    mime = r.fetch('mime_type', '')
-    if get_object[:file_counts][source] <= 1000
-      append_key(source, {
-        version: r.fetch('number', 0),
+
+  def process_object_files(ofiles, version)
+    set_key(:file_counts, get_object.fetch(:file_counts, {deleted: 0, empty: 0}))
+    set_key(:version, version)
+    ofiles.each do |k,v|
+      source = v.fetch(:source, :na)
+      increment_subkey(:file_counts, source)
+      # since we only record the first 1000 files for an object, this cannot be peformed at analysis time
+      if v[:version] < version
+        increment_subkey(:file_counts, :deleted) 
+        v[:deleted] = true
+      end
+
+      if v[:billable_size] == 0
+        increment_subkey(:file_counts, :empty) 
+        v[:empty] = true
+      end
+
+      # count mime type for all files
+      mime = v[:mime_type]
+      if source == :producer and !mime.empty?
+        count_mime(mime)
+      end
+
+      # record up to 1000 files for the object
+      if get_object[:file_counts][source] <= 1000
+        append_key(source, v)
+      end
+    end
+  end
+
+  def process_object_file(ofiles, r)
+    pathname = r.fetch('pathname', '')
+    version = 0
+    unless pathname.empty?
+      full_size = r.fetch('full_size', 0)
+      billable_size = r.fetch('billable_size', 0)
+      version = r.fetch('number', 0)
+      v = {
+        version: version,
+        source: r.fetch('source', ''),
         pathname: r.fetch('pathname', ''),
-        billable_size: r.fetch('billable_size', 0),
-        mime_type: mime,
+        billable_size: billable_size,
+        mime_type: r.fetch('mime_type', ''),
         digest_type: r.fetch('digest_type', ''),
         digest_value: r.fetch('digest_value', ''),
         created: r.fetch('created', '')
-      })
+      }
+      ofiles[pathname] = v unless ofiles.key?(pathname)
+      if full_size == billable_size
+        ofiles[pathname] = v unless ofiles.key?(pathname)
+      else
+        ofiles[pathname][:version] = version
+      end
     end
-    if source == :producer and !mime.empty?
-      count_mime(mime)
-    end
+    version
   end
     
   def get_mimes
@@ -139,7 +174,7 @@ class ObjectHealthObjectBuild < ObjectHealthObjectComponent
   end
     
   def init_object_mimes
-    set_key(:mime, get_mimes)
+    set_key(:mimes, get_mimes)
   end
 
   def count_mime(mime)

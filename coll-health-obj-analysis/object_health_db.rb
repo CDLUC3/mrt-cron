@@ -127,6 +127,7 @@ class ObjectHealthDb
         f.pathname,
         f.source,
         f.billable_size,
+        f.full_size,
         f.mime_type,
         f.digest_type,
         f.digest_value,
@@ -139,8 +140,6 @@ class ObjectHealthDb
         f.inv_version_id = v.id
       where 
         f.inv_object_id = ?
-      and
-        f.full_size = f.billable_size
       order by
         v.number, 
         f.pathname
@@ -149,15 +148,17 @@ class ObjectHealthDb
   end
 
   def process_object_files(ohobj)
-    # TODO: Identify deletions - file not in the current version
+    ofiles = {}
     sql = get_object_files_sql
 
     conn = get_db_cli
     stmt = conn.prepare(sql)
+    version = 0
     stmt.execute(*[ohobj.id]).each do |r|
-      ohobj.build.process_object_file(r)
+      version = ohobj.build.process_object_file(ofiles, r)
     end
     conn.close
+    ohobj.build.process_object_files(ofiles, version)
     ohobj
   end
 
