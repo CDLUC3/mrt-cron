@@ -1,4 +1,8 @@
 default:
+  default-params: 
+    QUERY: collection
+    MNEMONIC: merritt_demo
+    LIMIT: 10
   opensearch:
     host: 'https://localhost:9200'
     user: 'admin'
@@ -25,7 +29,6 @@ default:
   batch:
     process-max: 50
   gather-ids:
-    limit: 10
     select: |
       select o.id
       from inv.inv_objects o
@@ -34,13 +37,13 @@ default:
       where 1=1
     default-exclustion: |
       and 0 = 1
-      limit ?
+      limit {{LIMIT}}
     build-exclusion: |
       and not exists (
         select 1 from object_health_json h where h.inv_object_id = o.id and h.build_updated > o.modified
       )
       order by o.modified desc
-      limit ?
+      limit {{LIMIT}}
     analysis-exclusion: |
       and exists(
         select 1 from object_health_json h where h.inv_object_id = o.id and h.build is not null
@@ -49,7 +52,7 @@ default:
         select 1 from object_health_json h where h.inv_object_id = o.id and h.analysis_updated >= h.build_updated
       )
       order by o.modified desc
-      limit ?
+      limit {{LIMIT}}
     tests-exclusion: |
       and exists(
         select 1 from object_health_json h where h.inv_object_id = o.id and h.analysis is not null
@@ -58,11 +61,8 @@ default:
         select 1 from object_health_json h where h.inv_object_id = o.id and h.tests_updated >= h.analysis_updated
       )
       order by o.modified desc
-      limit ?
+      limit {{LIMIT}}
     # prioritized set of queries to use to find work to be performed.  If one query returns no results, the next one will be run
-    default-query: collection
-    default-params: 
-      MNEMONIC: merritt_demo
     queries:
       collection: |
         and c.mnemonic = '{{MNEMONIC}}'

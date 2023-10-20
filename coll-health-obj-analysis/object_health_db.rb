@@ -6,23 +6,25 @@ require_relative 'oh_object'
 
 class ObjectHealthDb
   def initialize(config, mode, cliparams)
-    nullquery = 'and 0 = 1 limit ?'
+    nullquery = 'and 0 = 1'
     @config = config
     @dbconf = @config.fetch('dbconf', {})
     gather = @config.fetch('gather-ids', {})
+    @cliparams = cliparams
     select = gather.fetch('select', 'select 1 where 1=1')
     exclusion = gather.fetch('default-exclusion', nullquery)
-    exclusion = gather.fetch('build-exclusion', 'limit ?') if mode == :build
-    exclusion = gather.fetch('analysis-exclusion', 'limit ?') if mode == :analysis
-    exclusion = gather.fetch('tests-exclusion', 'limit ?') if mode == :tests
-    defq = gather.fetch('default-query', 'collection')
+    exclusion = gather.fetch('build-exclusion', 'limit {{LIMIT}}') if mode == :build
+    exclusion = gather.fetch('analysis-exclusion', 'limit {{LIMIT}}') if mode == :analysis
+    exclusion = gather.fetch('tests-exclusion', 'limit {{LIMIT}}') if mode == :tests
+    defq = cliparams.fetch(:QUERY, 'collection')
     @queries = []
     q = gather.fetch('queries', {}).fetch(defq, nullquery)
-    params = cliparams.empty? ? gather.fetch('default-params', {}) : cliparams
-    q = Mustache.render(q, params)
-    sql = "#{select} #{q} #{exclusion}"
+    sql = add_user_params_to_sql("#{select} #{q} #{exclusion}")
     @queries.append(sql)
-    @limit = gather.fetch('limit', 10)
+  end
+
+  def add_user_params_to_sql(q)
+    Mustache.render(q, @cliparams)
   end
 
   def get_db_cli
@@ -43,7 +45,7 @@ class ObjectHealthDb
     @queries.each do |q|
       puts q
       stmt = conn.prepare(q)
-      stmt.execute(*[@limit]).each do |r|
+      stmt.execute(*[]).each do |r|
         list.append(r.values[0])
       end
       break unless list.empty?

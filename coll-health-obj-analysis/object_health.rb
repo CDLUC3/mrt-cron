@@ -27,9 +27,9 @@ require_relative 'oh_object_component'
 class ObjectHealth
   def initialize(argv)
     @collhdata = ENV.fetch('COLLHDATA', ENV['PWD'])
-    @options = make_options(argv)
     config_file = 'config/database.ssm.yml'
     @config = Uc3Ssm::ConfigResolver.new.resolve_file_values(file: config_file, resolve_key: 'default', return_key: 'default')
+    @options = make_options(argv)
     @debug = {
       export_count: 0, 
       export_max: @config.fetch('debug', {}).fetch('export_max', 5), 
@@ -51,7 +51,7 @@ class ObjectHealth
   end
 
   def make_options(argv)
-    options = {query_params: {}}
+    options = {query_params: @config.fetch('default-params', {})}
     OptionParser.new do |opts|
       opts.banner = "Usage: ruby object_health.rb [--help] [--build] [--test]"
       opts.on('-h', '--help', 'Show help and exit') do
@@ -79,8 +79,15 @@ class ObjectHealth
       opts.on('--clear-tests', 'Clear Tests Records') do
         options[:clear_tests] = true
       end
+      # The following values may be edited into yaml queries... perform some sanitization on the values
+      opts.on('--query=QUERY', 'Object Selection Query to Use') do |n|
+        options[:query_params][:QUERY] = n.gsub(%r[[^A-Za-z0-9_\-]], "")
+      end
       opts.on('--mnemonic=MNEMONIC', 'Set Query Param Mnemonic') do |n|
-        options[:query_params][:MNEMONIC] = n
+        options[:query_params][:MNEMONIC] = n.gsub(%r[[^a-z0-9_\-]], "")
+      end
+      opts.on('--limit=LIMIT', 'Set Query Limit') do |n|
+        options[:query_params][:LIMIT] = n.to_i
       end
     end.parse(ARGV)
     options    
