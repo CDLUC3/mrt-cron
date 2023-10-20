@@ -157,5 +157,7 @@ In general, most objects should not have an annotation.  This tool would be used
 ```
 
 ## Interesting Open Search Queries
-- build.file_counts.deleted > 0 AND build.producer.deleted: true
+- `tests.FAIL > 0`
+- `tests.WARN > 0`
 - `build.file_counts.deleted > 0 AND build.producer.deleted: true`
+- `build.file_counts.empty: 0`
