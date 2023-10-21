@@ -66,6 +66,21 @@ default:
     queries:
       collection: |
         and c.mnemonic = '{{MNEMONIC}}'
+  analysis-inputs:
+    duplicate-checksum:
+      note: consider excluding opencontext
+      query: |
+        select source, digest_value, full_size, count(*) 
+        from inv_files 
+        where source='producer' and full_size=billable_size 
+        group by source, digest_value, full_size 
+        having count(*) > 1 order by count(*);
+    average-object-size-for-collection:
+      description: compute average, mean file size to identify outliers
+    average-file-size-for-collection-and-mime:
+      description: compute average, mean file size to identify outliers
+    average-file-size-for-mime-type:
+      description: compute average, mean file size to identify outliers
   analysis-json:
     mime:
       class: MimeTask
@@ -316,31 +331,44 @@ default:
     format-id:
     virus-scan:
     pii-scan:
+    accessibility-scan:
   tests:
     sustainable-mime:
       class: MimeTest
       name: Mime type sustainability
       description: Compare file extention (or known mime type) to a list of sustainable mime types.
+    empty-file:
+      name: Empty file detection
+      description: Check file size - WARN if empty producer, INFO if empty system
+    has-delete:
+      description: INFO if delete detected
+    has-meaningful-erc:
+      name: Object has meaningful ERC metadata
+      description: at first look for empty fields
+    file-classified:
+      name: Classify Files
+      description: |
+        Classify file as content, metadata, other. Look at mime type, file size, file name.
+        Distinguish primary metadata from other metadata.
+        Identify content files vs derivatives.
+        Look at patterns in nuxeo feeds.
+    object-classified:
+      name: Object Classification
+      description: categorize object contents according to a taxonomy.  Distinguish objects and complex objects.
+    #later
+    has-duplicate-checksum:      
     filename-valid:
       name: Filename validation
       description: Rule varies by collection. Some default pattern matches for meaningless file names
-    empty-file:
-      name: Empty file detection
-      description: Check file size
     unusual-file-size:
       name: Unusual file size
       description: Compare file size to expectations for an extension type.  Re-compute based on the corpus. Determine some standard deviation rule to flag items.
-    file-claasified:
-      name: Classify Files
-      description: Classify file as content, metadata, other. Look at mime type, file size, file name.
     has-content-files:
       name: Object has content files
     has-sidecar-metadata:
       name: Object has sidecar metadata
     has-content-and-sidecar-metadata:
       name: Object has content + sidecar metadata
-    has-meaningful-erc:
-      name: Object has meaningful ERC metadata
     has-local-id:
       name: Object has local id
     has-embargo:
@@ -361,13 +389,12 @@ default:
       description: BITSTREAM SCAN assumes we could plug in such a service
     virus-detected:
       name: Virus detected
-      description: BITSTREAM SCAN
+      description: |
+        Lower priority for a preservation repository
+        BITSTREAM SCAN
     format-id-scan:
       name: Format Identification Issue
       description: BITSTREAM SCAN
     file-accessibility-scan:
       name: File Accessibility Issue
       description: BITSTREAM SCAN
-  x-tests-db:
-    has-duplicate-checksum:
-      name: Has duplicate checksum
