@@ -81,6 +81,7 @@ default:
       description: compute average, mean file size to identify outliers
     average-file-size-for-mime-type:
       description: compute average, mean file size to identify outliers
+    duplicate-title-in-collection:
   analysis-json:
     mime:
       class: MimeTask
@@ -356,7 +357,9 @@ default:
       name: Object Classification
       description: categorize object contents according to a taxonomy.  Distinguish objects and complex objects.
     #later
-    has-duplicate-checksum:      
+    has-duplicate-checksum:
+    has-duplicate-object-title:
+    has-empty-erc-field:
     filename-valid:
       name: Filename validation
       description: Rule varies by collection. Some default pattern matches for meaningless file names
