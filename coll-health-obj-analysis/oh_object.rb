@@ -63,4 +63,10 @@ class ObjectHealthObject
     @osobj[compkey][key] = {} unless @osobj[compkey].key?(key)
     @osobj[compkey][key][subkey] = @osobj[compkey][key].fetch(subkey, 0) + 1
   end
+
+  def concat_key(compkey, key, str)
+    s = @osobj[compkey].fetch(key, '')
+    ss = s.empty? ? str : "#{s}; #{str}"
+    @osobj[compkey][key] = ss 
+  end
 end

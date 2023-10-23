@@ -54,6 +54,10 @@ class ObjectHealthObjectComponent
     @ohobj.increment_subkey(@compkey, key, subkey)
   end
 
+  def concat_key(key, str)
+    @ohobj.concat_key(@compkey, key, str)
+  end
+
   def loaded?
     !@updated.nil?
   end

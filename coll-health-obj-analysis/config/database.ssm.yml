@@ -35,7 +35,7 @@ default:
       inner join inv.inv_collections_inv_objects icio on icio.inv_object_id = o.id
       inner join inv.inv_collections c on c.id = icio.inv_collection_id
       where 1=1
-    default-exclustion: |
+    default-exclusion: |
       and 0 = 1
       limit {{LIMIT}}
     build-exclusion: |
@@ -66,6 +66,8 @@ default:
     queries:
       collection: |
         and c.mnemonic = '{{MNEMONIC}}'
+      has-build: |
+        and exists (select 1 from object_health_json h where h.inv_object_id = o.id)
   analysis-inputs:
     duplicate-checksum:
       note: consider excluding opencontext
@@ -85,6 +87,20 @@ default:
   analysis-json:
     mime:
       class: MimeTask
+      categorize:
+        metadata:
+          mimes:
+          - application/xml
+          patterns:
+          - mrt-dc.xml
+        secondary:
+          mimes:
+          - text/plain
+          - application/xhtml+xml
+          - application/atom+xml
+          - text/html
+          patterns:
+          - mrt-erc.txt
       PASS:
       - text/plain
       - application/xml
@@ -341,8 +357,10 @@ default:
     empty-file:
       name: Empty file detection
       description: Check file size - WARN if empty producer, INFO if empty system
+      class: EmptyTest
     has-delete:
       description: INFO if delete detected
+      class: DeletedTest
     has-meaningful-erc:
       name: Object has meaningful ERC metadata
       description: at first look for empty fields

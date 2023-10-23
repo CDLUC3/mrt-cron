@@ -50,8 +50,18 @@ class ObjectHealth
     [:SKIP, :PASS, :INFO, :WARN, :FAIL]
   end
 
+  def self.status_val(status)
+    self.status_values.each_with_index do |v,i|
+      return i if v == status
+    end
+    0
+  end
+
   def make_options(argv)
-    options = {query_params: @config.fetch('default-params', {})}
+    options = {query_params: {}}
+    @config.fetch('default-params', {}).each do |k,v|
+      options[:query_params][k.to_sym] = v
+    end
     OptionParser.new do |opts|
       opts.banner = "Usage: ruby object_health.rb [--help] [--build] [--test]"
       opts.on('-h', '--help', 'Show help and exit') do
@@ -133,19 +143,19 @@ class ObjectHealth
     end
 
     if @options[:analyze_objects] && ohobj.build.loaded?
-      puts "analyze #{id}"
+      puts "  analyze #{id}"
       @analysis_tasks.run_tasks(ohobj)
       @obj_health_db.update_object_analysis(ohobj)
     end
 
     if @options[:test_objects] && ohobj.build.loaded?
-      puts "test #{id}"
+      puts "  test #{id}"
       @obj_health_tests.run_tests(ohobj)
       @obj_health_db.update_object_tests(ohobj)
     end
 
     if ohobj.build.loaded? && (@options[:build_objects] || @options[:test_objects] || @options[:analyze_objects])
-      puts "export #{id}"
+      puts "  export #{id}"
       begin
         export_object(ohobj)
       rescue => e 
