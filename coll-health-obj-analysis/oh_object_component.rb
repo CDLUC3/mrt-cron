@@ -116,7 +116,7 @@ class ObjectHealthObjectBuild < ObjectHealthObjectComponent
     set_key(:file_counts, get_object.fetch(:file_counts, {deleted: 0, empty: 0}))
     set_key(:version, version)
     ofiles.each do |k,v|
-      source = v.fetch(:source, :na)
+      source = v.fetch(:source, :na).to_sym
       increment_subkey(:file_counts, source)
       # since we only record the first 1000 files for an object, this cannot be peformed at analysis time
       if v[:version] < version

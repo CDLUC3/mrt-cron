@@ -43,7 +43,7 @@ bundle exec ruby object_health.rb
 
 ## System Design
 
-### Analysis Preparation
+### Analysis Preparation - Initial Solution
 
 ```mermaid
   graph TD;
@@ -53,15 +53,16 @@ bundle exec ruby object_health.rb
         ANALYZE(Analyze Objects)
         TEST(Test Objects)
         Publish(Publish Changes)
-        subgraph code
-          YAML[[Rules File - Yaml]]
-          OAT(Object Analysis Tasks)
-          OT(Object Tests)
-        end
+        CODE["Analysis Code
+          - Rules File - Yaml
+          - Object Analysis Tasks
+          - Object Tests
+        "]
       end
       subgraph InventoryDatabase
         INVO>inv.inv_objects]
         OM[/Object Metadata/]
+        OF[/Object Files/]
       end
       subgraph Billing Database 
         subgraph billing.object_health_json
@@ -69,14 +70,13 @@ bundle exec ruby object_health.rb
           JA[/Object Analysis Json/]
           JT[/Object Tests Json/]
         end
-        BT[/Bitstream Test Results/]
-        AQ[/Analysis Queries/]
       end
       subgraph OpenSearch
         OSOH[\OpenSearch Object Health Index\]
       end
       INVO-->GATHER
       OM-.->GATHER
+      OF-.->GATHER
       GATHER-->BUILD
       GATHER-->ANALYZE
       GATHER-->TEST
@@ -87,30 +87,40 @@ bundle exec ruby object_health.rb
       Publish-->OSOH
 ```
 
-### Test Execution - Bitstream Tests
-Expensive tests that may need to be scheduled or prioritized. As the underlying services that perfom the operations improve, these tests should be re-run.
-Because tests are expensive to execute, test results should be recoded in the inventory database.
+### Analysis Preparation - Extended Analysis
+These components will be more compuationally expensive to implement.  
+The results of these analyses should feed into the existing Object Health process.
 
 ```mermaid
   graph TD;
-      INV_DB((Inventory Database))
-      JsonRepo((JSON Repo))
-      NoSQL((NoSQL Repo))
-      BitstreamTests(Bitstream Tests)
-      JsonRepo<-->BitstreamTests
-      JsonRepo-->Publish
-      Publish-->NoSQL
-      TestConfig[[Test Configuration Files - Yaml]]
-      TestConfig-->BitstreamTests
-      NoSQLViewer(NoSQL Viewer)
-      NoSQL-->NoSQLViewer
-      Cloud((Cloud Storage))
-      Cloud-->BitstreamTests
-      CloudServices(Cloud Services such as PII Scan)
-      OpenSrcServices(Open Source Services such as JHove or Virus Scan)
-      BitstreamTests<-.->CloudServices
-      BitstreamTests<-.->OpenSrcServices
-      BitstreamTests--"bitstream test results - new table"-->INV_DB
+      subgraph Object Health Publishing Process
+        GATHER(Gather Objects)
+      end
+      subgraph InventoryDatabase
+        OF[/Object Files/]
+      end
+      subgraph Billing Database 
+        BT[/"Bitstream Test Results (future)
+        - format identification
+        - PII scan
+        - accessiblity scan
+        "/]
+        AQ[/"Analysis Queries (run weekly from INV DB)
+        - duplicate checksum
+        - statistically unusual file size"/]
+      end
+      OF-.->GATHER
+      BITSCAN("Bitstream Scan Process
+      assumes a cloud solution will exist")
+      OF-->BITSCAN
+      BITSCAN-->BT
+      AQC(Analysis Queries Run by Cron)
+      AQC-->AQ
+      OF-->AQC
+      CLOUD((Cloud Storage))
+      CLOUD-->BITSCAN
+      BT-->GATHER
+      AQ-->GATHER
 ```
 
 ## Interesting Open Search Queries
