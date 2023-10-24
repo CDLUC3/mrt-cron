@@ -22,7 +22,7 @@ class ObjectHealthTests
       status = test.run_test(ohobj)
       ohobj.tests.record_test(test.name, status)
       ostate = ObjectHealth.compare_state(ostate, status)
-      ohobj.tests.concat_key(:summary, test.name) unless status == :PASS || status == :SKIP
+      ohobj.tests.append_key(:summary, test.name) unless status == :PASS || status == :SKIP
     end
     ohobj.tests.set_key(:state, ostate)
     ohobj

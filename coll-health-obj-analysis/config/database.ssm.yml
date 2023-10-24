@@ -424,31 +424,28 @@ default:
         - ^\[Date not indicated\]$
         - ^n\.d\.$
         - ^undated$
+    has-embargo:
+      name: "Has embargo / had embargo"
+      class: EmbargoTest
+    no-local-id:
+      name: Object has local id
+      class: LocalIdTest
     #later
     has-duplicate-checksum:
     has-duplicate-object-title:
-    has-empty-erc-field:
     filename-valid:
       name: Filename validation
       description: Rule varies by collection. Some default pattern matches for meaningless file names
     unusual-file-size:
       name: Unusual file size
       description: Compare file size to expectations for an extension type.  Re-compute based on the corpus. Determine some standard deviation rule to flag items.
-    has-content-files:
-      name: Object has content files
     has-sidecar-metadata:
       name: Object has sidecar metadata
-    has-content-and-sidecar-metadata:
-      name: Object has content + sidecar metadata
-    has-local-id:
-      name: Object has local id
-    has-embargo:
-      name: "Has embargo / had embargo"
-    localid-valid:
+    localid-invalid:
       name: Local id conforms to naming standards for collection
-    erc-valid:
+    erc-invalid:
       name: ERC metadata conforms to naming standards for collection
-    filesize-valid:
+    filesize-invalid:
       name: File size is within typical size range for the collection
   x-tests-bitstream:
     extension-mime-match:

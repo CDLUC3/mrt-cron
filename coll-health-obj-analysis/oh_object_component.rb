@@ -224,7 +224,7 @@ class ObjectHealthObjectTests < ObjectHealthObjectComponent
   end
             
   def default_object
-    tres = {failures: [], summary: '', test_run_log: []}
+    tres = {failures: [], summary: [], test_run_log: []}
     ObjectHealth.status_values.each do |stat|
       tres[stat] = 0
     end
