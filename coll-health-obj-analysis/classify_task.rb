@@ -43,8 +43,12 @@ class ClassifyTask < ObjHealthTask
       ohobj.analysis.set_key(:object_classification, :complex)
     elsif fclass.fetch(:content, 0) > 1 && fclass.fetch(:metadata, 0) > 0
       ohobj.analysis.set_key(:object_classification, :multi_content_with_metadata)
+    elsif fclass.fetch(:content, 0) > 1 && fclass.fetch(:secondary, 0) > 0
+      ohobj.analysis.set_key(:object_classification, :multi_content_with_secondary)
     elsif fclass.fetch(:content, 0) == 1 && fclass.fetch(:metadata, 0) > 0
       ohobj.analysis.set_key(:object_classification, :content_with_metadata)
+    elsif fclass.fetch(:content, 0) == 1 && fclass.fetch(:secondary, 0) > 0
+      ohobj.analysis.set_key(:object_classification, :content_with_secondary)
     elsif fclass.fetch(:content, 0) == 0 && fclass.fetch(:metadata, 0) > 0
       ohobj.analysis.set_key(:object_classification, :metadata_only)
     elsif fclass.fetch(:content, 0) == 0 && fclass.fetch(:secondary, 0) > 0

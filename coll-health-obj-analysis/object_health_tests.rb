@@ -15,17 +15,13 @@ class ObjectHealthTests
 
   end
 
-  def setState(ostate, status)
-    ObjectHealth.status_val(ostate) < ObjectHealth.status_val(status) ? status : ostate
-  end
-
   def run_tests(ohobj)
     ohobj.tests.init_object
     ostate = :SKIP
     @tests.each do |test|
       status = test.run_test(ohobj)
       ohobj.tests.record_test(test.name, status)
-      ostate = setState(ostate, status)
+      ostate = ObjectHealth.compare_state(ostate, status)
       ohobj.tests.concat_key(:summary, test.name) unless status == :PASS || status == :SKIP
     end
     ohobj.tests.set_key(:state, ostate)

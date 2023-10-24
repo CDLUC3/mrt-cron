@@ -57,6 +57,11 @@ class ObjectHealth
     0
   end
 
+  def self.compare_state(ostate, status)
+    ObjectHealth.status_val(ostate) < ObjectHealth.status_val(status) ? status : ostate
+  end
+
+
   def make_options(argv)
     options = {query_params: {}}
     @config.fetch('default-params', {}).each do |k,v|

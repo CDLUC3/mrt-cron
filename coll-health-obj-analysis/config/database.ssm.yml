@@ -372,6 +372,7 @@ default:
         - video/quicktime
         - application/vnd.openxmlformats-officedocument.presentationml.presentation
         - application/vnd.ms-powerpoint
+      # everything else is classified as :na
   analysis-bitstream:
     format-id:
     virus-scan:
@@ -382,6 +383,23 @@ default:
       class: MimeTest
       name: Mime type sustainability
       description: Compare file extention (or known mime type) to a list of sustainable mime types.
+    object-classification:
+      class: ObjectClassificationTest
+      categorize:
+        PASS:
+        - content_with_metadata
+        - multi_content_with_metadata
+        INFO:
+        - complex
+        - multi_content_with_secondary
+        - content_with_secondary
+        WARN:
+        - multi_content_no_metadata
+        - content_no_metadata
+        FAIL:
+        - metadata_only
+        - secondary_only
+        - unknown
     empty-file:
       name: Empty file detection
       description: Check file size - WARN if empty producer, INFO if empty system
@@ -389,19 +407,23 @@ default:
     has-delete:
       description: INFO if delete detected
       class: DeletedTest
-    has-meaningful-erc:
+    doesnt-have-meaningful-erc:
       name: Object has meaningful ERC metadata
       description: at first look for empty fields
-    file-classified:
-      name: Classify Files
-      description: |
-        Classify file as content, metadata, other. Look at mime type, file size, file name.
-        Distinguish primary metadata from other metadata.
-        Identify content files vs derivatives.
-        Look at patterns in nuxeo feeds.
-    object-classified:
-      name: Object Classification
-      description: categorize object contents according to a taxonomy.  Distinguish objects and complex objects.
+      class: ERCTest
+      categorize:
+        FAIL:
+        - ^$
+        WARN:
+        - ^\(:unas\)$
+        - ^\(:unav\)$
+        INFO:
+        - ^\(title unknown\)$
+        - ^\[Untitled\]$
+        - ^Untitled$
+        - ^\[Date not indicated\]$
+        - ^n\.d\.$
+        - ^undated$
     #later
     has-duplicate-checksum:
     has-duplicate-object-title:
