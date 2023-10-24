@@ -128,3 +128,26 @@ The results of these analyses should feed into the existing Object Health proces
 - `tests.WARN > 0`
 - `build.file_counts.deleted > 0 AND build.producer.deleted: true`
 - `build.file_counts.empty: 0`
+
+## Script Notes
+
+Builds
+```
+bundle exec ruby object_health.rb -b -a -t --limit 1200 --mnemonic=merritt_demo
+bundle exec ruby object_health.rb -b -a -t --limit 500 --mnemonic=ucm_lib_mclean
+bundle exec ruby object_health.rb -b -a -t --limit 500 --mnemonic=ucb_lib_bancroft
+bundle exec ruby object_health.rb -b -a -t --limit 500 --mnemonic=ucla_dash
+bundle exec ruby object_health.rb -b -a -t --limit 500 --mnemonic=ucsc_lib_sc
+bundle exec ruby object_health.rb -b -a -t --limit 500 --mnemonic=ucb_lib_church
+bundle exec ruby object_health.rb -b -a -t --limit 500 --mnemonic=ucr_lib_nuxeo
+```
+
+Re-analyze
+```
+bundle exec ruby object_health.rb -a -t --clear-analysis --clear-tests --limit 5000 --query=has-build
+```
+
+Re-test
+```
+bundle exec ruby object_health.rb -t --clear-tests --limit 5000 --query=has-build
+```

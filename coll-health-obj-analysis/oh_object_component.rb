@@ -42,12 +42,24 @@ class ObjectHealthObjectComponent
     @ohobj.set_key(@compkey, key, val)
   end
 
+  def set_subkey(key, subkey, val)
+    @ohobj.set_subkey(@compkey, key, subkey, val)
+  end
+
   def append_key(key, val)
     @ohobj.append_key(@compkey, key, val)
   end
-    
+
+  def append_subkey(key, subkey, val)
+    @ohobj.append_subkey(@compkey, key, subkey, val)
+  end
+
   def increment_key(key)
     @ohobj.increment_key(@compkey, key)
+  end
+
+  def zero_subkey(key, subkey)
+    @ohobj.zero_subkey(@compkey, key, subkey)
   end
 
   def increment_subkey(key, subkey)
@@ -123,7 +135,7 @@ class ObjectHealthObjectBuild < ObjectHealthObjectComponent
       source = v.fetch(:source, :na).to_sym
       increment_subkey(:file_counts, source)
       # since we only record the first 1000 files for an object, this cannot be peformed at analysis time
-      if v[:version] < version
+      if v[:last_version_present] < version
         increment_subkey(:file_counts, :deleted) 
         v[:deleted] = true
       end
@@ -155,6 +167,7 @@ class ObjectHealthObjectBuild < ObjectHealthObjectComponent
       version = r.fetch('number', 0)
       v = {
         version: version,
+        last_version_present: version,
         source: r.fetch('source', ''),
         pathname: r.fetch('pathname', ''),
         billable_size: billable_size,
@@ -165,9 +178,9 @@ class ObjectHealthObjectBuild < ObjectHealthObjectComponent
       }
       ofiles[pathname] = v unless ofiles.key?(pathname)
       if full_size == billable_size
-        ofiles[pathname] = v unless ofiles.key?(pathname)
+        ofiles[pathname] = v
       else
-        ofiles[pathname][:version] = version
+        ofiles[pathname][:last_version_present] = version
       end
     end
     version

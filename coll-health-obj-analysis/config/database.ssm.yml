@@ -87,20 +87,6 @@ default:
   analysis-json:
     mime:
       class: MimeTask
-      categorize:
-        metadata:
-          mimes:
-          - application/xml
-          patterns:
-          - mrt-dc.xml
-        secondary:
-          mimes:
-          - text/plain
-          - application/xhtml+xml
-          - application/atom+xml
-          - text/html
-          patterns:
-          - mrt-erc.txt
       PASS:
       - text/plain
       - application/xml
@@ -344,6 +330,48 @@ default:
     # write analysis->classify->metadata->[type]->[fileid]
     # write analysis->classify->other->[type]->[fileid]
     classify:
+      class: ClassifyTask
+      categorize:
+      - name: metadata
+        mimes:
+        - application/xml
+        - application/json
+        patterns:
+        - mrt-dc.xml
+      - name: secondary
+        mimes:
+        - text/plain
+        - application/xhtml+xml
+        - application/atom+xml
+        - text/html
+        patterns:
+        - mrt-erc.txt
+      - name: complex
+        mimes:
+        - application/x-gzip
+        - application/zip
+        - application/gzip
+      - name: content
+        mimes:
+        - image/jpeg
+        - image/tiff
+        - application/xhtml+xml
+        - application/pdf
+        - application/atom+xml
+        - image/gif
+        - text/csv
+        - image/png
+        - application/vnd.openxmlformats-officedocument.wordprocessingml.document
+        - application/msword
+        - audio/x-wav
+        - audio/mpeg
+        - application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
+        - application/mxf
+        - application/vnd.ms-excel
+        - video/mp4
+        - video/quicktime
+        - application/vnd.openxmlformats-officedocument.presentationml.presentation
+        - application/vnd.ms-powerpoint
   analysis-bitstream:
     format-id:
     virus-scan:

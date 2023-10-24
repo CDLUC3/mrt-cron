@@ -50,15 +50,31 @@ class ObjectHealthObject
     @osobj[compkey][key] = val
   end
     
+  def set_subkey(compkey, key, subkey, val)
+    @osobj[compkey][key] =  {} unless @osobj[compkey].key?(key)
+    @osobj[compkey][key][subkey] = val
+  end
+
   def append_key(compkey, key, val)
     @osobj[compkey][key] = [] unless @osobj[compkey].key?(key)
     @osobj[compkey][key].append(val)
   end
-    
+
+  def append_subkey(compkey, key, subkey, val)
+    @osobj[compkey][key] =  {} unless @osobj[compkey].key?(key)
+    @osobj[compkey][key][subkey] = [] unless @osobj[compkey][key].key?(subkey)
+    @osobj[compkey][key][subkey].append(val)
+  end
+
   def increment_key(compkey, key)
     @osobj[compkey][key] = @osobj[compkey].fetch(key, 0) + 1
   end
-    
+
+  def zero_subkey(compkey, key, subkey)
+    @osobj[compkey][key] = {} unless @osobj[compkey].key?(key)
+    @osobj[compkey][key][subkey] = 0
+  end
+
   def increment_subkey(compkey, key, subkey)
     @osobj[compkey][key] = {} unless @osobj[compkey].key?(key)
     @osobj[compkey][key][subkey] = @osobj[compkey][key].fetch(subkey, 0) + 1

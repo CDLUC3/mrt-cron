@@ -3,7 +3,7 @@ require 'json'
 class ObjHealthTask
   def initialize(oh, taskdef, name)
     @oh = oh
-    @taskdef = taskdef
+    @taskdef_with_sym = JSON.parse(taskdef.to_json, symbolize_names: true)
     @name = name
   end
 

@@ -10,6 +10,7 @@ class MimeTask < ObjHealthTask
       taskdef.fetch(stat.to_s, []).each do |mime|
         @statmap[mime.to_sym] = stat 
       end
+      cat = taskdef.fetch(:categorize, {})
     end
   end
 
