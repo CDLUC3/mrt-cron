@@ -35,6 +35,9 @@ default:
       inner join inv.inv_collections_inv_objects icio on icio.inv_object_id = o.id
       inner join inv.inv_collections c on c.id = icio.inv_collection_id
       where 1=1
+      and c.mnemonic not in ('cdl_dryad', 'ucb_open_context', 'cdl_uc3_etdreports') 
+      and c.mnemonic not like '%_dash'
+      and c.mnemonic not like 'mrt_%'
     default-exclusion: |
       and 0 = 1
       limit {{LIMIT}}
@@ -68,6 +71,25 @@ default:
         and c.mnemonic = '{{MNEMONIC}}'
       has-build: |
         and exists (select 1 from object_health_json h where h.inv_object_id = o.id)
+  collection_taxonomy:
+    colltax_skip:
+      patterns: 
+      - ^.*_dash$
+      - ^mrt_.*$
+      mnemonics:
+      - ucb_open_context
+      - cdl_dryad
+      - cdl_uc3_etdreports
+    colltax_lsta:
+      patterns:
+      - ^lsta_.*$
+    colltax_nuxeo:
+      #mnemonics: 
+      #- ...
+    colltax_cdl:
+      mnemonics:
+      - merritt_demo
+      - escholarship
   analysis-inputs:
     duplicate-checksum:
       note: consider excluding opencontext
@@ -430,6 +452,15 @@ default:
     no-local-id:
       name: Object has local id
       class: LocalIdTest
+      # all tasks and tests can be scoped to run/not run for specific collections
+      collection_scope:
+        skip:
+        #- merritt_demo
+        #- escholarship
+        - colltax_cdl
+        - lsta_pomonapl
+        # apply:
+        # - mnemonic
     #later
     has-duplicate-checksum:
     has-duplicate-object-title:

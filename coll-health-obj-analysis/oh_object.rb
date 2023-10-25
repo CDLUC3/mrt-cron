@@ -46,6 +46,10 @@ class ObjectHealthObject
     @osobj.fetch(:id, 0)
   end
 
+  def mnemonic
+    @osobj[:build].fetch(:containers, {}).fetch(:mnemonic, "")
+  end
+
   def set_key(compkey, key, val)
     @osobj[compkey][key] = val
   end

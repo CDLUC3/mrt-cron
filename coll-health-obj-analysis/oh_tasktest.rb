@@ -4,7 +4,21 @@ class ObjHealthTask
   def initialize(oh, taskdef, name)
     @oh = oh
     @taskdef_with_sym = JSON.parse(taskdef.to_json, symbolize_names: true)
+    scope = @taskdef_with_sym.fetch(:collection_scope, {})
+    @skip = scope.fetch(:skip, [])
+    @apply = scope.fetch(:apply, [])
     @name = name
+  end
+
+  def check_scope(ohobj)
+    m = ohobj.mnemonic
+    colltax = @oh.collection_taxonomy(m)
+    if @apply.length > 0
+      return @apply.include?(m) || @apply.include(colltax)
+    elsif @skip.length > 0
+      return !(@skip.include?(m) || @skip.include?(colltax))
+    end
+    true
   end
 
   def name

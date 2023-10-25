@@ -19,6 +19,7 @@ class ObjectHealthTests
     ohobj.tests.init_object
     ostate = :SKIP
     @tests.each do |test|
+      next unless test.check_scope(ohobj)
       status = test.run_test(ohobj)
       ohobj.tests.record_test(test.name, status)
       ostate = ObjectHealth.compare_state(ostate, status)

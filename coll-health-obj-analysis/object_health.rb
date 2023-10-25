@@ -44,6 +44,17 @@ class ObjectHealth
     @dt_build = @config.fetch('config-dateime', {}).fetch('build', now)
     @dt_analysis = @config.fetch('config-dateime', {}).fetch('analysis', now)
     @dt_tests = @config.fetch('config-dateime', {}).fetch('tests', now)
+    @colltax_mnemonics = {}
+    @colltax_patterns = {}
+    @config.fetch(:collection_taxonomy.to_s, {}).each do |colltax,conf|
+      next if conf.nil?
+      conf.fetch(:patterns.to_s, []).each do |p|
+        @colltax_patterns[p] = colltax
+      end
+      conf.fetch(:mnemonics.to_s, []).each do |m|
+        @colltax_mnemonics[m] = colltax
+      end
+    end
   end
 
   def self.status_values
@@ -61,6 +72,22 @@ class ObjectHealth
     ObjectHealth.status_val(ostate) < ObjectHealth.status_val(status) ? status : ostate
   end
 
+  def collection_taxonomy(mnemonic)
+    m = mnemonic
+    @colltax_patterns.each do |k,colltax|
+      if mnemonic =~ Regexp.new(k)
+        m = colltax
+        break
+      end
+    end
+    @colltax_mnemonics.each do |k,colltax|
+      if k == mnemonic
+        m = colltax
+        break
+      end
+    end
+    m
+  end
 
   def make_options(argv)
     options = {query_params: {}}
