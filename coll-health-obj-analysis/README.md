@@ -43,7 +43,7 @@ bundle exec ruby object_health.rb
 
 ## System Design
 
-### Analysis Preparation - Initial Solution
+### Initial Analysis - Built from RDS Data
 
 ```mermaid
   graph TD;
@@ -87,7 +87,30 @@ bundle exec ruby object_health.rb
       Publish-->OSOH
 ```
 
-### Analysis Preparation - Extended Analysis
+### Statistical Analysis 
+This analysis will require complex queries to run weekly to support the analysis.
+
+```mermaid
+  graph TD;
+      subgraph Object Health Publishing Process
+        GATHER(Gather Objects)
+      end
+      subgraph InventoryDatabase
+        OF[/Object Files/]
+      end
+      subgraph Billing Database 
+        AQ[/"Analysis Queries (run weekly from INV DB)
+        - duplicate checksum
+        - statistically unusual file size"/]
+      end
+      OF-.->GATHER
+      AQC(Analysis Queries Run by Cron)
+      AQC-->AQ
+      OF-->AQC
+      AQ-->GATHER
+```
+
+### Bitstream Analysis 
 These components will be more compuationally expensive to implement.  
 The results of these analyses should feed into the existing Object Health process.
 
@@ -105,23 +128,74 @@ The results of these analyses should feed into the existing Object Health proces
         - PII scan
         - accessiblity scan
         "/]
-        AQ[/"Analysis Queries (run weekly from INV DB)
-        - duplicate checksum
-        - statistically unusual file size"/]
       end
       OF-.->GATHER
       BITSCAN("Bitstream Scan Process
       assumes a cloud solution will exist")
       OF-->BITSCAN
-      BITSCAN-->BT
-      AQC(Analysis Queries Run by Cron)
-      AQC-->AQ
-      OF-->AQC
+      BITSCAN<-->BT
       CLOUD((Cloud Storage))
       CLOUD-->BITSCAN
       BT-->GATHER
-      AQ-->GATHER
 ```
+
+---
+
+## Estimates - Initial Analysis
+
+### Retrospective Json Generation
+
+- 4M object * 8KB/object = 32GB
+  - or 3M if we exclude specific collections 
+- 32GB RDS storage (billing.object_health_json) 
+- 32GB OpenSearch storage (objhealth index)
+- Compute to produce 4M JSON documents
+  - use available compute on Merritt batch server
+  - run within Lambda
+
+### Prospective Json Generation (adds and updates to objects)
+
+- 8K/object added to RDS and OpenSearch
+- Compute to process updates
+
+### Test refinement
+- Compute to partially re-process 4M objects
+
+## Estimates - Statistical Analysis
+
+- Weekly cron jobs
+- Additional join tables 
+  - repeated checksums (1M rows)
+  - average/mean size per mime per collection (may already exist in the billing database)
+
+## Estimates - Bitstream Analysis
+
+### Tasks to run
+- File identification 
+  - All files 34M
+- PII scan?
+  - Data, Text, Image? (30M)
+- Accessibility scan?
+  - Text, Video? (20M)
+
+### Content Breakdown
+- audio	- 174,608
+- container	- 448,449
+- data	-- Total --	1,579,481
+- image	-- Total --	11,689,378
+- text	-- Total --	19,797,445
+- video	-- Total --	68,931
+
+### Cost
+
+- Assumption: 1K json per bitstream = 34G in RDS
+- Compute per bitstream - will need to calculate by service
+  - File Id - open source
+  - Accessibility - open source?
+  - PII scan - vendor solution
+- Bitstream retrieval - 500T
+
+---
 
 ## Interesting Open Search Queries
 - `tests.FAIL > 0`
