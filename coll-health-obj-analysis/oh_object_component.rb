@@ -170,14 +170,15 @@ class ObjectHealthObjectBuild < ObjectHealthObjectComponent
       ext = pathname.downcase.split(".")[-1] if pathname =~ %r[\.]
       if ext.empty?
         pathtype = :na
+      elsif ext =~ %r[^([a-z][a-z0-9]{1,4})$]
+        pathtype = :file
+      elsif ext =~ %r[[\/\?]]
+        ext = ext.gsub(%r[[\/\?].*$], '')
+        pathtype = :url
+        ext = "" unless ext =~ %r[^([a-z][a-z0-9]{1,4})$]
       else
-        m = %r[^([a-z0-9_]*)[^a-z0-9_].*$].match(ext)
-        if m
-          ext = m[1]
-          pathtype = :url
-        else
-          pathtype = :file
-        end
+        pathtype = :na
+        ext = ""
       end
       
       v = {
@@ -203,16 +204,16 @@ class ObjectHealthObjectBuild < ObjectHealthObjectComponent
     version
   end
     
-  def get_mimes
-    get_object.fetch(:mimes, {})
-  end
-    
-  def init_object_mimes
-    set_key(:mimes, get_mimes)
-  end
-
   def count_mime(mime)
-    increment_subkey(:mimes, mime.to_sym)
+    get_object[:mimes_for_object] = [] unless get_object.key?(:mimes_for_object)
+    arr = get_object[:mimes_for_object]
+    arr.each_with_index do |r,i|
+      if r.fetch(:mime, '') == mime
+        arr[i][:count] = arr[i].fetch(:count, 0) + 1
+        return
+      end
+    end
+    arr.append({mime: mime, count: 1})
   end
     
 end
@@ -225,14 +226,6 @@ class ObjectHealthObjectAnalysis < ObjectHealthObjectComponent
   def default_object
     {}
   end
-
-  def get_mimes
-    get_object.fetch(:mimes, {})
-  end
-
-  def set_mimes(objmap)
-    set_key(:mimes, objmap)
-  end   
 end
 
 class ObjectHealthObjectTests < ObjectHealthObjectComponent

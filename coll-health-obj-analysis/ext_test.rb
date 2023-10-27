@@ -44,7 +44,7 @@ class ExtNotPresentTest < ExtTest
   end
 
   def get_filetype
-    :url
+    :na
   end
 
   def get_status
