@@ -11,8 +11,8 @@ class EmptyTest < ObjHealthTest
     status = :PASS
     if ohobj.build.get_object.fetch(:empty, 0) > 0
       status = :INFO
-      ohobj.build.producer.each do |v|
-        status = WARN if v.fetch(:deleted, false)
+      ohobj.build.get_object.fetch(:producer, {}).each do |v|
+        status = :WARN if v.fetch(:empty, false)
       end
     end
     status

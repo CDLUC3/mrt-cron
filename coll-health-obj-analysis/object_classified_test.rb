@@ -6,9 +6,9 @@ class ObjectClassificationTest < ObjHealthTest
   def initialize(oh, taskdef, name)
     super(oh, taskdef, name)
     @mapping = {}
-    @taskdef_with_sym.fetch(:categorize, {}).each do |k,list|
+    @taskdef.fetch(:categorize, {}).each do |k,list|
       list.each do |v|
-        @mapping[v.to_sym] = k.to_sym
+        @mapping[v] = k
       end
     end
   end

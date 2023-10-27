@@ -3,8 +3,8 @@ require 'json'
 class ObjHealthTask
   def initialize(oh, taskdef, name)
     @oh = oh
-    @taskdef_with_sym = JSON.parse(taskdef.to_json, symbolize_names: true)
-    scope = @taskdef_with_sym.fetch(:collection_scope, {})
+    @taskdef = taskdef
+    scope = @taskdef.fetch(:collection_scope, {})
     @skip = scope.fetch(:skip, [])
     @apply = scope.fetch(:apply, [])
     @name = name
@@ -27,7 +27,7 @@ class ObjHealthTask
   
   def self.create(oh, taskdef, name)
     unless taskdef.nil?
-      taskclass = taskdef.fetch('class', '')
+      taskclass = taskdef.fetch(:class, '')
       unless taskclass.empty?
         Object.const_get(taskclass).new(oh, taskdef, name)
       end

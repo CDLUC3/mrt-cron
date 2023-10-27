@@ -6,9 +6,11 @@ class MimeTask < ObjHealthTask
   def initialize(oh, taskdef, name)
     super(oh, taskdef, name)
     @statmap = {}
+    @mimeext = {}
     ObjectHealth.status_values.each do |stat|
-      taskdef.fetch(stat.to_s, []).each do |mime|
-        @statmap[mime.to_sym] = stat 
+      taskdef.fetch(stat, {}).each do |mime, exts|
+        @statmap[mime] = stat
+        @mimeext[mime] = exts 
       end
       cat = taskdef.fetch(:categorize, {})
     end
@@ -21,7 +23,7 @@ class MimeTask < ObjHealthTask
       objmap[stat] = []
     end
     ohobj.build.get_mimes.each do |mime,v|
-      map[mime.to_sym] = @statmap.fetch(mime.to_sym, :SKIP) unless mime.empty?
+      map[mime] = @statmap.fetch(mime, :SKIP) unless mime.empty?
     end
     map.each do |k,v|
       objmap[v].append(k)

@@ -5,7 +5,7 @@ require_relative 'oh_tasktest'
 class ClassifyTask < ObjHealthTask
   def initialize(oh, taskdef, name)
     super(oh, taskdef, name)
-    @categories = @taskdef_with_sym.fetch(:categorize, [])
+    @categories = @taskdef.fetch(:categorize, [])
     puts @categories
   end
 

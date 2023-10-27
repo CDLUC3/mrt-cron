@@ -165,17 +165,34 @@ class ObjectHealthObjectBuild < ObjectHealthObjectComponent
       full_size = r.fetch('full_size', 0)
       billable_size = r.fetch('billable_size', 0)
       version = r.fetch('number', 0)
+      ext = ""
+      
+      ext = pathname.downcase.split(".")[-1] if pathname =~ %r[\.]
+      if ext.empty?
+        pathtype = :na
+      else
+        m = %r[^([a-z0-9_]*)[^a-z0-9_].*$].match(ext)
+        if m
+          ext = m[1]
+          pathtype = :url
+        else
+          pathtype = :file
+        end
+      end
+      
       v = {
         version: version,
         last_version_present: version,
         source: r.fetch('source', ''),
-        pathname: r.fetch('pathname', ''),
+        pathname: pathname,
         billable_size: billable_size,
         mime_type: r.fetch('mime_type', ''),
         digest_type: r.fetch('digest_type', ''),
         digest_value: r.fetch('digest_value', ''),
-        created: r.fetch('created', '')
+        created: r.fetch('created', ''),
+        pathtype: pathtype
       }
+      v[:ext] = ext unless ext.empty?
       ofiles[pathname] = v unless ofiles.key?(pathname)
       if full_size == billable_size
         ofiles[pathname] = v

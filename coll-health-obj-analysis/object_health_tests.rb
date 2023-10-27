@@ -8,7 +8,8 @@ class ObjectHealthTests
     @config = config
     @tests = []
 
-    @config.fetch('tests', {}).each do |k,v|
+    tests = JSON.parse(@config.fetch('tests', {}).to_json, symbolize_names: true)
+    tests.each do |k,v|
       test = ObjHealthTest.create(@oh, v, k)
       @tests.append(test) unless test.nil?
     end

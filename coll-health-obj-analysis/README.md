@@ -214,14 +214,40 @@ bundle exec ruby object_health.rb -b -a -t --limit 500 --mnemonic=ucla_dash
 bundle exec ruby object_health.rb -b -a -t --limit 500 --mnemonic=ucsc_lib_sc
 bundle exec ruby object_health.rb -b -a -t --limit 500 --mnemonic=ucb_lib_church
 bundle exec ruby object_health.rb -b -a -t --limit 500 --mnemonic=ucr_lib_nuxeo
+bundle exec ruby object_health.rb -b -a -t --limit 500 --mnemonic=ucb_bampfa_art
+bundle exec ruby object_health.rb -b -a -t --limit 500 --mnemonic=ucla_lib_frontera
+bundle exec ruby object_health.rb -b -a -t --limit 500 --mnemonic=ucla_lib_str_frontera
+bundle exec ruby object_health.rb -b -a -t --limit 500 --mnemonic=ucr_lib_etd
+bundle exec ruby object_health.rb -b -a -t --limit 500 --mnemonic=ucla_lib_etd
+```
+
+Build - Small Set
+```
+bundle exec ruby object_health.rb -b -a -t --limit 20 --mnemonic=merritt_demo
+bundle exec ruby object_health.rb -b -a -t --limit 10 --mnemonic=ucm_lib_mclean
+bundle exec ruby object_health.rb -b -a -t --limit 10 --mnemonic=ucb_lib_bancroft
+bundle exec ruby object_health.rb -b -a -t --limit 10 --mnemonic=ucla_dash
+bundle exec ruby object_health.rb -b -a -t --limit 10 --mnemonic=ucsc_lib_sc
+bundle exec ruby object_health.rb -b -a -t --limit 10 --mnemonic=ucb_lib_church
+bundle exec ruby object_health.rb -b -a -t --limit 10 --mnemonic=ucr_lib_nuxeo
+bundle exec ruby object_health.rb -b -a -t --limit 10 --mnemonic=ucb_bampfa_art
+bundle exec ruby object_health.rb -b -a -t --limit 10 --mnemonic=ucla_lib_frontera
+bundle exec ruby object_health.rb -b -a -t --limit 10 --mnemonic=ucla_lib_str_frontera
+bundle exec ruby object_health.rb -b -a -t --limit 10 --mnemonic=ucr_lib_etd
+bundle exec ruby object_health.rb -b -a -t --limit 10 --mnemonic=ucla_lib_etd
+```
+
+Re-build
+```
+bundle exec ruby object_health.rb -b -a -t --clear-build --clear-analysis --clear-tests --limit 10000 --query=has-build
 ```
 
 Re-analyze
 ```
-bundle exec ruby object_health.rb -a -t --clear-analysis --clear-tests --limit 5000 --query=has-build
+bundle exec ruby object_health.rb -a -t --clear-analysis --clear-tests --limit 10000 --query=has-build
 ```
 
 Re-test
 ```
-bundle exec ruby object_health.rb -t --clear-tests --limit 5000 --query=has-build
+bundle exec ruby object_health.rb -t --clear-tests --limit 10000 --query=has-build
 ```
