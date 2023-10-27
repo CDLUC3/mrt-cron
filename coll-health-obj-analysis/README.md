@@ -49,17 +49,19 @@ Communications:
   - Directly with campus partners
   - Through DPLG overview
   - Use and review of file level data dashboard
+
 Prototyping:
 - File level data extraction and visualization in OpenSearch. Extract file level data and generate a dashboard in OpenSearch that reveals this for review.
 - Object level data extraction
   - Storage of object data as JSON in MySQL records
   - Process to update object data records in OpenSearch
 #### Leveraging OpenSearch
-The OpenSearch frontend will provide the visual analysis tooling necessary to visualize and build dashboards within for communicating health check reports to campus partners.
+The OpenSearch frontend will provide the visual analysis tooling necessary to visualize and build dashboards within for communicating health check reports to campus partners. Integration points and uses of OpenSearch infrastructure include but are not limited to:
 - Generating JSON files from MySQL records
 - Capturing collection name, owner, mime-type, bytes, etc.
 - Creating OpenSearch visualizations
 - Linking visualizations through a dashboard
+
 Pre-processing data to:
 - Enable the ability for us to recognize specific mime-types according to preferred, acceptable formats in the LOC RFS 
 - Flag outliers mime-types in a collection
@@ -69,6 +71,7 @@ Pre-processing data to:
 - Recognize files that:
   - Are within a typical byte size (file and object basis)
   - Adhere to naming conventions in a collection
+
 Provide a means to:
 - Review collection report results
 - Annotate/comment on results
