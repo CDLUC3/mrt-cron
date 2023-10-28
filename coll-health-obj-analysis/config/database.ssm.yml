@@ -126,20 +126,20 @@ default:
         application/x-gzip: ["gzip", "gz"]
         text/html: ["html", "htm"]
         image/png: ["png"]
-        application/vnd.openxmlformats-officedocument.wordprocessingml.document: []
+        application/vnd.openxmlformats-officedocument.wordprocessingml.document: ["docx"]
         application/zip: ["zip"]
-        application/msword: ["doc", "docx"]
+        application/msword: ["doc"]
         audio/x-wav: ["wav"]
         audio/mpeg: ["mpeg"]
-        application/vnd.openxmlformats-officedocument.spreadsheetml.sheet: []
+        application/vnd.openxmlformats-officedocument.spreadsheetml.sheet: ["xlsx"]
         application/json: ["json"]
         application/mxf: ["mxf"]
         application/gzip: ["gzip", "gz"]
-        application/vnd.ms-excel: ["xls", "xlsx"]
+        application/vnd.ms-excel: ["xls"]
         video/mp4: ["mp4"]
         video/quicktime: []
-        application/vnd.openxmlformats-officedocument.presentationml.presentation: []
-        application/vnd.ms-powerpoint: ["ppt", "pptx"]
+        application/vnd.openxmlformats-officedocument.presentationml.presentation: ["pptx"]
+        application/vnd.ms-powerpoint: ["ppt"]
       SKIP: &sustainable_mimes_skip
         plain/turtle: []
         application/rdf+xml: []
@@ -358,21 +358,33 @@ default:
     classify:
       class: ClassifyTask
       # There categorizations are applied in ranked order allowing the re-use of blocks of mime types
+      metadata_types:
+        common_metadata:
+        bag_metadata:
+        etd_metadata:
+        metadata:
       categorize:
+      - name: common_metadata
+        paths:
+        - mrt-dc.xml
+        - cdlmeta.tar.gz
+      - name: etd_metadata
+        patterns:
+        - ^.*_(ucr|ucla)_.*_DATA.xml$
+      - name: bag_metadata
+        paths:
+        - bag-info.txt
       - name: metadata
         mimes:
           application/xml:
           application/json:
-        patterns:
-          mrt-dc.xml:
-          cdlmeta.tar.gz:
       - name: secondary
         mimes:
           text/plain:
           application/xhtml+xml:
           application/atom+xml:
           text/html:
-        patterns:
+        paths:
         - mrt-erc.txt
       - name: complex
         mimes:
@@ -406,6 +418,7 @@ default:
       categorize:
         PASS:
           multi_digital_files:
+          multi_digital_files_with_derivatives:
           digital_file_with_derivatives:
           single_digital_file:
         INFO:
