@@ -7,6 +7,7 @@ class ClassificationTest < ObjHealthTest
     super(oh, taskdef, name)
     @mapping = {}
     @taskdef.fetch(:categorize, {}).each do |k,list|
+      next if list.nil?
       list.keys.each do |v|
         @mapping[v.to_sym] = k
       end

@@ -1,8 +1,38 @@
+# -------------------
+# The Object Health process has 3 phases
+# - BUILD: take inforamtion from the INV database and represent that information in Json.
+#   - A sensible limitation will be placed on the number of files to analyze for an object (1000).
+# - ANALYSIS: An analysis TASK will analyze the build information and create a new Json structure that may be queried by one or more tests.
+# - TESTS: A TEST will perform a series of tests on an objects.  A test will always return a status: SKIP, PASS, INFO, WARN, FAIL
+#
+# Generic Configuration Parameters that can be added to any TASK or TEST configuration
+#   collection_scope:
+#      skip:
+#      - merritt_demo
+#      - escholarship
+#      apply:
+#      - mnemonic
+
+# -------------------
 default:
+  # -------------------
+  # Runtime Options
+  #   default command line parameters (see usage info for more information)
+  # -------------------
   default-params: 
     QUERY: collection
     MNEMONIC: merritt_demo
     LIMIT: 10
+  # debug settings to control debug messages and output
+  debug:
+    export_max: 5
+    print_max: 1
+
+  # -------------------
+  # System Configuration
+  # -------------------
+
+  # open search connection parameters
   opensearch:
     host: 'https://localhost:9200'
     user: 'admin'
@@ -10,6 +40,7 @@ default:
     transport_options:
       ssl: 
         verify: false
+  # database connection parameters
   dbconf:
     adapter: mysql2
     encoding: utf8mb4
@@ -19,15 +50,12 @@ default:
     port: 3306
     username: "{!SSM: billing/readwrite/db-user}"
     password: "{!SSM: billing/readwrite/db-password}"
-  config-dateime:
-    build: '2023-10-13 16:00:00'
-    analysis: '2023-10-13 16:00:00'
-    test: '2023-10-13 16:00:00'
-  debug:
-    export_max: 5
-    print_max: 1
-  batch:
-    process-max: 50
+
+  # -------------------
+  # Object Selection Queries
+  # -------------------
+  # Select objects to process
+  # Note that this code presumes that OpenContext, ETD Reports, Dryad and Merritt admin collections will always be excluded
   gather-ids:
     select: |
       select o.id
@@ -38,15 +66,18 @@ default:
       and c.mnemonic not in ('cdl_dryad', 'ucb_open_context', 'cdl_uc3_etdreports') 
       and c.mnemonic not like '%_dash'
       and c.mnemonic not like 'mrt_%'
+    # Default exclude sql fragment
     default-exclusion: |
       and 0 = 1
       limit {{LIMIT}}
+    # Sql fragment to only pull objects that need to be re-built
     build-exclusion: |
       and not exists (
         select 1 from object_health_json h where h.inv_object_id = o.id and h.build_updated > o.modified
       )
       order by o.modified desc
       limit {{LIMIT}}
+    # Sql fragment to only pull objects that need to be re-analyzed
     analysis-exclusion: |
       and exists(
         select 1 from object_health_json h where h.inv_object_id = o.id and h.build is not null
@@ -56,6 +87,7 @@ default:
       )
       order by o.modified desc
       limit {{LIMIT}}
+    # Sql fragment to only pull objects that need to be re-tested
     tests-exclusion: |
       and exists(
         select 1 from object_health_json h where h.inv_object_id = o.id and h.analysis is not null
@@ -67,10 +99,17 @@ default:
       limit {{LIMIT}}
     # prioritized set of queries to use to find work to be performed.  If one query returns no results, the next one will be run
     queries:
+      # query by collection mnemonic
       collection: |
         and c.mnemonic = '{{MNEMONIC}}'
+      # query for objects with an existing build representation
       has-build: |
         and exists (select 1 from object_health_json h where h.inv_object_id = o.id)
+
+  # -------------------
+  # Collection Taxonomy
+  #   This can be used to include/exclude specific collections from specific Analysis Tasks and Tests
+  # -------------------
   collection_taxonomy:
     colltax_skip:
       patterns: 
@@ -94,6 +133,11 @@ default:
       mnemonics:
       - merritt_demo
       - escholarship
+
+  # -------------------
+  # Statistica Analysis Queries
+  #   This is not yet in the project scope
+  # -------------------
   analysis-inputs:
     duplicate-checksum:
       note: consider excluding opencontext
@@ -110,7 +154,22 @@ default:
     average-file-size-for-mime-type:
       description: compute average, mean file size to identify outliers
     duplicate-title-in-collection:
+
+  # -------------------
+  # Object Analysis Tasks
+  # -------------------
   analysis-json:
+    # -------------------
+    # Organize known Merritt mime types by sustainability criteria.
+    # Also, document the expected file extensions for each sustainable mime type.
+    # 
+    # The PASS and INFO mime types will be utilized to identify digital file content within an object.
+    # Each object will be expected to contain at least one file from each of these groups.
+    #
+    # Apache Tika has been used within Merritt to identify mime types (TBD verify).  
+    # Also, this information can be sent by depositors.
+    # The results of this analysis may suggest that Merritt should process all content files with file identification software.
+    # -------------------
     mime:
       class: MimeTask
       PASS: &sustainable_mimes_pass
@@ -352,9 +411,30 @@ default:
         application/x-font-linux-psf: []
         application/mbox: []
         text/x-c++hdr: []
-    # write analysis->classify->content->[type]->[fileid]
-    # write analysis->classify->metadata->[type]->[fileid]
-    # write analysis->classify->other->[type]->[fileid]
+
+    # -------------------
+    # Classify Object Producer Files based on an ordered set of rules
+    #
+    # Content Classifications
+    # - complex_object - container file found or preservation files of multiple mime types found within the object
+    # - multi_digital_files_with_derivatives - mutliple preservation files of the same mime type found and derivative files found
+    # - multi_digital_files - multiple preservation files of the same mime type found
+    # - digital_file_with_derivatives - preservation and derivative files found
+    # - derivatives_only - only derivative content files found
+    # - single_digital_file - one identifiable content file
+    # - no_content - no identifiable content files
+    #
+    # Metadata Classifications
+    # - common_metadata_file: "Common" Merritt metadata file 
+    # - bag_metadata_file: Bag metadata file derived from a bagged object
+    # - etd_metadata_file: Metadata sidecar file for an ETD submission
+    # - nuxeo_style_metadata_file: Metadata sidecar file for a Nuxeo submission
+    # - metadata_with_secondary: Primary metadata sidecar file plus other metadata files
+    # - single_metadata_file: Primary metadata sidecar file
+    # - multi_metadata: Multiple potential metadata sidecar files
+    # - secondary_only: Files containing metadata that would not be classified as a sidecar file. A sidecar is assumed to have richer metadata than a Merritt ERC file.
+    # - no_metadata: No identifiable metadat file found
+    # -------------------
     classify:
       class: ClassifyTask
       # There categorizations are applied in ranked order allowing the re-use of blocks of mime types
@@ -365,25 +445,33 @@ default:
         etd_metadata:
         metadata:
       categorize:
+      # If multiple common metadata files are found, the primary metadata file will be chosen in the following priority order
       - name: common_metadata
         paths:
         - mets.xml
         - mets.txt
         - mrt-dc.xml
         - cdlmeta.tar.gz
+      # If ETD metadata is found, other metadata files will not affect the categorization
       - name: etd_metadata
         patterns:
         - ^.*_(ucr|ucla)_.*_DATA.xml$
+      # If Nuxeo metadata is found, other metadata files will not affect the categorization.
+      # Allowable template values to look for:
+      # - LOCALID
       - name: nuxeo_style_metadata
         templates:
         - "{{LOCALID}}.xml"
+      # If bag metadata is found, other metadata files will not affect the categorization.
       - name: bag_metadata
         paths:
         - bag-info.txt
+      # If mutliple metadata files are found the categorization will indicate that the primary file cannot be identified.
       - name: metadata
         mimes:
           application/xml:
           application/json:
+      # Secondary metadata files may contain metadata, but they are not considered to be a good choice as a "primary" metadata file
       - name: secondary
         mimes:
           text/plain:
@@ -392,33 +480,56 @@ default:
           text/html:
         paths:
         - mrt-erc.txt
+      # Complex files may contain multiple types of digital files.  The object will need to be downloaded and expanded in order to introspect the object.
       - name: complex
         mimes:
           application/x-gzip:
           application/zip:
           application/gzip:
+      # Common derivative file types.  These file types are not generally good choices for preservation on their own.  These files will generally accompany primary content files.
       - name: derivatives
         mimes:
           video/mp4:
           audio/mpeg3:
           image/jpeg:
+      # Common digitial files types for preservation
+      # Note that this section is linking out to the sustainable mime type definitions elsewhere in the yaml file.
+      # Any metadata or derivative file types should be categorized in the sections above.
       - name: content
         mimes:
           <<: *sustainable_mimes_pass
           <<: *sustainable_mimes_info
       # everything else is classified as :na
+
+  # -------------------
+  # Bitstream Analysis: these functions are not yet in scope for Merritt
+  # -------------------
   analysis-bitstream:
     format-id:
     virus-scan:
     pii-scan:
     accessibility-scan:
+
+  # -------------------
+  # Object Health Tests
+  #   These tests will be performed using the data contained within the build and analysis json for an object.  No external resources should be needed.
+  #   All tests will return one of the following stats
+  #   - SKIP: test was skipped
+  #   - PASS: test passed, object is configured as expected
+  #   - INFO: some irregularity was found, intervention is not expected
+  #   - WARN: some irregularity was found, intervention is recommended
+  #   - FAIL: significant irregularity was found, action should be taken to resolve the issue
+  # -------------------
   tests:
+    # Evaluate the sustainability ot fhe mime types for producer files within the object
     sustainable-mime:
       class: MimeTest
       name: Mime type sustainability
       description: Compare file extention (or known mime type) to a list of sustainable mime types.
+    # Evaluate whether or not the file extension for a producer file is expected for a given mime type
     mime-extension-mismatch:
       class: MimeExtTest
+    # Evaluate the object classification based on producer file types
     object-classification:
       class: ObjectClassificationTest
       categorize:
@@ -433,29 +544,39 @@ default:
           derviatives_only:
         FAIL:
           no_content:
+    # Evaluate the object metadata classification based on producer file types
     metadata-classification:
       class: MetadataClassificationTest
       categorize:
         PASS:
+          common_metadata_file:
+          bag_metadata_file:
+          etd_metadata_file:
           metadata_with_secondary:
+          nuxeo_style_metadata_file:
           single_metadata_file:
         INFO:
           multi_metadata:
         WARN:
           secondary_only:
-        FAIL:
           no_metadata:
+        FAIL:
+    # Test for URL-like Merritt pathnames that may not expand well into a filename
     ext-url-like-pathname:
       class: ExtUrlTest
+    # Test for Merritt pathnames that may not expand well into a filename
     ext-not-present:
       class: ExtNotPresentTest
+    # Test for zero byte cotnent files
     empty-file:
       name: Empty file detection
       description: Check file size - WARN if empty producer, INFO if empty system
       class: EmptyTest
+    # Test for Merritt objects in which a delete was performed between object versions.
     has-delete:
       description: INFO if delete detected
       class: DeletedTest
+    # Test Merritt ERC for missing or indistinct data
     doesnt-have-meaningful-erc-what:
       name: Object has meaningful ERC metadata
       description: at first look for empty fields
@@ -469,6 +590,7 @@ default:
         - ^\(title unknown\)$
         - ^\[Untitled\]$
         - ^Untitled$
+    # Test Merritt ERC for missing or indistinct data
     doesnt-have-meaningful-erc-who:
       name: Object has meaningful ERC metadata
       description: at first look for empty fields
@@ -479,6 +601,7 @@ default:
         WARN:
         - ^\(:unav\)$
         - ^\(:unas\)$
+    # Test Merritt ERC for missing or indistinct data
     doesnt-have-meaningful-erc-when:
       name: Object has meaningful ERC metadata
       description: at first look for empty fields
@@ -493,9 +616,12 @@ default:
         - ^\[Date not indicated\]$
         - ^n\.d\.$
         - ^undated$
+    # Test for the presence of a Merritt Embargo
     has-embargo:
       name: "Has embargo / had embargo"
       class: EmbargoTest
+    # Find objects without a localid
+    # Note: some Merritt collections never set a localid.  Those collections should be SKIP
     no-local-id:
       name: Object has local id
       class: LocalIdTest
@@ -508,7 +634,9 @@ default:
         - lsta_pomonapl
         # apply:
         # - mnemonic
-    #later
+    # -------------------------
+    # Future Tests to define and implement
+    # -------------------------
     has-duplicate-checksum:
     has-duplicate-object-title:
     filename-valid:
@@ -525,22 +653,3 @@ default:
       name: ERC metadata conforms to naming standards for collection
     filesize-invalid:
       name: File size is within typical size range for the collection
-  x-tests-bitstream:
-    extension-mime-match:
-      name: File Extension matches mime type
-      description: If format identification has over-ruled the extension, make note of that.
-      skip: true
-    pii-detected:
-      name: PII detected
-      description: BITSTREAM SCAN assumes we could plug in such a service
-    virus-detected:
-      name: Virus detected
-      description: |
-        Lower priority for a preservation repository
-        BITSTREAM SCAN
-    format-id-scan:
-      name: Format Identification Issue
-      description: BITSTREAM SCAN
-    file-accessibility-scan:
-      name: File Accessibility Issue
-      description: BITSTREAM SCAN

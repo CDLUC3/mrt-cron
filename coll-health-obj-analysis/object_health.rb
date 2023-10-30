@@ -41,9 +41,6 @@ class ObjectHealth
     @obj_health_tests = ObjectHealthTests.new(self, @config)
     @opensrch = ObjectHealthOpenSearch.new(self, @config)
     now = Time.now.strftime("%Y-%m-%d %H:%M:%S")
-    @dt_build = @config.fetch('config-dateime', {}).fetch('build', now)
-    @dt_analysis = @config.fetch('config-dateime', {}).fetch('analysis', now)
-    @dt_tests = @config.fetch('config-dateime', {}).fetch('tests', now)
     @colltax_mnemonics = {}
     @colltax_patterns = {}
     @config.fetch(:collection_taxonomy.to_s, {}).each do |colltax,conf|
