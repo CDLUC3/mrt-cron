@@ -244,6 +244,7 @@ class ObjectHealthObjectTests < ObjectHealthObjectComponent
   def record_test(name, status)
     set_key(name.to_sym, status)
     increment_key(status)
-    append_key(:failures, name) if status == :FAIL
+    append_subkey(:by_status, status, name)
+    #append_key(:failures, name) if status == :FAIL
   end    
 end
