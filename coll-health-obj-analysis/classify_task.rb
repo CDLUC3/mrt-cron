@@ -1,4 +1,5 @@
 require 'json'
+require 'mustache'
 require_relative 'oh_tasktest'
 
 # write analysis->mime->[status]->mime->[mime-type]
@@ -13,22 +14,35 @@ class ClassifyTask < ObjHealthTask
     name = cat.fetch(:name, 'na').to_sym
     ohobj.analysis.zero_subkey(:classification, name)
     ohobj.analysis.set_subkey(:mime_classification, name, [])
-    ohobj.analysis.set_key(:metadata_paths, {
-      metadata: [],
-      common_metadata: [],
-      bag_metadata: []
-    })
+    @metadata_types.keys.each do |mt|
+      ohobj.analysis.set_subkey(:metadata_paths, mt, [])
+    end
   end
 
-  def test_category(cat, mime, basename)
+  def test_category(cat, mime, basename, ohobj)
     categorization = :na
     name = cat.fetch(:name, 'na').to_sym
 
     cat.fetch(:paths, []).each do |m|
       if m == basename
         categorization = name
-        set_metadata_paths(categorization, basename)
+        set_metadata_paths(categorization, basename, ohobj)
         break
+      end
+    end
+    return categorization if categorization != :na
+
+    unless cat.fetch(:templates, []).empty?
+      locid = ohobj.build.get_object.fetch(:identifiers, {}).fetch(:localids, [])
+      map = {}
+      map[:LOCALID] = locid[0] unless locid.empty?
+      cat.fetch(:templates, []).each do |m|
+        mm = Mustache.render(m, map)
+        if mm == basename
+          categorization = name
+          set_metadata_paths(categorization, basename, ohobj)
+          break
+        end
       end
     end
     return categorization if categorization != :na
@@ -36,7 +50,7 @@ class ClassifyTask < ObjHealthTask
     cat.fetch(:patterns, []).each do |m|
       if basename =~ Regexp.new(m)
         categorization = name
-        set_metadata_paths(categorization, basename)
+        set_metadata_paths(categorization, basename, ohobj)
         break
       end
     end
@@ -45,7 +59,7 @@ class ClassifyTask < ObjHealthTask
     cat.fetch(:mimes, {}).keys.each do |m|
       if m == mime
         categorization = name
-        set_metadata_paths(categorization, basename)
+        set_metadata_paths(categorization, basename, ohobj)
         break
       end
     end
@@ -68,7 +82,7 @@ class ClassifyTask < ObjHealthTask
 
       categorization = :na
       @categories.each do |cat|
-        categorization = test_category(cat, mime, basename)
+        categorization = test_category(cat, mime, basename, ohobj)
         break if categorization != :na
       end
       ohobj.analysis.increment_subkey(:classification, categorization)
@@ -108,15 +122,24 @@ class ClassifyTask < ObjHealthTask
     fclass = ohobj.analysis.get_object.fetch(:classification, {})
     ohobj.analysis.set_key(:metadata_classification, :unknown)
     mdcount = 0
-    @metadata_types.each do |mt|
+    @metadata_types.keys.each do |mt|
       mdcount = mdcount + fclass.fetch(mt, 0)
     end
+
     if mdcount > 1 
       ohobj.analysis.set_key(:metadata_classification, :multi_metadata)
     elsif mdcount == 1 && fclass.fetch(:secondary, 0) > 0
       ohobj.analysis.set_key(:metadata_classification, :metadata_with_secondary)
     elsif mdcount == 1 && fclass.fetch(:secondary, 0) == 0
-      ohobj.analysis.set_key(:metadata_classification, :single_metadata_file)
+      if fclass.fetch(:bag_metadata, 0) == 1
+        ohobj.analysis.set_key(:metadata_classification, :bag_metadata_file)
+      elsif fclass.fetch(:etd_metadata, 0) == 1
+        ohobj.analysis.set_key(:metadata_classification, :etd_metadata_file)
+      elsif fclass.fetch(:nuxeo_style_metadata, 0) == 1
+        ohobj.analysis.set_key(:metadata_classification, :nuxeo_style_metadata_file)
+      else
+        ohobj.analysis.set_key(:metadata_classification, :single_metadata_file)
+      end
     elsif mdcount == 0 && fclass.fetch(:secondary, 0) > 0
       ohobj.analysis.set_key(:metadata_classification, :secondary_only)
     elsif mdcount == 0 && fclass.fetch(:secondary, 0) == 0
@@ -125,19 +148,17 @@ class ClassifyTask < ObjHealthTask
   end
 
   def deterimine_primary_metadata_file(ohobj)
-    @metadata_types.each do |mt|
+    @metadata_types.keys.each do |mt|
       arr = ohobj.analysis.get_object.fetch(:metadata_paths, {}).fetch(mt, [])
       next if arr.empty?
-      arr.length > 1 ? "Multiple Options: #{arr.length}" : arr[0]
+      return arr.length > 1 ? "Multiple Options: #{arr.length}" : arr[0]
     end
-    "NA"
+    :NA
   end
 
-  def set_metadata_paths(categorization, path)
-    @metadata_types.each do |mt|
-      if categorization == mt
-        ohobj.analysis.append_subkey(:metadata_paths, categorization, path)
-      end
-    end
+  def set_metadata_paths(categorization, path, ohobj)
+    return if path == :NA
+    return unless ohobj.analysis.get_object.fetch(:metadata_paths, {}).key?(categorization)
+    ohobj.analysis.append_subkey(:metadata_paths, categorization, path)
   end
 end

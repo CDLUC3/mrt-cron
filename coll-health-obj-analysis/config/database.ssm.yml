@@ -360,6 +360,7 @@ default:
       # There categorizations are applied in ranked order allowing the re-use of blocks of mime types
       metadata_types:
         common_metadata:
+        nuxeo_style_metadata:
         bag_metadata:
         etd_metadata:
         metadata:
@@ -371,6 +372,9 @@ default:
       - name: etd_metadata
         patterns:
         - ^.*_(ucr|ucla)_.*_DATA.xml$
+      - name: nuxeo_style_metadata
+        templates:
+        - "{{LOCALID}}.xml"
       - name: bag_metadata
         paths:
         - bag-info.txt
