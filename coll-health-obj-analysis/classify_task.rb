@@ -6,6 +6,7 @@ require_relative 'oh_tasktest'
 class ClassifyTask < ObjHealthTask
   def initialize(oh, taskdef, name)
     super(oh, taskdef, name)
+    @common_paths = []
     @categories = @taskdef.fetch(:categorize, [])
     @metadata_types = @taskdef.fetch(:metadata_types, [])
   end
@@ -22,6 +23,10 @@ class ClassifyTask < ObjHealthTask
   def test_category(cat, mime, basename, ohobj)
     categorization = :na
     name = cat.fetch(:name, 'na').to_sym
+
+    if name == :common_metadata
+      @common_paths = cat.fetch(:paths, [])
+    end
 
     cat.fetch(:paths, []).each do |m|
       if m == basename
@@ -127,11 +132,29 @@ class ClassifyTask < ObjHealthTask
     end
 
     if mdcount > 1 
-      ohobj.analysis.set_key(:metadata_classification, :multi_metadata)
+      if fclass.fetch(:common_metadata, 0) == 1
+        ohobj.analysis.set_key(:metadata_classification, :common_metadata_file)
+      elsif fclass.fetch(:bag_metadata, 0) == 1
+        ohobj.analysis.set_key(:metadata_classification, :bag_metadata_file)
+      else
+        ohobj.analysis.set_key(:metadata_classification, :multi_metadata)
+      end
     elsif mdcount == 1 && fclass.fetch(:secondary, 0) > 0
-      ohobj.analysis.set_key(:metadata_classification, :metadata_with_secondary)
+      if fclass.fetch(:common_metadata, 0) == 1
+        ohobj.analysis.set_key(:metadata_classification, :common_metadata_file)
+      elsif fclass.fetch(:bag_metadata, 0) == 1
+        ohobj.analysis.set_key(:metadata_classification, :bag_metadata_file)
+      elsif fclass.fetch(:etd_metadata, 0) == 1
+        ohobj.analysis.set_key(:metadata_classification, :etd_metadata_file)
+      elsif fclass.fetch(:nuxeo_style_metadata, 0) == 1
+        ohobj.analysis.set_key(:metadata_classification, :nuxeo_style_metadata_file)
+      else
+        ohobj.analysis.set_key(:metadata_classification, :metadata_with_secondary)
+      end
     elsif mdcount == 1 && fclass.fetch(:secondary, 0) == 0
-      if fclass.fetch(:bag_metadata, 0) == 1
+      if fclass.fetch(:common_metadata, 0) == 1
+        ohobj.analysis.set_key(:metadata_classification, :common_metadata_file)
+      elsif fclass.fetch(:bag_metadata, 0) == 1
         ohobj.analysis.set_key(:metadata_classification, :bag_metadata_file)
       elsif fclass.fetch(:etd_metadata, 0) == 1
         ohobj.analysis.set_key(:metadata_classification, :etd_metadata_file)
@@ -151,7 +174,14 @@ class ClassifyTask < ObjHealthTask
     @metadata_types.keys.each do |mt|
       arr = ohobj.analysis.get_object.fetch(:metadata_paths, {}).fetch(mt, [])
       next if arr.empty?
-      return arr.length > 1 ? "Multiple Options: #{arr.length}" : arr[0]
+      return arr[0] if arr.length == 1
+      return "Multiple Options: #{arr.length}" if mt == :metadata
+      if mt == :common_metadata
+        @common_paths.each do |p|
+          return p if arr.include?(p)
+        end
+      end
+      return arr[0]
     end
     :NA
   end

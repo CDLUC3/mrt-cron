@@ -367,6 +367,8 @@ default:
       categorize:
       - name: common_metadata
         paths:
+        - mets.xml
+        - mets.txt
         - mrt-dc.xml
         - cdlmeta.tar.gz
       - name: etd_metadata
