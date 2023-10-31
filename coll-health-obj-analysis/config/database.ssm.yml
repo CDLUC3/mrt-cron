@@ -33,13 +33,20 @@ default:
   # -------------------
 
   # open search connection parameters
-  opensearch:
+  x-opensearch:
     host: 'https://localhost:9200'
     user: 'admin'
     password: 'admin'
     transport_options:
       ssl: 
         verify: false
+  opensearch:
+    host: "{!SSM: objhealth/opensearch_host}"
+    user: "{!SSM: objhealth/opensearch_user}"
+    password: "{!SSM: objhealth/opensearch_password}"
+    transport_options:
+      ssl: 
+        verify: true
   # database connection parameters
   dbconf:
     adapter: mysql2
@@ -200,7 +207,7 @@ default:
         application/vnd.openxmlformats-officedocument.presentationml.presentation: ["pptx"]
         application/vnd.ms-powerpoint: ["ppt"]
       SKIP: &sustainable_mimes_skip
-        plain/turtle: []
+        plain/turtle: ["ttl"]
         application/rdf+xml: []
       FAIL:
       # x-pkcs: Public-Key Cryptography Standards files provide for certificate storage
@@ -224,14 +231,14 @@ default:
         application/x-hdf: []
         application/x-matlab-data: []
         text/x-rsrc: []
-        application/x-gtar: []
+        application/x-gtar: ["gz"]
         application/rtf: []
         audio/x-aiff: []
         application/postscript: []
         text/x-actionscript: []
         image/vnd.adobe.photoshop: []
         audio/vnd.wave: []
-        application/x-tika-msoffice: []
+        application/x-tika-msoffice: ["db"]
         application/x-rar-compressed: []
         application/x-netcdf: []
         video/x-msvideo: []
@@ -432,8 +439,8 @@ default:
     # - metadata_with_secondary: Primary metadata sidecar file plus other metadata files
     # - single_metadata_file: Primary metadata sidecar file
     # - multi_metadata: Multiple potential metadata sidecar files
-    # - secondary_only: Files containing metadata that would not be classified as a sidecar file. A sidecar is assumed to have richer metadata than a Merritt ERC file.
-    # - no_metadata: No identifiable metadat file found
+    # - secondary_metadata_only: Files containing metadata that would not be classified as a sidecar file. A sidecar is assumed to have richer metadata than a Merritt ERC file.
+    # - no_sidecar_metadata: No identifiable metadat file found
     # -------------------
     classify:
       class: ClassifyTask
@@ -492,6 +499,7 @@ default:
           video/mp4:
           audio/mpeg3:
           image/jpeg:
+          image/gif:
       # Common digitial files types for preservation
       # Note that this section is linking out to the sustainable mime type definitions elsewhere in the yaml file.
       # Any metadata or derivative file types should be categorized in the sections above.
@@ -558,8 +566,8 @@ default:
         INFO:
           multi_metadata:
         WARN:
-          secondary_only:
-          no_metadata:
+          secondary_metadata_only:
+          no_sidecar_metadata:
         FAIL:
     # Test for URL-like Merritt pathnames that may not expand well into a filename
     ext-url-like-pathname:

@@ -164,9 +164,9 @@ class ClassifyTask < ObjHealthTask
         ohobj.analysis.set_key(:metadata_classification, :single_metadata_file)
       end
     elsif mdcount == 0 && fclass.fetch(:secondary, 0) > 0
-      ohobj.analysis.set_key(:metadata_classification, :secondary_only)
+      ohobj.analysis.set_key(:metadata_classification, :secondary_metadata_only)
     elsif mdcount == 0 && fclass.fetch(:secondary, 0) == 0
-      ohobj.analysis.set_key(:metadata_classification, :no_metadata)
+      ohobj.analysis.set_key(:metadata_classification, :no_sidecar_metadata)
     end
   end
 
