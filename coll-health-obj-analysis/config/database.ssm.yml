@@ -1,9 +1,9 @@
 # -------------------
 # The Object Health process has 3 phases
-# - BUILD: take inforamtion from the INV database and represent that information in Json.
+# - BUILD: take information from the INV database and represent that information in Json.
 #   - A sensible limitation will be placed on the number of files to analyze for an object (1000).
 # - ANALYSIS: An analysis TASK will analyze the build information and create a new Json structure that may be queried by one or more tests.
-# - TESTS: A TEST will perform a series of tests on an objects.  A test will always return a status: SKIP, PASS, INFO, WARN, FAIL
+# - TESTS: A TEST will perform a series of tests on an object.  A test will always return a status: SKIP, PASS, INFO, WARN, FAIL
 #
 # Generic Configuration Parameters that can be added to any TASK or TEST configuration
 #   collection_scope:
@@ -142,7 +142,7 @@ default:
       - escholarship
 
   # -------------------
-  # Statistica Analysis Queries
+  # Statistical Analysis Queries
   #   This is not yet in the project scope
   # -------------------
   analysis-inputs:
@@ -168,6 +168,7 @@ default:
   analysis-json:
     # -------------------
     # Organize known Merritt mime types by sustainability criteria.
+    # Organization of mime types will be updated over time to incorporate community best practices.
     # Also, document the expected file extensions for each sustainable mime type.
     # 
     # The PASS and INFO mime types will be utilized to identify digital file content within an object.
@@ -424,7 +425,7 @@ default:
     #
     # Content Classifications
     # - complex_object - container file found or preservation files of multiple mime types found within the object
-    # - multi_digital_files_with_derivatives - mutliple preservation files of the same mime type found and derivative files found
+    # - multi_digital_files_with_derivatives - multiple preservation files of the same mime type found and derivative files found
     # - multi_digital_files - multiple preservation files of the same mime type found
     # - digital_file_with_derivatives - preservation and derivative files found
     # - derivatives_only - only derivative content files found
@@ -444,7 +445,7 @@ default:
     # -------------------
     classify:
       class: ClassifyTask
-      # There categorizations are applied in ranked order allowing the re-use of blocks of mime types
+      # These categorizations are applied in ranked order allowing the re-use of blocks of mime types
       metadata_types:
         common_metadata:
         nuxeo_style_metadata:
@@ -529,7 +530,7 @@ default:
   #   - FAIL: significant irregularity was found, action should be taken to resolve the issue
   # -------------------
   tests:
-    # Evaluate the sustainability ot fhe mime types for producer files within the object
+    # Evaluate the sustainability of fhe mime types for producer files within the object
     sustainable-mime:
       class: MimeTest
       name: Mime type sustainability
@@ -575,7 +576,7 @@ default:
     # Test for Merritt pathnames that may not expand well into a filename
     ext-not-present:
       class: ExtNotPresentTest
-    # Test for zero byte cotnent files
+    # Test for zero byte content files
     empty-file:
       name: Empty file detection
       description: Check file size - WARN if empty producer, INFO if empty system
