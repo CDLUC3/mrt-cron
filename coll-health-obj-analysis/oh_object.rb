@@ -89,4 +89,15 @@ class ObjectHealthObject
     ss = s.empty? ? str : "#{s}; #{str}"
     @osobj[compkey][key] = ss 
   end
+
+  def template_map 
+    identifiers = build.get_object.fetch(:identifiers, {})
+    locid = identifiers.fetch(:localids, [])
+    ark = identifiers.fetch(:ark, "")
+    map = {}
+    map[:ARK] = ark unless ark.empty?
+    map[:LOCALID] = locid[0] unless locid.empty?
+    map
+  end 
+
 end

@@ -37,6 +37,41 @@ class ObjHealthTask
   def run_task(ohobj)
     ohobj.analysis
   end
+
+  def self.match_first(ordered_list, list_set)
+    ordered_list.each do |v|
+      return v if list_set.include?(v)
+    end
+    return nil
+  end
+
+  def self.match_list(list, str)
+    list.include?(str)
+  end
+
+  def self.match_map(map, str)
+    self.match_list(map.keys, str)
+  end
+
+  def self.match_template_list(list, str, ohobj)
+    tlist = []
+    list.each do |v|
+      tlist.append(Mustache.render(v, ohobj.template_map))
+    end
+    self.match_list(tlist, str)
+  end
+
+  def self.match_pattern(list, str)
+    list.each do |v|
+      return true if str =~ Regexp.new(v)
+    end
+    false
+  end
+
+  def inspect
+    self.to_s
+  end
+
 end
 
 class ObjHealthTest < ObjHealthTask
@@ -45,7 +80,6 @@ class ObjHealthTest < ObjHealthTask
   end
 
   def run_test(ohobj)
-    #Random.new.rand(4) == 0 ? :FAIL : :PASS
     :SKIP
   end
 end

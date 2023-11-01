@@ -206,6 +206,10 @@ class ObjectHealth
     return :tests if @options[:test_objects]
     return :na
   end
+
+  def inspect
+    self.to_s
+  end
 end
 
 oh = ObjectHealth.new(ARGV)

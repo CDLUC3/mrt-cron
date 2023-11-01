@@ -425,23 +425,23 @@ default:
     #
     # Content Classifications
     # - complex_object - container file found or preservation files of multiple mime types found within the object
-    # - multi_digital_files_with_derivatives - multiple preservation files of the same mime type found and derivative files found
-    # - multi_digital_files - multiple preservation files of the same mime type found
-    # - digital_file_with_derivatives - preservation and derivative files found
-    # - derivatives_only - only derivative content files found
-    # - single_digital_file - one identifiable content file
-    # - no_content - no identifiable content files
+    # - has_multi_digital_files_with_derivatives - multiple preservation files of the same mime type found and derivative files found
+    # - has_multi_digital_files - multiple preservation files of the same mime type found
+    # - has_digital_file_with_derivatives - preservation and derivative files found
+    # - has_derivatives_only - only derivative content files found
+    # - has_single_digital_file - one identifiable content file
+    # - has_no_content - no identifiable content files
     #
     # Metadata Classifications
-    # - common_metadata_file: "Common" Merritt metadata file 
-    # - bag_metadata_file: Bag metadata file derived from a bagged object
-    # - etd_metadata_file: Metadata sidecar file for an ETD submission
-    # - nuxeo_style_metadata_file: Metadata sidecar file for a Nuxeo submission
-    # - metadata_with_secondary: Primary metadata sidecar file plus other metadata files
-    # - single_metadata_file: Primary metadata sidecar file
-    # - multi_metadata: Multiple potential metadata sidecar files
-    # - secondary_metadata_only: Files containing metadata that would not be classified as a sidecar file. A sidecar is assumed to have richer metadata than a Merritt ERC file.
-    # - no_sidecar_metadata: No identifiable metadat file found
+    # - has_common_metadata_file: "Common" Merritt metadata file 
+    # - has_bag_metadata_file: Bag metadata file derived from a bagged object
+    # - has_etd_metadata_file: Metadata sidecar file for an ETD submission
+    # - has_nuxeo_style_metadata_file: Metadata sidecar file for a Nuxeo submission
+    # - has_metadata_with_secondary: Primary metadata sidecar file plus other metadata files
+    # - has_single_metadata_file: Primary metadata sidecar file
+    # - has_multi_metadata: Multiple potential metadata sidecar files
+    # - has_secondary_metadata_only: Files containing metadata that would not be classified as a sidecar file. A sidecar is assumed to have richer metadata than a Merritt ERC file.
+    # - has_no_sidecar_metadata: No identifiable metadat file found
     # -------------------
     classify:
       class: ClassifyTask
@@ -455,6 +455,8 @@ default:
       categorize:
       # If multiple common metadata files are found, the primary metadata file will be chosen in the following priority order
       - name: common_metadata
+        # this indicates that the first match will be used regardless of the number of matches
+        ordered_paths: true
         paths:
         - mets.xml
         - mets.txt
@@ -466,10 +468,10 @@ default:
         - ^.*_(ucr|ucla)_.*_DATA.xml$
       # If Nuxeo metadata is found, other metadata files will not affect the categorization.
       # Allowable template values to look for:
-      # - LOCALID
+      # - ARK
       - name: nuxeo_style_metadata
         templates:
-        - "{{LOCALID}}.xml"
+        - "{{ARK}}.xml"
       # If bag metadata is found, other metadata files will not affect the categorization.
       - name: bag_metadata
         paths:
@@ -543,32 +545,32 @@ default:
       class: ObjectClassificationTest
       categorize:
         PASS:
-          multi_digital_files:
-          multi_digital_files_with_derivatives:
-          digital_file_with_derivatives:
-          single_digital_file:
+          has_multi_digital_files:
+          has_multi_digital_files_with_derivatives:
+          has_digital_file_with_derivatives:
+          has_single_digital_file:
         INFO:
           complex_object:
         WARN:
           derviatives_only:
         FAIL:
-          no_content:
+          has_no_content:
     # Evaluate the object metadata classification based on producer file types
     metadata-classification:
       class: MetadataClassificationTest
       categorize:
         PASS:
-          common_metadata_file:
-          bag_metadata_file:
-          etd_metadata_file:
-          metadata_with_secondary:
-          nuxeo_style_metadata_file:
-          single_metadata_file:
+          has_common_metadata_file:
+          has_bag_metadata_file:
+          has_etd_metadata_file:
+          has_metadata_with_secondary:
+          has_nuxeo_style_metadata_file:
+          has_single_metadata_file:
         INFO:
-          multi_metadata:
+          has_multi_metadata:
         WARN:
-          secondary_metadata_only:
-          no_sidecar_metadata:
+          has_secondary_metadata_only:
+          has_no_sidecar_metadata:
         FAIL:
     # Test for URL-like Merritt pathnames that may not expand well into a filename
     ext-url-like-pathname:
