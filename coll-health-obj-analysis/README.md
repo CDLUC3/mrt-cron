@@ -319,6 +319,8 @@ bundle exec ruby object_health.rb -b -a -t --limit 10 --mnemonic=ucla_lib_str_fr
 bundle exec ruby object_health.rb -b -a -t --limit 10 --mnemonic=ucr_lib_etd
 bundle exec ruby object_health.rb -b -a -t --limit 10 --mnemonic=ucla_lib_etd
 bundle exec ruby object_health.rb -b -a -t --limit 10 --mnemonic=ucsf_ctp_archive
+bundle exec ruby object_health.rb -b -a -t --limit 10 --mnemonic=ucb_lib_examiner
+bundle exec ruby object_health.rb -b -a -t --limit 10 --mnemonic=ucb_lib_sugoroku
 
 ```
 
