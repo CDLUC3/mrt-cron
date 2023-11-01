@@ -210,6 +210,45 @@ class ObjectHealth
   def inspect
     self.to_s
   end
+
+  def self.match_first(ordered_list, list_set)
+    ordered_list.each do |v|
+      return v if list_set.include?(v)
+    end
+    return nil
+  end
+
+  def self.match_list(list, str)
+    list.include?(str)
+  end
+
+  def self.match_map(map, str)
+    self.match_list(map.keys, str)
+  end
+
+  def self.match_template_list(list, str, ohobj)
+    tlist = []
+    list.each do |v|
+      tlist.append(Mustache.render(v, ohobj.template_map))
+    end
+    self.match_list(tlist, str)
+  end
+
+  def self.match_pattern(list, str)
+    list.each do |v|
+      return true if str =~ Regexp.new(v)
+    end
+    false
+  end
+
+  def self.match_criteria(criteria:, key:, ohobj:, criteria_list: nil, criteria_keys: nil, criteria_templates: nil, criteria_patterns: nil)
+    b = false
+    b = b || self.match_list(criteria.fetch(criteria_list, []), key) if criteria_list
+    b = b || self.match_map(criteria.fetch(criteria_keys, []), key) if criteria_keys
+    b = b || self.match_pattern(criteria.fetch(criteria_patterns, []), key) if criteria_patterns
+    b = b || self.match_template_list(criteria.fetch(criteria_templates, []), key, ohobj) if criteria_templates
+    b
+  end
 end
 
 oh = ObjectHealth.new(ARGV)

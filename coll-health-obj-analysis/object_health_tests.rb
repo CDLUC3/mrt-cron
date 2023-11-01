@@ -20,11 +20,10 @@ class ObjectHealthTests
     ohobj.tests.init_object
     ostate = :SKIP
     @tests.each do |test|
-      next unless test.check_scope(ohobj)
-      status = test.run_test(ohobj)
+      status = test.check_scope(ohobj) ? test.run_test(ohobj) : :SKIP 
       ohobj.tests.record_test(test.name, status)
       ostate = ObjectHealth.compare_state(ostate, status)
-      ohobj.tests.append_key(:summary, test.name) unless status == :PASS || status == :SKIP
+      ohobj.tests.append_key(:summary, test.name) unless status == :PASS
     end
     ohobj.tests.set_key(:state, ostate)
     ohobj

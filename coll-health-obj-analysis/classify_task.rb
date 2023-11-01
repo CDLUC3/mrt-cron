@@ -24,22 +24,12 @@ class ClassifyTask < ObjHealthTask
   def test_category(cat, mime, basename, ohobj)
     name = cat.fetch(:name, 'na').to_sym
 
-    if ObjHealthTask.match_list(cat.fetch(:paths, []), basename)
+    if ObjectHealth.match_criteria(criteria: cat, key: basename, ohobj: ohobj, criteria_list: :paths, criteria_templates: :templates, criteria_patterns: :patterns)
       set_metadata_paths(name, basename, ohobj)
       return name
     end
 
-    if ObjHealthTask.match_template_list(cat.fetch(:templates, []), basename, ohobj)
-      set_metadata_paths(name, basename, ohobj)
-      return name
-    end
-
-    if ObjHealthTask.match_pattern(cat.fetch(:patterns, []), basename)
-      set_metadata_paths(name, basename, ohobj)
-      return name
-    end
-
-    if ObjHealthTask.match_list(cat.fetch(:mimes, {}).keys, mime)
+    if ObjectHealth.match_criteria(criteria: cat, key: mime, ohobj: ohobj, criteria_list: :mimes)
       set_metadata_paths(name, basename, ohobj)
       return name
     end
@@ -148,11 +138,11 @@ class ClassifyTask < ObjHealthTask
   def deterimine_metadata_classification(ohobj)
     if count_common_metadata_files(ohobj) > 0
       ohobj.analysis.set_key(:metadata_classification, :has_common_metadata_file)
-    elsif count_bag_metadata_files(ohobj) == 1
+    elsif count_bag_metadata_files(ohobj) > 0
       ohobj.analysis.set_key(:metadata_classification, :has_bag_metadata_file)
-    elsif count_etd_metadata_files(ohobj) > 1 
+    elsif count_etd_metadata_files(ohobj) > 0 
       ohobj.analysis.set_key(:metadata_classification, :has_etd_metadata_file)
-    elsif count_nuxeo_metadata_files(ohobj) == 1
+    elsif count_nuxeo_metadata_files(ohobj) > 0
       ohobj.analysis.set_key(:metadata_classification, :has_nuxeo_style_metadata_file)
     elsif count_metadata_files(ohobj) > 1 
       ohobj.analysis.set_key(:metadata_classification, :has_multi_metadata)
@@ -174,7 +164,7 @@ class ClassifyTask < ObjHealthTask
       return arr[0] if arr.length == 1
       return "Multiple Options: #{arr.length}" if mt == :metadata
       cat = @catmap[mt]
-      return ObjHealthTask.match_first(cat.fetch(:paths, []), arr) if cat.fetch(:ordered_paths, false)
+      return ObjectHealth.match_first(cat.fetch(:paths, []), arr) if cat.fetch(:ordered_paths, false)
       return arr[0]
     end
     :NA
