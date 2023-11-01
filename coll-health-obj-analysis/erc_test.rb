@@ -5,12 +5,10 @@ require_relative 'oh_tasktest'
 class ERCTest < ObjHealthTest
   def initialize(oh, taskdef, name)
     super(oh, taskdef, name)
-    @mapping = {}
-    @taskdef.fetch(:categorize, {}).each do |k,list|
-      list.each do |v|
-        @mapping[v] = k
-      end
-    end
+  end
+
+  def status_matcher(status)
+    @taskdef.fetch(:status_matcher, {}).fetch(status, {})
   end
 
   def get_field_sym
@@ -21,9 +19,11 @@ class ERCTest < ObjHealthTest
     status = :PASS
     metadata = ohobj.build.get_object.fetch(:metadata, {})
     merc = metadata.fetch(get_field_sym, "").strip
-    @mapping.each do |k,v|
-      regx = Regexp.new(k)
-      status = ObjectHealth.compare_state(status, v) if merc =~ regx
+    ObjectHealth.status_values.each do |stat|
+      if ObjectHealth.match_criteria(criteria: status_matcher(stat), key: merc, ohobj: ohobj, criteria_list: :values, criteria_patterns: :patterns)
+        status = stat
+        break
+      end
     end
     status
   end

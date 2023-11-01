@@ -249,6 +249,17 @@ class ObjectHealth
     b = b || self.match_template_list(criteria.fetch(criteria_templates, []), key, ohobj) if criteria_templates
     b
   end
+
+  def self.make_status_key_map(criteria, key) 
+    mapping = {}
+    criteria.fetch(key, {}).each do |k,list|
+      next if list.nil?
+      list.keys.each do |v|
+        mapping[v.to_sym] = k
+      end
+    end
+    mapping
+  end  
 end
 
 oh = ObjectHealth.new(ARGV)

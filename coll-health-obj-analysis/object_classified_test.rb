@@ -5,13 +5,7 @@ require_relative 'oh_tasktest'
 class ClassificationTest < ObjHealthTest
   def initialize(oh, taskdef, name)
     super(oh, taskdef, name)
-    @mapping = {}
-    @taskdef.fetch(:categorize, {}).each do |k,list|
-      next if list.nil?
-      list.keys.each do |v|
-        @mapping[v.to_sym] = k
-      end
-    end
+    @mapping = ObjectHealth.make_status_key_map(taskdef, :status_keys)
   end
 
   def get_key

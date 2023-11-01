@@ -543,7 +543,7 @@ default:
     # Evaluate the object classification based on producer file types
     object-classification:
       class: ObjectClassificationTest
-      categorize:
+      status_keys:
         PASS:
           has_multi_digital_files:
           has_multi_digital_files_with_derivatives:
@@ -558,7 +558,7 @@ default:
     # Evaluate the object metadata classification based on producer file types
     metadata-classification:
       class: MetadataClassificationTest
-      categorize:
+      status_keys:
         PASS:
           has_common_metadata_file:
           has_bag_metadata_file:
@@ -592,41 +592,49 @@ default:
       name: Object has meaningful ERC metadata
       description: at first look for empty fields
       class: ErcWhatTest
-      categorize:
+      status_matcher:
         FAIL:
-        - ^$
+          patterns:
+          - "^$"
         WARN:
-        - ^\(:unas\)$
+          values:
+          - "(:unas)"
         INFO:
-        - ^\(title unknown\)$
-        - ^\[Untitled\]$
-        - ^Untitled$
+          values:
+          - "(title unknown)"
+          - "[Untitled]"
+          - "Untitled"
     # Test Merritt ERC for missing or indistinct data
     doesnt-have-meaningful-erc-who:
       name: Object has meaningful ERC metadata
       description: at first look for empty fields
       class: ErcWhoTest
-      categorize:
+      status_matcher:
         FAIL:
-        - ^$
+          patterns:
+          - "^$"
         WARN:
-        - ^\(:unav\)$
-        - ^\(:unas\)$
+          values:
+          - "(:unav)"
+          - "(:unas)"
     # Test Merritt ERC for missing or indistinct data
     doesnt-have-meaningful-erc-when:
       name: Object has meaningful ERC metadata
       description: at first look for empty fields
       class: ErcWhenTest
-      categorize:
+      status_matcher:
         FAIL:
-        - ^$
+          patterns:
+          - "^$"
         WARN:
-        - ^\(:unas\)$
-        - ^\(:unav\)$
+          values:
+          - "(:unav)"
+          - "(:unas)"
         INFO:
-        - ^\[Date not indicated\]$
-        - ^n\.d\.$
-        - ^undated$
+          values:
+          - "[Date not indicated]"
+          - "n.d."
+          - "undated"
     # Test for the presence of a Merritt Embargo
     has-embargo:
       name: "Has embargo / had embargo"
