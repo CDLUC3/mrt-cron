@@ -68,7 +68,9 @@ class ObjectHealthDb
         o.erc_where,
         o.modified,
         (select group_concat(ifnull(local_id, '')) from inv.inv_localids where inv_object_ark = o.ark) as localids,
-        (select ifnull(embargo_end_date, '') from inv.inv_embargoes where inv_object_id = o.id) as embargo_end_date
+        (select ifnull(embargo_end_date, '') from inv.inv_embargoes where inv_object_id = o.id) as embargo_end_date,
+        own.name as owner_name,
+        c.name as coll_name
       from
         inv.inv_objects o
       inner join

@@ -95,8 +95,11 @@ class ObjectHealthObjectBuild < ObjectHealthObjectComponent
     })
     set_key(:containers, {
       owner_ark: r.fetch('owner_ark', ''),
+      owner_name: r.fetch('owner_name', ''),
       coll_ark: r.fetch('coll_ark', ''),
-      mnemonic: r.fetch('mnemonic', '')
+      coll_name: r.fetch('coll_name', ''),
+      mnemonic: r.fetch('mnemonic', ''),
+      campus: campus(r.fetch('coll_name', ''))
     })
     set_key(:metadata, {
       erc_who: r.fetch('erc_who', ''),
@@ -107,6 +110,21 @@ class ObjectHealthObjectBuild < ObjectHealthObjectComponent
     set_key(:modified, ObjectHealthObject.make_opensearch_date(r.fetch('modified', '')))
     set_key(:embargo_end_date, ObjectHealthObject.make_opensearch_date(r.fetch('embargo_end_date', '')))
     @updated = DateTime.now.to_s
+  end
+
+  def campus(cname)
+    return "CDL" if cname =~ %r[^(CDL|UC3)]
+    return "UCB" if cname =~ %r[(^UCB |Berkeley)]
+    return "UCD" if cname =~ %r[^UCD]
+    return "UCLA" if cname =~ %r[^UCLA]
+    return "UCSB" if cname =~ %r[^UCSB]
+    return "UCI" if cname =~ %r[^UCI]
+    return "UCM" if cname =~ %r[^UCM]
+    return "UCR" if cname =~ %r[^UCR]
+    return "UCSC" if cname =~ %r[^UCSC]
+    return "UCSD" if cname =~ %r[^UCSD]
+    return "UCSF" if cname =~ %r[^UCSF]
+    "Other"
   end
 
   def self.make_sidecar(sidecarText)
