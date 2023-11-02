@@ -8,6 +8,7 @@ class MimeTask < ObjHealthTask
     @statmap = {}
     @mimeext = {}
     ObjectHealth.status_values.each do |stat|
+      next if taskdef.fetch(stat, {}).nil?
       taskdef.fetch(stat, {}).each do |mime, exts|
         @statmap[mime] = stat
         @mimeext[mime] = exts 

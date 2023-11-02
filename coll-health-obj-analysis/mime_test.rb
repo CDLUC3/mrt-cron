@@ -26,3 +26,13 @@ class MimeExtTest < ObjHealthTest
     ohobj.analysis.get_object.fetch(:mime_ext_mismatch, []).empty? ? :PASS : :FAIL
   end
 end
+
+class MimeNotFoundTest < ObjHealthTest
+  def initialize(oh, taskdef, name)
+    super(oh, taskdef, name)
+  end
+
+  def run_test(ohobj)
+    ohobj.analysis.get_object.fetch(:mimes_by_status, {}).fetch(:SKIP, []).empty? ? :PASS : :FAIL
+  end
+end

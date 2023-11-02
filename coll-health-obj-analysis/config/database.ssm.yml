@@ -207,9 +207,8 @@ default:
         video/quicktime: []
         application/vnd.openxmlformats-officedocument.presentationml.presentation: ["pptx"]
         application/vnd.ms-powerpoint: ["ppt"]
-      SKIP: &sustainable_mimes_skip
-        plain/turtle: ["ttl"]
-        application/rdf+xml: []
+      # Leave SKIP blank to help identify unfound mimes
+      SKIP:
       FAIL:
       # x-pkcs: Public-Key Cryptography Standards files provide for certificate storage
         application/x-pkcs12: []
@@ -419,6 +418,9 @@ default:
         application/x-font-linux-psf: []
         application/mbox: []
         text/x-c++hdr: []
+        # note - moved these from SKIP to INFO
+        plain/turtle: ["ttl"]
+        application/rdf+xml: []
 
     # -------------------
     # Classify Object Producer Files based on an ordered set of rules
@@ -515,11 +517,11 @@ default:
   # -------------------
   # Bitstream Analysis: these functions are not yet in scope for Merritt
   # -------------------
-  analysis-bitstream:
-    format-id:
-    virus-scan:
-    pii-scan:
-    accessibility-scan:
+  #analysis-bitstream:
+  #  format-id:
+  #  virus-scan:
+  #  pii-scan:
+  #  accessibility-scan:
 
   # -------------------
   # Object Health Tests
@@ -540,6 +542,8 @@ default:
     # Evaluate whether or not the file extension for a producer file is expected for a given mime type
     mime-extension-mismatch:
       class: MimeExtTest
+    mime-not-found:
+      class: MimeNotFoundTest
     # Evaluate the object classification based on producer file types
     object-classification:
       class: ObjectClassificationTest
@@ -656,19 +660,19 @@ default:
     # -------------------------
     # Future Tests to define and implement
     # -------------------------
-    has-duplicate-checksum:
-    has-duplicate-object-title:
-    filename-valid:
-      name: Filename validation
-      description: Rule varies by collection. Some default pattern matches for meaningless file names
-    unusual-file-size:
-      name: Unusual file size
-      description: Compare file size to expectations for an extension type.  Re-compute based on the corpus. Determine some standard deviation rule to flag items.
-    has-sidecar-metadata:
-      name: Object has sidecar metadata
-    localid-invalid:
-      name: Local id conforms to naming standards for collection
-    erc-invalid:
-      name: ERC metadata conforms to naming standards for collection
-    filesize-invalid:
-      name: File size is within typical size range for the collection
+    #has-duplicate-checksum:
+    #has-duplicate-object-title:
+    #filename-valid:
+    #  name: Filename validation
+    #  description: Rule varies by collection. Some default pattern matches for meaningless file names
+    #unusual-file-size:
+    #  name: Unusual file size
+    #  description: Compare file size to expectations for an extension type.  Re-compute based on the corpus. Determine some standard deviation rule to flag items.
+    #has-sidecar-metadata:
+    #  name: Object has sidecar metadata
+    #localid-invalid:
+    #  name: Local id conforms to naming standards for collection
+    #erc-invalid:
+    #  name: ERC metadata conforms to naming standards for collection
+    #filesize-invalid:
+    #  name: File size is within typical size range for the collection
