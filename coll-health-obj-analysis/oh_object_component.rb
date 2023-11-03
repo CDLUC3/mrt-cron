@@ -163,6 +163,11 @@ class ObjectHealthObjectBuild < ObjectHealthObjectComponent
         v[:empty] = true
       end
 
+      if @ohobj.check_ignore_file(v[:pathname])
+        v[:ignore_file] = true
+        append_key(:ignore_files, v[:pathname])
+      end
+
       # count mime type for all files
       mime = v[:mime_type]
       if source == :producer and !mime.empty?

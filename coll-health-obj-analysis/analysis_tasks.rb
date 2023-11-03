@@ -8,7 +8,7 @@ class AnalysisTasks
     @config = config
     @tasks = []
 
-    analysis = JSON.parse(@config.fetch('analysis-json', {}).to_json, symbolize_names: true)
+    analysis = @config.fetch(:analysis_json, {})
     analysis.each do |k,v|
       task = ObjHealthTask.create(@oh, v, k)
       @tasks.append(task) unless task.nil?

@@ -19,7 +19,7 @@ default:
   # Runtime Options
   #   default command line parameters (see usage info for more information)
   # -------------------
-  default-params: 
+  default_params: 
     QUERY: collection
     MNEMONIC: merritt_demo
     LIMIT: 10
@@ -56,7 +56,7 @@ default:
   # -------------------
   # Select objects to process
   # Note that this code presumes that OpenContext, ETD Reports, Dryad and Merritt admin collections will always be excluded
-  gather-ids:
+  gather_ids:
     select: |
       select o.id
       from inv.inv_objects o
@@ -67,18 +67,18 @@ default:
       and c.mnemonic not like '%_dash'
       and c.mnemonic not like 'mrt_%'
     # Default exclude sql fragment
-    default-exclusion: |
+    default_exclusion: |
       and 0 = 1
       limit {{LIMIT}}
     # Sql fragment to only pull objects that need to be re-built
-    build-exclusion: |
+    build_exclusion: |
       and not exists (
         select 1 from object_health_json h where h.inv_object_id = o.id and h.build_updated > o.modified
       )
       order by o.modified desc
       limit {{LIMIT}}
     # Sql fragment to only pull objects that need to be re-analyzed
-    analysis-exclusion: |
+    analysis_exclusion: |
       and exists(
         select 1 from object_health_json h where h.inv_object_id = o.id and h.build is not null
       )
@@ -88,7 +88,7 @@ default:
       order by o.modified desc
       limit {{LIMIT}}
     # Sql fragment to only pull objects that need to be re-tested
-    tests-exclusion: |
+    tests_exclusion: |
       and exists(
         select 1 from object_health_json h where h.inv_object_id = o.id and h.analysis is not null
       )
@@ -135,30 +135,40 @@ default:
       - escholarship
 
   # -------------------
+  # Object Build Config
+  # -------------------
+  build_config: 
+    ignore_files:
+      patterns:
+      - ^.*Thumbs.*\.db$
+      - ^.*\.DS_store$
+
+  # -------------------
   # Statistical Analysis Queries
   #   This is not yet in the project scope
   # -------------------
-  analysis-inputs:
-    duplicate-checksum:
-      note: consider excluding opencontext
-      query: |
-        select source, digest_value, full_size, count(*) 
-        from inv_files 
-        where source='producer' and full_size=billable_size 
-        group by source, digest_value, full_size 
-        having count(*) > 1 order by count(*);
-    average-object-size-for-collection:
-      description: compute average, mean file size to identify outliers
-    average-file-size-for-collection-and-mime:
-      description: compute average, mean file size to identify outliers
-    average-file-size-for-mime-type:
-      description: compute average, mean file size to identify outliers
-    duplicate-title-in-collection:
+  #analysis-inputs:
+  #  duplicate-checksum:
+  #    note: consider excluding opencontext
+  #    query: |
+  #      select source, digest_value, full_size, count(*) 
+  #      from inv_files 
+  #      where source='producer' and full_size=billable_size 
+  #      group by source, digest_value, full_size 
+  #      having count(*) > 1 order by count(*);
+  #  average-object-size-for-collection:
+  #    description: compute average, mean file size to identify outliers
+  #  average-file-size-for-collection-and-mime:
+  #    description: compute average, mean file size to identify outliers
+  #  average-file-size-for-mime-type:
+  #    description: compute average, mean file size to identify outliers
+  #  duplicate-title-in-collection:
+
 
   # -------------------
   # Object Analysis Tasks
   # -------------------
-  analysis-json:
+  analysis_json:
     # -------------------
     # Organize known Merritt mime types by sustainability criteria.
     # Organization of mime types will be updated over time to incorporate community best practices.
@@ -537,6 +547,8 @@ default:
       class: MimeExtTest
     mime-not-found:
       class: MimeNotFoundTest
+    has-ignored-file:
+      class: IgnoreFileTest
     # Evaluate the object classification based on producer file types
     object-classification:
       class: ObjectClassificationTest

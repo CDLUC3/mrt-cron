@@ -1,10 +1,11 @@
 class ObjectHealthObject
-  def initialize(id)
+  def initialize(build_config, id)
     @id = id
     @osobj = {
       id: id,
       '@timestamp': Time.now.strftime("%Y-%m-%dT%H:%M:%S%z")
     }
+    @build_config = build_config
   end
 
   def init_components
@@ -99,5 +100,9 @@ class ObjectHealthObject
     map[:LOCALID] = locid[0] unless locid.empty?
     map
   end 
+
+  def check_ignore_file(pathname)
+    ObjectHealth.match_criteria(criteria: @build_config.fetch(:ignore_files, {}), key: pathname, ohobj: self, criteria_list: :paths, criteria_patterns: :patterns)
+  end
 
 end

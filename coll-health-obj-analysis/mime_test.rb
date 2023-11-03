@@ -36,3 +36,13 @@ class MimeNotFoundTest < ObjHealthTest
     ohobj.analysis.get_object.fetch(:mimes_by_status, {}).fetch(:SKIP, []).empty? ? :PASS : :FAIL
   end
 end
+
+class IgnoreFileTest < ObjHealthTest
+  def initialize(oh, taskdef, name)
+    super(oh, taskdef, name)
+  end
+
+  def run_test(ohobj)
+    ohobj.build.get_object.fetch(:ignore_files, []).empty? ? :PASS : :INFO
+  end
+end

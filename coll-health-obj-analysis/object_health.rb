@@ -28,17 +28,19 @@ class ObjectHealth
   def initialize(argv)
     @collhdata = ENV.fetch('COLLHDATA', ENV['PWD'])
     config_file = 'config/database.ssm.yml'
-    @config = Uc3Ssm::ConfigResolver.new.resolve_file_values(file: config_file, resolve_key: 'default', return_key: 'default')
+    config = Uc3Ssm::ConfigResolver.new.resolve_file_values(file: config_file, resolve_key: 'default', return_key: 'default')
+    @config = JSON.parse(config.to_json, symbolize_names: true)
     @options = make_options(argv)
     @debug = {
       export_count: 0, 
-      export_max: @config.fetch('debug', {}).fetch('export_max', 5), 
+      export_max: @config.fetch(:debug, {}).fetch(:export_max, 5), 
       print_count: 0, 
-      print_max: @config.fetch('debug', {}).fetch('print_max', 1)
+      print_max: @config.fetch(:debug, {}).fetch(:print_max, 1)
     }
     @obj_health_db = ObjectHealthDb.new(@config, mode, @options[:query_params])
     @analysis_tasks = AnalysisTasks.new(self, @config)
     @obj_health_tests = ObjectHealthTests.new(self, @config)
+    @build_config = @config.fetch(:build_config, {})
     @opensrch = ObjectHealthOpenSearch.new(self, @config)
     now = Time.now.strftime("%Y-%m-%d %H:%M:%S")
     @colltax_mnemonics = {}
@@ -88,7 +90,7 @@ class ObjectHealth
 
   def make_options(argv)
     options = {query_params: {}}
-    @config.fetch('default-params', {}).each do |k,v|
+    @config.fetch(:default_params, {}).each do |k,v|
       options[:query_params][k.to_sym] = v
     end
     OptionParser.new do |opts|
@@ -158,8 +160,11 @@ class ObjectHealth
     @opensrch.export(ohobj)
   end
 
+
+
   def process_object(id)
-    ohobj = ObjectHealthObject.new(id)
+    puts id
+    ohobj = ObjectHealthObject.new(@build_config, id)
     ohobj.init_components
     if @options[:build_objects]
       puts "build #{id}"

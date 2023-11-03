@@ -26,7 +26,18 @@ class MimeTask < ObjHealthTask
     end
     ohobj.build.get_object.fetch(:mimes_for_object, []).each do |rec|
       mime = rec.fetch(:mime, '').to_sym
-      map[mime] = @statmap.fetch(mime, :SKIP) unless mime.empty?
+      next if mime.empty?
+      status = @statmap.fetch(mime, :SKIP)
+      # if mime contains a semicolon, try performing a match on the substring before the semicolon
+      if status == :SKIP && mime.to_s =~ %r[;]
+        tmime = mime.to_s.split(";")[0].to_sym
+        tstatus = @statmap.fetch(tmime, :SKIP)
+        if tstatus != :SKIP
+          mime = tmime
+          status = tstatus
+        end
+      end
+      map[mime] = status
     end
     map.each do |k,v|
       objmap[v].append(k)

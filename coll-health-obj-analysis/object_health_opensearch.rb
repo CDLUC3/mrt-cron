@@ -8,11 +8,11 @@ class ObjectHealthOpenSearch
     @INDEX = 'objhealth'
     @oh = oh
     @config = config
-    osconfig = @config.fetch("opensearch", {})
+    osconfig = @config.fetch(:opensearch, {})
     osconfig[:transport_options] = osconfig.fetch(:transport_options, {})
     osconfig[:transport_options][:ssl] = osconfig[:transport_options].fetch(:ssl, {})
     osconfig[:transport_options][:ssl][:verify] = osconfig[:transport_options][:ssl].fetch(:verify, "false") == "true"
-    @osclient = OpenSearch::Client.new(@config.fetch("opensearch", {}))
+    @osclient = OpenSearch::Client.new(osconfig)
     begin
       @osclient.indices.create(index: @INDEX)
     rescue OpenSearch::Transport::Transport::Errors::BadRequest => e 

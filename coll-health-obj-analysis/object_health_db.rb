@@ -8,17 +8,17 @@ class ObjectHealthDb
   def initialize(config, mode, cliparams)
     nullquery = 'and 0 = 1'
     @config = config
-    @dbconf = @config.fetch('dbconf', {})
-    gather = @config.fetch('gather-ids', {})
+    @dbconf = @config.fetch(:dbconf, {})
+    gather = @config.fetch(:gather_ids, {})
     @cliparams = cliparams
-    select = gather.fetch('select', 'select 1 where 1=1')
-    exclusion = gather.fetch('default-exclusion', nullquery)
-    exclusion = gather.fetch('build-exclusion', 'limit {{LIMIT}}') if mode == :build
-    exclusion = gather.fetch('analysis-exclusion', 'limit {{LIMIT}}') if mode == :analysis
-    exclusion = gather.fetch('tests-exclusion', 'limit {{LIMIT}}') if mode == :tests
-    defq = cliparams.fetch(:QUERY, 'collection')
+    select = gather.fetch(:select, 'select 1 where 1=1')
+    exclusion = gather.fetch(:default_exclusion, nullquery)
+    exclusion = gather.fetch(:build_exclusion, 'limit {{LIMIT}}') if mode == :build
+    exclusion = gather.fetch(:analysis_exclusion, 'limit {{LIMIT}}') if mode == :analysis
+    exclusion = gather.fetch(:tests_exclusion, 'limit {{LIMIT}}') if mode == :tests
+    defq = cliparams.fetch(:QUERY, 'collection').to_sym
     @queries = []
-    q = gather.fetch('queries', {}).fetch(defq, nullquery)
+    q = gather.fetch(:queries, {}).fetch(defq, nullquery)
     sql = add_user_params_to_sql("#{select} #{q} #{exclusion}")
     @queries.append(sql)
   end
@@ -29,13 +29,13 @@ class ObjectHealthDb
 
   def get_db_cli
     Mysql2::Client.new(
-      :host => @dbconf['host'],
-      :username => @dbconf['username'],
-      :database=> @dbconf['database'],
-      :password=> @dbconf['password'],
-      :port => @dbconf['port'],
-      :encoding => @dbconf.fetch('encoding', 'utf8mb4'),
-      :collation => @dbconf.fetch('collation', 'utf8mb4_unicode_ci'),
+      :host => @dbconf[:host],
+      :username => @dbconf[:username],
+      :database=> @dbconf[:database],
+      :password=> @dbconf[:password],
+      :port => @dbconf[:port],
+      :encoding => @dbconf.fetch(:encoding, 'utf8mb4'),
+      :collation => @dbconf.fetch(:collation, 'utf8mb4_unicode_ci'),
     )
   end
   
@@ -96,8 +96,6 @@ class ObjectHealthDb
       select value from inv.inv_metadatas where inv_object_id = ?;
     }
   end
-
-
 
   def process_object_metadata(ohobj)
     sql = get_object_sql
