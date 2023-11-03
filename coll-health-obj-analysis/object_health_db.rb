@@ -5,17 +5,23 @@ require 'mustache'
 require_relative 'oh_object'
 
 class ObjectHealthDb
+  DEFQ='select 1 where 1=1'
   def initialize(config, mode, cliparams)
     nullquery = 'and 0 = 1'
     @config = config
     @dbconf = @config.fetch(:dbconf, {})
     gather = @config.fetch(:gather_ids, {})
     @cliparams = cliparams
-    select = gather.fetch(:select, 'select 1 where 1=1')
-    exclusion = gather.fetch(:default_exclusion, nullquery)
-    exclusion = gather.fetch(:build_exclusion, 'limit {{LIMIT}}') if mode == :build
-    exclusion = gather.fetch(:analysis_exclusion, 'limit {{LIMIT}}') if mode == :analysis
-    exclusion = gather.fetch(:tests_exclusion, 'limit {{LIMIT}}') if mode == :tests
+    select = gather.fetch(:select, DEFQ)
+
+    if @cliparams.fetch(:QUERY, '') == "id"
+      exclusion = ""
+    else
+      exclusion = gather.fetch(:default_exclusion, nullquery)
+      exclusion = gather.fetch(:build_exclusion, 'limit {{LIMIT}}') if mode == :build
+      exclusion = gather.fetch(:analysis_exclusion, 'limit {{LIMIT}}') if mode == :analysis
+      exclusion = gather.fetch(:tests_exclusion, 'limit {{LIMIT}}') if mode == :tests
+    end
     defq = cliparams.fetch(:QUERY, 'collection').to_sym
     @queries = []
     q = gather.fetch(:queries, {}).fetch(defq, nullquery)
@@ -43,7 +49,7 @@ class ObjectHealthDb
     list = []
     conn = get_db_cli
     @queries.each do |q|
-      puts q
+      puts q if ObjectHealth.debug
       stmt = conn.prepare(q)
       stmt.execute(*[]).each do |r|
         list.append(r.values[0])
@@ -239,7 +245,7 @@ class ObjectHealthDb
       }
     end
     unless sql.empty?
-      puts sql
+      puts sql if ObjectHealth.debug
       conn = get_db_cli
       stmt = conn.prepare(sql)
       stmt.execute(*[])

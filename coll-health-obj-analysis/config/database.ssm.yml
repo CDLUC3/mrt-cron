@@ -22,10 +22,11 @@ default:
   default_params: 
     QUERY: collection
     MNEMONIC: merritt_demo
+    ID: 0
     LIMIT: 10
   # debug settings to control debug messages and output
   debug:
-    export_max: 5
+    export_max: 1
     print_max: 1
 
   # -------------------
@@ -105,6 +106,8 @@ default:
       # query for objects with an existing build representation
       has-build: |
         and exists (select 1 from object_health_json h where h.inv_object_id = o.id)
+      id: |
+        and o.id = '{{ID}}'
 
   # -------------------
   # Collection Taxonomy

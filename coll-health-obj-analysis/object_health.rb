@@ -30,19 +30,27 @@ class ObjectHealth
     config_file = 'config/database.ssm.yml'
     config = Uc3Ssm::ConfigResolver.new.resolve_file_values(file: config_file, resolve_key: 'default', return_key: 'default')
     @config = JSON.parse(config.to_json, symbolize_names: true)
-    @options = make_options(argv)
+    $options = make_options(argv)
     @debug = {
       export_count: 0, 
       export_max: @config.fetch(:debug, {}).fetch(:export_max, 5), 
       print_count: 0, 
       print_max: @config.fetch(:debug, {}).fetch(:print_max, 1)
     }
-    @obj_health_db = ObjectHealthDb.new(@config, mode, @options[:query_params])
+    @obj_health_db = ObjectHealthDb.new(@config, mode, $options[:query_params])
     @analysis_tasks = AnalysisTasks.new(self, @config)
     @obj_health_tests = ObjectHealthTests.new(self, @config)
     @build_config = @config.fetch(:build_config, {})
     @opensrch = ObjectHealthOpenSearch.new(self, @config)
     now = Time.now.strftime("%Y-%m-%d %H:%M:%S")
+  end
+
+  def self.options
+    $options.nil? ? {} : $options
+  end
+
+  def self.debug
+    self.options.fetch(:debug, false)
   end
 
   def self.status_values
@@ -105,6 +113,11 @@ class ObjectHealth
       end
       opts.on('--mnemonic=MNEMONIC', 'Set Query Param Mnemonic') do |n|
         options[:query_params][:MNEMONIC] = n.gsub(%r[[^a-z0-9_\-]], "")
+        options[:query_params][:QUERY] = "collection"
+      end
+      opts.on('--id=ID', 'Set Query Param Id') do |n|
+        options[:query_params][:ID] = n.to_i
+        options[:query_params][:QUERY] = "id"
       end
       opts.on('--limit=LIMIT', 'Set Query Limit') do |n|
         options[:query_params][:LIMIT] = n.to_i
@@ -114,10 +127,10 @@ class ObjectHealth
   end
 
   def preliminary_tasks
-    puts @options
-    @obj_health_db.clear_object_health(:build) if @options[:clear_build]
-    @obj_health_db.clear_object_health(:analysis) if @options[:clear_analysis]
-    @obj_health_db.clear_object_health(:tests) if @options[:clear_tests]
+    puts $options if ObjectHealth.debug
+    @obj_health_db.clear_object_health(:build) if $options[:clear_build]
+    @obj_health_db.clear_object_health(:analysis) if $options[:clear_analysis]
+    @obj_health_db.clear_object_health(:tests) if $options[:clear_tests]
   end
 
   def process_objects
@@ -127,7 +140,7 @@ class ObjectHealth
   end
 
   def export_object(ohobj)
-    if @options[:debug]
+    if ObjectHealth.debug
       if @debug[:export_count] < @debug[:export_max]
         File.open("#{@collhdata}/debug/objects_details.#{ohobj.id}.json", 'w') do |f|
           f.write(ohobj.build.pretty_json)
@@ -142,33 +155,33 @@ class ObjectHealth
 
 
   def process_object(id)
-    puts id
+    puts id if ObjectHealth.debug
     ohobj = ObjectHealthObject.new(@build_config, id)
     ohobj.init_components
-    if @options[:build_objects]
-      puts "build #{id}"
+    if $options[:build_objects]
+      puts "build #{id}" if ObjectHealth.debug
       @obj_health_db.build_object(ohobj)
-      puts "save #{id}"
+      puts "save #{id}" if ObjectHealth.debug
       @obj_health_db.update_object_build(ohobj)
     else
-      puts "get #{id}"
+      puts "get #{id}" if ObjectHealth.debug
       @obj_health_db.load_object_json(ohobj)
     end
 
-    if @options[:analyze_objects] && ohobj.build.loaded?
-      puts "  analyze #{id}"
+    if $options[:analyze_objects] && ohobj.build.loaded?
+      puts "  analyze #{id}" if ObjectHealth.debug
       @analysis_tasks.run_tasks(ohobj)
       @obj_health_db.update_object_analysis(ohobj)
     end
 
-    if @options[:test_objects] && ohobj.build.loaded?
-      puts "  test #{id}"
+    if $options[:test_objects] && ohobj.build.loaded?
+      puts "  test #{id}" if ObjectHealth.debug
       @obj_health_tests.run_tests(ohobj)
       @obj_health_db.update_object_tests(ohobj)
     end
 
-    if ohobj.build.loaded? && (@options[:build_objects] || @options[:test_objects] || @options[:analyze_objects])
-      puts "  export #{id}"
+    if ohobj.build.loaded? && ($options[:build_objects] || $options[:test_objects] || $options[:analyze_objects])
+      puts "  export #{id}" if ObjectHealth.debug
       begin
         export_object(ohobj)
       rescue => e 
@@ -176,7 +189,7 @@ class ObjectHealth
       end
     end
 
-    if @options[:debug]
+    if ObjectHealth.debug
       if @debug[:print_count] < @debug[:print_max]
         puts ohobj.build.pretty_json
         @debug[:print_count] += 1
@@ -185,9 +198,9 @@ class ObjectHealth
   end
 
   def mode
-    return :build if @options[:build_objects]
-    return :analysis if @options[:analyze_objects]
-    return :tests if @options[:test_objects]
+    return :build if $options[:build_objects]
+    return :analysis if $options[:analyze_objects]
+    return :tests if $options[:test_objects]
     return :na
   end
 

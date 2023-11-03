@@ -27,6 +27,5 @@ class ObjectHealthOpenSearch
       id: ohobj.id,
       refresh: true
     )
-    #puts "RESP: #{resp['result']} #{resp['_version']}"
   end
 end
