@@ -43,17 +43,6 @@ class ObjectHealth
     @build_config = @config.fetch(:build_config, {})
     @opensrch = ObjectHealthOpenSearch.new(self, @config)
     now = Time.now.strftime("%Y-%m-%d %H:%M:%S")
-    @colltax_mnemonics = {}
-    @colltax_patterns = {}
-    @config.fetch(:collection_taxonomy.to_s, {}).each do |colltax,conf|
-      next if conf.nil?
-      conf.fetch(:patterns.to_s, []).each do |p|
-        @colltax_patterns[p] = colltax
-      end
-      conf.fetch(:mnemonics.to_s, []).each do |m|
-        @colltax_mnemonics[m] = colltax
-      end
-    end
   end
 
   def self.status_values
@@ -72,20 +61,10 @@ class ObjectHealth
   end
 
   def collection_taxonomy(mnemonic)
-    m = mnemonic
-    @colltax_patterns.each do |k,colltax|
-      if mnemonic =~ Regexp.new(k)
-        m = colltax
-        break
-      end
+    @config.fetch(:collection_taxonomy, {}).each do |colltax,conf|
+      return colltax if ObjectHealth.match_criteria(criteria: conf, key: mnemonic, ohobj: nil, criteria_list: :mnemonics, criteria_patterns: :patterns)
     end
-    @colltax_mnemonics.each do |k,colltax|
-      if k == mnemonic
-        m = colltax
-        break
-      end
-    end
-    m
+    mnemonic
   end
 
   def make_options(argv)
@@ -224,22 +203,28 @@ class ObjectHealth
   end
 
   def self.match_list(list, str)
+    return false if list.nil?
     list.include?(str)
   end
 
   def self.match_map(map, str)
+    return false if map.nil?
     self.match_list(map.keys, str)
   end
 
   def self.match_template_list(list, str, ohobj)
+    return false if list.nil?
+
     tlist = []
     list.each do |v|
-      tlist.append(Mustache.render(v, ohobj.template_map))
+      tlist.append(Mustache.render(v, ohobj.nil? ? {} : ohobj.template_map))
     end
     self.match_list(tlist, str)
   end
 
   def self.match_pattern(list, str)
+    return false if list.nil?
+
     list.each do |v|
       return true if str =~ Regexp.new(v)
     end
@@ -247,6 +232,7 @@ class ObjectHealth
   end
 
   def self.match_criteria(criteria:, key:, ohobj:, criteria_list: nil, criteria_keys: nil, criteria_templates: nil, criteria_patterns: nil)
+    return false if criteria.nil?
     b = false
     b = b || self.match_list(criteria.fetch(criteria_list, []), key) if criteria_list
     b = b || self.match_map(criteria.fetch(criteria_keys, []), key) if criteria_keys
