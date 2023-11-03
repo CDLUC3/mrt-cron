@@ -10,7 +10,8 @@ require_relative 'object_health_opensearch'
 require_relative 'analysis_tasks'
 require_relative 'oh_object'
 require_relative 'oh_object_component'
-require 'debug'
+# only on dev box for now
+#require 'debug'
 
 # Inputs
 # - Merritt Inventory Database
