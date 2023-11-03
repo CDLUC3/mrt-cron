@@ -10,7 +10,7 @@ class EmbargoTest < ObjHealthTest
   def run_test(ohobj)
     status = :PASS
     if !ohobj.build.get_object.fetch(:embargo_end_date, "").empty?
-      status = :WARN
+      status = report_status
     end
     status
   end

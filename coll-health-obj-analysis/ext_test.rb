@@ -11,14 +11,10 @@ class ExtTest < ObjHealthTest
     :file
   end
 
-  def get_status
-    :PASS
-  end
-
   def run_test(ohobj)
     status = :PASS
     ohobj.build.get_object.fetch(:producer, {}).each do |v|
-      status = get_status if v.fetch(:pathtype, '').to_sym == get_filetype
+      status = report_status if v.fetch(:pathtype, '').to_sym == get_filetype
     end
     status
   end
@@ -32,10 +28,6 @@ class ExtUrlTest < ExtTest
   def get_filetype
     :url
   end
-
-  def get_status
-    :WARN
-  end
 end
 
 class ExtNotPresentTest < ExtTest
@@ -45,9 +37,5 @@ class ExtNotPresentTest < ExtTest
 
   def get_filetype
     :na
-  end
-
-  def get_status
-    :FAIL
   end
 end

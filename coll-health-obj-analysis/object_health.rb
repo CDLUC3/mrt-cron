@@ -10,6 +10,7 @@ require_relative 'object_health_opensearch'
 require_relative 'analysis_tasks'
 require_relative 'oh_object'
 require_relative 'oh_object_component'
+require 'debug'
 
 # Inputs
 # - Merritt Inventory Database
@@ -37,12 +38,32 @@ class ObjectHealth
       print_count: 0, 
       print_max: @config.fetch(:debug, {}).fetch(:print_max, 1)
     }
+    # map mnemonics to groups
+    @mnemonics = {}
+    # map collection taxonomy groups to mnemonics
+    @ct_groups = {}
+    load_collection_taxonomy
+    $options[:query_params][:SKIPS] = @ct_groups[:CT_skip].map{|s| "'#{s}'"}.join(",")
     @obj_health_db = ObjectHealthDb.new(@config, mode, $options[:query_params])
     @analysis_tasks = AnalysisTasks.new(self, @config)
     @obj_health_tests = ObjectHealthTests.new(self, @config)
     @build_config = @config.fetch(:build_config, {})
     @opensrch = ObjectHealthOpenSearch.new(self, @config)
     now = Time.now.strftime("%Y-%m-%d %H:%M:%S")
+  end
+
+  def load_collection_taxonomy
+    @config.fetch(:collection_taxonomy, []).each do |ctdef|
+      next if ctdef.nil?
+      ctdef.fetch(:groups, {}).keys.each do |g|
+        ctdef.fetch(:mnemonics, {}).keys.each do |m|
+          @mnemonics[m] = [] unless @mnemonics.key?(m)
+          @mnemonics[m].append(g)
+          @ct_groups[g] = [] unless @ct_groups.key?(g)
+          @ct_groups[g].append(m)
+        end
+      end
+    end
   end
 
   def self.options
@@ -69,10 +90,7 @@ class ObjectHealth
   end
 
   def collection_taxonomy(mnemonic)
-    @config.fetch(:collection_taxonomy, {}).each do |colltax,conf|
-      return colltax if ObjectHealth.match_criteria(criteria: conf, key: mnemonic, ohobj: nil, criteria_list: :mnemonics, criteria_patterns: :patterns)
-    end
-    mnemonic
+    @mnemonics.fetch(mnemonic, [])
   end
 
   def make_options(argv)

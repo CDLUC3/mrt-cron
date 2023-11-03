@@ -12,26 +12,33 @@ GEM
   remote: https://rubygems.org/
   specs:
     aws-eventstream (1.2.0)
-    aws-partitions (1.834.0)
-    aws-sdk-core (3.185.1)
+    aws-partitions (1.844.0)
+    aws-sdk-core (3.186.0)
       aws-eventstream (~> 1, >= 1.0.2)
       aws-partitions (~> 1, >= 1.651.0)
       aws-sigv4 (~> 1.5)
       jmespath (~> 1, >= 1.6.1)
-    aws-sdk-lambda (1.105.0)
+    aws-sdk-lambda (1.106.0)
       aws-sdk-core (~> 3, >= 3.184.0)
       aws-sigv4 (~> 1.1)
-    aws-sdk-ssm (1.158.0)
+    aws-sdk-ssm (1.159.0)
       aws-sdk-core (~> 3, >= 3.184.0)
       aws-sigv4 (~> 1.1)
-    aws-sigv4 (1.6.0)
+    aws-sigv4 (1.6.1)
       aws-eventstream (~> 1, >= 1.0.2)
     base64 (0.1.1)
+    debug (1.8.0)
+      irb (>= 1.5.0)
+      reline (>= 0.3.1)
     faraday (2.7.11)
       base64
       faraday-net_http (>= 2.0, < 3.1)
       ruby2_keywords (>= 0.0.4)
     faraday-net_http (3.0.2)
+    io-console (0.6.0)
+    irb (1.8.3)
+      rdoc
+      reline (>= 0.3.8)
     jmespath (1.6.2)
     json (2.6.3)
     logger (1.5.3)
@@ -43,8 +50,15 @@ GEM
     opensearch-ruby (3.0.1)
       faraday (>= 1.0, < 3)
       multi_json (>= 1.0)
-    racc (1.7.1)
+    psych (5.1.1.1)
+      stringio
+    racc (1.7.2)
+    rdoc (6.5.0)
+      psych (>= 4.0.0)
+    reline (0.3.9)
+      io-console (~> 0.5)
     ruby2_keywords (0.0.5)
+    stringio (3.0.8)
     yaml (0.2.1)
 
 PLATFORMS
@@ -53,6 +67,8 @@ PLATFORMS
 DEPENDENCIES
   aws-sdk-lambda
   base64
+  debug
+  irb
   json
   mustache
   mysql2

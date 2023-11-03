@@ -8,6 +8,6 @@ class DeletedTest < ObjHealthTest
   end
 
   def run_test(ohobj)
-    ohobj.build.get_object.fetch(:file_counts, {}).fetch(:deleted, 0) > 0 ? :INFO : :PASS
+    ohobj.build.get_object.fetch(:file_counts, {}).fetch(:deleted, 0) > 0 ? report_status : :PASS
   end
 end

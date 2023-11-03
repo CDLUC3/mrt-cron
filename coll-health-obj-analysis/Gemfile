@@ -8,3 +8,7 @@ gem 'nokogiri'
 gem 'mysql2'
 gem 'opensearch-ruby'
 gem 'mustache'
+
+# apt-get install libyaml-dev is required to 
+gem 'irb'
+gem 'debug'

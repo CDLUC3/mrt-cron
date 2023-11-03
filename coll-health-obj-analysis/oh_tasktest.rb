@@ -12,11 +12,11 @@ class ObjHealthTask
 
   def check_scope(ohobj)
     m = ohobj.mnemonic
-    colltax = @oh.collection_taxonomy(m)
-    if @apply.length > 0
-      return @apply.include?(m) || @apply.include(colltax)
-    elsif @skip.length > 0
-      return !(@skip.include?(m) || @skip.include?(colltax))
+    return true if @apply.include?(m)
+    return false if @skip.include?(m)
+    @oh.collection_taxonomy(m).each do |g|
+      return true if @apply.include?(g)
+      return false if @skip.include?(g)
     end
     true
   end
@@ -50,6 +50,15 @@ class ObjHealthTest < ObjHealthTask
   end
 
   def run_test(ohobj)
+    :SKIP
+  end
+
+  def report_status(condition: nil)
+    @taskdef.fetch(:report_status, {}).each do |k,v|
+      return k if condition.nil? || v.nil?
+      return k if condition == v.to_sym
+      return k if condition == v
+    end
     :SKIP
   end
 end

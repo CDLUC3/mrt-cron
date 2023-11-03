@@ -10,7 +10,7 @@ class LocalIdTest < ObjHealthTest
   def run_test(ohobj)
     status = :PASS
     if ohobj.build.get_object.fetch(:identifiers, {}).fetch(:localids, []).empty?
-      status = :WARN
+      status = report_status
     end
     status
   end

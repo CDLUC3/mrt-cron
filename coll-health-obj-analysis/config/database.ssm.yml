@@ -64,9 +64,7 @@ default:
       inner join inv.inv_collections_inv_objects icio on icio.inv_object_id = o.id
       inner join inv.inv_collections c on c.id = icio.inv_collection_id
       where 1=1
-      and c.mnemonic not in ('cdl_dryad', 'ucb_open_context', 'cdl_uc3_etdreports') 
-      and c.mnemonic not like '%_dash'
-      and c.mnemonic not like 'mrt_%'
+      and c.mnemonic not in ({{{SKIPS}}}) 
     # Default exclude sql fragment
     default_exclusion: |
       and 0 = 1
@@ -114,28 +112,389 @@ default:
   #   This can be used to include/exclude specific collections from specific Analysis Tasks and Tests
   # -------------------
   collection_taxonomy:
-    colltax_skip:
-      patterns: 
-      - ^.*_dash$
-      - ^mrt_.*$
+    - name: Skip Tests
+      groups: 
+        CT_skip:
       mnemonics:
-      - ucb_open_context
-      - cdl_dryad
-      - cdl_uc3_etdreports
-      #rhodecode
-    colltax_lsta:
-      patterns:
-      - ^lsta_.*$
-    colltax_nuxeo:
-      #mnemonics: 
-      #- ...
-    # tind
-    # expanded bags (UCI, UCSC)
-    # etds
-    colltax_cdl:
+        ucb_open_context:
+        cdl_dryad:
+        cdl_uc3_etdreports:
+    - name: Initial Test Set
+      groups:
+        CT_test_set:
       mnemonics:
-      - merritt_demo
-      - escholarship
+        merritt_demo:
+        ucb_bampfa_art:
+        ucb_lib_bancroft:
+        ucb_lib_church:
+        ucb_lib_examiner:
+        ucb_lib_sugoroku:
+        ucla_dash:
+        ucla_lib_etd:
+        ucla_lib_frontera:
+        ucla_lib_str_frontera:
+        ucm_lib_mclean:
+        ucr_lib_etd:
+        ucr_lib_nuxeo:
+        ucsc_lib_sc:
+        ucsf_ctp_archive:
+    - name: TBD
+      mnemonics:
+        cdl_dsc_census:
+        cdl_eartharxiv:
+        cdl_ecoevo:
+        cdl_escholarship_editions:
+        cdl_escholarship_mtpo:
+        cdl_ipresbo:
+        cdl_mcgrawhill_ebooks:
+        cdl_oac:
+        cdl_ptord:
+        cdl_uc3:
+        cdl_uc3_hg_repos:
+        cdl_uc3_ipres09:
+        cdl_uc3_mdcune:
+        cdl_uc3_was:
+        escholarship:
+        lsta_aju:
+        lsta_albanypl:
+        lsta_anaheimpl:
+        lsta_arcadiapl:
+        lsta_banninglibrary:
+        lsta_beaumontld:
+        lsta_berkeleypl:
+        lsta_blackgoldcooperativels:
+        lsta_brisbanepl:
+        lsta_chs:
+        lsta_chulavistapl:
+        lsta_citruscollege:
+        lsta_commercepl:
+        lsta_coronadopl:
+        lsta_coronapl:
+        lsta_covinapl:
+        lsta_csuchannelislands:
+        lsta_csueastbay:
+        lsta_csufullerton:
+        lsta_csula_lib:
+        lsta_csus_lib:
+        lsta_csu_mbl:
+        lsta_csu_stanislaus:
+        lsta_dublinhm:
+        lsta_escondidopl:
+        lsta_fullerton:
+        lsta_glbthistsoc:
+        lsta_glendalepl:
+        lsta_gtu_lib:
+        lsta_humboldtstate_lib:
+        lsta_inglewoodpl:
+        lsta_janm:
+        lsta_kernlib:
+        lsta_laphil_archives:
+        lsta_libertyhighlib:
+        lsta_lmu_lib:
+        lsta_marinctlib:
+        lsta_millscollegelib:
+        lsta_millvalleypl:
+        lsta_missionviejolib:
+        lsta_montereycountylib:
+        lsta_montereyparklib:
+        lsta_mpdsf_chinesetheater:
+        lsta_mpdsf_pal_mbl:
+        lsta_oaklandpl:
+        lsta_orangectpl:
+        lsta_orangepl:
+        lsta_oxnardpl:
+        lsta_palosverdeld:
+        lsta_placentiald:
+        lsta_pomonapl:
+        lsta_rcpl:
+        lsta_redwoodcitypl:
+        lsta_richmondpl:
+        lsta_riversidepl:
+        lsta_sanbernadinopl:
+        lsta_sanbrunopl:
+        lsta_sandiegohistsoc:
+        lsta_sanjosepl:
+        lsta_sanmateopl:
+        lsta_santaanapl:
+        lsta_santacruzpl:
+        lsta_santafespringslib:
+        lsta_scpl:
+        lsta_sdsu_lib:
+        lsta_sjvls_coalingahuronld:
+        lsta_sjvls_fcpl:
+        lsta_sjvls_kerncl:
+        lsta_sjvls_kingscl:
+        lsta_sjvls_maderacl:
+        lsta_sjvls_mariposacl:
+        lsta_sjvls_portervillepl:
+        lsta_sjvls_tcfl:
+        lsta_sjvls_tpl:
+        lsta_socallib:
+        lsta_soccalpioneers:
+        lsta_sonomalib_mbl:
+        lsta_sppl:
+        lsta_ssfpl:
+        lsta_ssu:
+        lsta_svho_chr:
+        lsta_svho_hsj:
+        lsta_svho_intel:
+        lsta_svho_sccl:
+        lsta_svho_scu:
+        lsta_svho_sjplcr:
+        lsta_svho_sjsu:
+        lsta_toakslib:
+        lsta_ucr_specialcolls:
+        lsta_upl:
+        lsta_westvalleylib:
+        lsta_wpl:
+        lsta_ylpl:
+        lsta_yubapl:
+        ucop_dash:
+        dataone_dash:
+        oneshare_dataup:
+        ucjeps_img_archive:
+        ucla_pal_museum:
+        ucpress_dash:
+        lbnl_dash:
+        moorea_biocode:
+        ucbling_cla:
+        ucbling_cla_restricted:
+        ucb_ced_borndigital:
+        ucb_dash:
+        ucb_fonoroff:
+        ucb_indochina_archives:
+        ucb_lib_almasar:
+        ucb_lib_anthpubs:
+        ucb_lib_apis:
+        ucb_lib_arrowgb:
+        ucb_lib_asami:
+        ucb_lib_banclc:
+        ucb_lib_bancroft_general:
+        ucb_lib_bancroft_inhouse:
+        ucb_lib_bancroft_select:
+        ucb_lib_banc_ctcn:
+        ucb_lib_banc_ge:
+        ucb_lib_banc_nc:
+        ucb_lib_banc_olm:
+        ucb_lib_banc_ow:
+        ucb_lib_banc_pop:
+        ucb_lib_banc_psj:
+        ucb_lib_bart:
+        ucb_lib_bios:
+        ucb_lib_bmtn:
+        ucb_lib_bonney:
+        ucb_lib_call_bulletin:
+        ucb_lib_cal_cultures:
+        ucb_lib_cal_heritage:
+        ucb_lib_cara:
+        ucb_lib_cased_photos:
+        ucb_lib_cateach:
+        ucb_lib_cavpp:
+        ucb_lib_ced_lectures:
+        ucb_lib_centennial:
+        ucb_lib_chinese_cal:
+        ucb_lib_chmerr:
+        ucb_lib_city_arts:
+        ucb_lib_coh:
+        ucb_lib_cpp:
+        ucb_lib_csm:
+        ucb_lib_cuban_posters:
+        ucb_lib_daysofcal:
+        ucb_lib_dcpp:
+        ucb_lib_dig_script:
+        ucb_lib_disability_rights:
+        ucb_lib_dlabu:
+        ucb_lib_doble:
+        ucb_lib_drilm:
+        ucb_lib_ealgav:
+        ucb_lib_ealjas:
+        ucb_lib_ealjr:
+        ucb_lib_ealselect:
+        ucb_lib_eal_books:
+        ucb_lib_earlyreaders:
+        ucb_lib_eckbo:
+        ucb_lib_elecephemera:
+        ucb_lib_eqf:
+        ucb_lib_etd:
+        ucb_lib_ethnodocs:
+        ucb_lib_farrand:
+        ucb_lib_friedman:
+        ucb_lib_fsm:
+        ucb_lib_fsmcafe:
+        ucb_lib_furtwangler:
+        ucb_lib_ggva:
+        ucb_lib_gis:
+        ucb_lib_gpahearst:
+        ucb_lib_graham:
+        ucb_lib_graves:
+        ucb_lib_greekp:
+        ucb_lib_hasla:
+        ucb_lib_hearst:
+        ucb_lib_hfunam:
+        ucb_lib_histpres:
+        ucb_lib_hjp:
+        ucb_lib_hlital:
+        ucb_lib_hmozf:
+        ucb_lib_honeyman:
+        ucb_lib_howland:
+        ucb_lib_hpc:
+        ucb_lib_huafnc:
+        ucb_lib_igsdigital:
+        ucb_lib_immanu:
+        ucb_lib_irle:
+        ucb_lib_jais:
+        ucb_lib_jan:
+        ucb_lib_japanese_prints:
+        ucb_lib_jar:
+        ucb_lib_jarda:
+        ucb_lib_jbcooksc:
+        ucb_lib_jekyll:
+        ucb_lib_jfna:
+        ucb_lib_jhmaps:
+        ucb_lib_jmanu:
+        ucb_lib_jvac:
+        ucb_lib_kalx:
+        ucb_lib_kransky:
+        ucb_lib_kroeber:
+        ucb_lib_kurier:
+        ucb_lib_landcase_maps:
+        ucb_lib_latimes:
+        ucb_lib_lee:
+        ucb_lib_librettos:
+        ucb_lib_loyalty_oath:
+        ucb_lib_main:
+        ucb_lib_mammoth:
+        ucb_lib_map:
+        ucb_lib_math:
+        ucb_lib_maybeck:
+        ucb_lib_meiklejohn:
+        ucb_lib_mellon:
+        ucb_lib_metabolism:
+        ucb_lib_metcalf:
+        ucb_lib_moac:
+        ucb_lib_mrc:
+        ucb_lib_naacp:
+        ucb_lib_nrfl:
+        ucb_lib_oaklandb:
+        ucb_lib_oralhistories:
+        ucb_lib_oroville:
+        ucb_lib_pahlavi:
+        ucb_lib_pamonthly:
+        ucb_lib_papresb:
+        ucb_lib_physics:
+        ucb_lib_pictman:
+        ucb_lib_planec:
+        ucb_lib_ppie:
+        ucb_lib_pra:
+        ucb_lib_prechmat:
+        ucb_lib_profit:
+        ucb_lib_prosser:
+        ucb_lib_ritz:
+        ucb_lib_robbins:
+        ucb_lib_royston:
+        ucb_lib_sierra_club:
+        ucb_lib_srrj:
+        ucb_lib_stats_tr:
+        ucb_lib_stone_rubbings:
+        ucb_lib_straits:
+        ucb_lib_supreme:
+        ucb_lib_swift:
+        ucb_lib_tech_reports:
+        ucb_lib_tech_tocs:
+        ucb_lib_turnbull:
+        ucb_lib_uchda:
+        ucb_lib_var:
+        ucb_lib_vietnam_photos:
+        ucb_lib_vtm:
+        ucb_lib_war_posters:
+        ucb_lib_wurster:
+        ucb_lib_wwm:
+        ucb_robbins:
+        ucb_transportation_studies_library:
+        ucd_bioageng_dash:
+        ucd_ice_swap:
+        ucd_lib_bwrp:
+        ucd_lib_dash:
+        ucd_lib_eastman:
+        ucd_lib_etd:
+        ucd_lib_misc:
+        ucd_lib_yolo:
+        uci_dash:
+        uci_honors_theses:
+        uci_lib_bgilmore:
+        uci_lib_diskimage:
+        uci_lib_etd:
+        uci_lib_legacy:
+        uci_lib_sca_crit:
+        uci_lib_sca_orange:
+        uci_lib_sca_sc:
+        uci_lib_sca_se_asian:
+        uci_lib_sca_ua:
+        uci_lib_sca_upub:
+        uci_lib_ucispace:
+        uci_lib_vaohp:
+        ucla_lib_hoover:
+        ucla_womenshealth_lbwhc_resources:
+        ucm_admin_misc:
+        ucm_dash:
+        ucm_lib_acm:
+        ucm_lib_clark:
+        ucm_lib_donpedro:
+        ucm_lib_dsc:
+        ucm_lib_elowe:
+        ucm_lib_etd:
+        ucm_lib_jaac_newsletters:
+        ucm_lib_mcdaniel:
+        ucm_lib_nuxeo:
+        ucm_lib_psych:
+        ucm_lib_ssczo:
+        ucm_lib_ucce_anr:
+        ucm_lib_ucce_fresno:
+        ucm_lib_ucce_humboldt:
+        ucm_lib_ucce_madera:
+        ucm_lib_ucce_mariposa:
+        ucm_lib_ucce_merced:
+        ucm_lib_ucce_modoc:
+        ucm_lib_ucce_sbslo:
+        ucm_lib_ucce_sd:
+        ucm_lib_ucce_sjo:
+        ucm_lib_ucce_syu:
+        ucm_lib_ucce_tulare:
+        ucm_lib_ucce_ventura:
+        ucr_bcoe_2dmaterials:
+        ucr_lib_dash:
+        ucr_lib_eatonfz:
+        ucr_lib_wrca_laaqua:
+        ucr_lib_wrca_wwaters:
+        ucsb_admin_misc:
+        ucsb_dash:
+        ucsb_lib_calcultures:
+        ucsb_lib_etd:
+        ucsc_dash:
+        ucsc_lib_cabrillo:
+        ucsc_lib_etd:
+        ucsc_lib_grateful_dead:
+        ucsc_lib_hollzahawi:
+        ucsc_lib_kmankoff:
+        ucsc_lib_promweek:
+        ucsc_lib_regional_history:
+        ucsd_lib_etd:
+        ucsf_datashare:
+        ucsf_lib_actup:
+        ucsf_lib_av:
+        ucsf_lib_bobbicampbell:
+        ucsf_lib_calcultures:
+        ucsf_lib_cambodiaprotests:
+        ucsf_lib_datashare:
+        ucsf_lib_etd:
+        ucsf_lib_lectures:
+        ucsf_lib_misc:
+        ucsf_lib_robertday:
+        ucsf_lib_speck:
+        ucsf_lib_stantonglantz:
+        ucsf_lib_synapse:
+        ucsf_lib_text:
+        ucsf_lib_wan:
 
   # -------------------
   # Object Build Config
@@ -480,15 +839,11 @@ default:
       - name: nuxeo_style_metadata
         templates:
         - "{{ARK}}.xml"
+        - "{{LOCALID}}.xml"
       # If bag metadata is found, other metadata files will not affect the categorization.
       - name: bag_metadata
         paths:
         - bag-info.txt
-      # If mutliple metadata files are found the categorization will indicate that the primary file cannot be identified.
-      - name: metadata
-        mimes:
-          application/xml:
-          application/json:
       # Secondary metadata files may contain metadata, but they are not considered to be a good choice as a "primary" metadata file
       - name: secondary
         mimes:
@@ -496,8 +851,15 @@ default:
           application/xhtml+xml:
           application/atom+xml:
           text/html:
+        patterns:
+        - ^.*-media\.json$
         paths:
         - mrt-erc.txt
+      # If mutliple metadata files are found the categorization will indicate that the primary file cannot be identified.
+      - name: metadata
+        mimes:
+          application/xml:
+          application/json:
       # Complex files may contain multiple types of digital files.  The object will need to be downloaded and expanded in order to introspect the object.
       - name: complex
         mimes:
@@ -548,10 +910,16 @@ default:
     # Evaluate whether or not the file extension for a producer file is expected for a given mime type
     mime-extension-mismatch:
       class: MimeExtTest
+      report_status: 
+        FAIL:
     mime-not-found:
       class: MimeNotFoundTest
+      report_status: 
+        FAIL:
     has-ignored-file:
       class: IgnoreFileTest
+      report_status: 
+        INFO:
     # Evaluate the object classification based on producer file types
     object-classification:
       class: ObjectClassificationTest
@@ -587,18 +955,26 @@ default:
     # Test for URL-like Merritt pathnames that may not expand well into a filename
     ext-url-like-pathname:
       class: ExtUrlTest
+      report_status: 
+        WARN:
     # Test for Merritt pathnames that may not expand well into a filename
     ext-not-present:
       class: ExtNotPresentTest
+      report_status: 
+        FAIL:
     # Test for zero byte content files
     empty-file:
       name: Empty file detection
       description: Check file size - WARN if empty producer, INFO if empty system
       class: EmptyTest
+      report_status:
+        WARN: "producer" 
+        INFO:
     # Test for Merritt objects in which a delete was performed between object versions.
     has-delete:
-      description: INFO if delete detected
       class: DeletedTest
+      report_status: 
+        INFO:
     # Test Merritt ERC for missing or indistinct data
     doesnt-have-meaningful-erc-what:
       name: Object has meaningful ERC metadata
@@ -651,17 +1027,20 @@ default:
     has-embargo:
       name: "Has embargo / had embargo"
       class: EmbargoTest
+      report_status: 
+        WARN:
     # Find objects without a localid
     # Note: some Merritt collections never set a localid.  Those collections should be SKIP
     no-local-id:
       name: Object has local id
       class: LocalIdTest
+      report_status: 
+        WARN:
       # all tasks and tests can be scoped to run/not run for specific collections
       collection_scope:
         skip:
-        #- merritt_demo
-        #- escholarship
-        - colltax_cdl
+        - merritt_demo
+        - escholarship
         - lsta_pomonapl
         # apply:
         # - mnemonic
