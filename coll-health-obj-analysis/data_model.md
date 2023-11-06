@@ -248,7 +248,7 @@ _includes ALL files, not just the first 1000 files_
 ```
 
 ### Capture metadata sidecar information about the object
-_If present in the inventory database **inv_metadatas** table_
+_If present in the inventory database **inv_metadatas** table. Data contains a dump of dublin core type metadata._
 ```json
 {
     "id": 3632877,
@@ -265,6 +265,21 @@ _If present in the inventory database **inv_metadatas** table_
       "version": 2,
       "modified": "2023-10-30T16:29:29-07:00",
       "embargo_end_date": "",
+      "sidecar": [
+        {
+          "identifier": [],
+          "creatorName": [],
+          "nameIdentifier": [],
+          "affiliation": [],
+          "title": [],
+          "publisher": [],
+          "resourceType": [],
+          "publicationYear": [],
+          "subject": [],
+          "description": []
+        },
+        {}
+      ]
     },
     "@timestamp": "2023-11-06T13:44:35-0800",
 }
