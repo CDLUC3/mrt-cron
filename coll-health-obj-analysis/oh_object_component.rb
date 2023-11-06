@@ -86,19 +86,21 @@ class ObjectHealthObjectBuild < ObjectHealthObjectComponent
     }
   end
 
-  def build_object_representation(r)
+  def build_object_representation(r, mnemonics)
     loc = r.fetch('localids', '')
     loc = '' if loc.nil?
     set_key(:identifiers, {
       ark: r.fetch('ark', ''),
       localids: loc.split(',')
     })
+    m = r.fetch('mnemonic', '')
     set_key(:containers, {
       owner_ark: r.fetch('owner_ark', ''),
       owner_name: r.fetch('owner_name', ''),
       coll_ark: r.fetch('coll_ark', ''),
       coll_name: r.fetch('coll_name', ''),
-      mnemonic: r.fetch('mnemonic', ''),
+      mnemonic: m,
+      collection_tags: mnemonics.fetch(m.to_sym, []),
       campus: campus(r.fetch('coll_name', ''))
     })
     set_key(:metadata, {

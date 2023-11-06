@@ -284,42 +284,13 @@ The results of these analyses should feed into the existing Object Health proces
 
 Builds
 ```
-bundle exec ruby object_health.rb -bat --limit 500 --mnemonic=merritt_demo
-#bundle exec ruby object_health.rb -bat --limit 500 --mnemonic=merritt_demo --clear-build
-bundle exec ruby object_health.rb -bat --limit 500 --mnemonic=ucm_lib_mclean
-bundle exec ruby object_health.rb -bat --limit 500 --mnemonic=ucb_lib_bancroft
-bundle exec ruby object_health.rb -bat --limit 500 --mnemonic=ucla_dash
-bundle exec ruby object_health.rb -bat --limit 500 --mnemonic=ucsc_lib_sc
-bundle exec ruby object_health.rb -bat --limit 500 --mnemonic=ucb_lib_church
-bundle exec ruby object_health.rb -bat --limit 500 --mnemonic=ucr_lib_nuxeo
-bundle exec ruby object_health.rb -bat --limit 500 --mnemonic=ucb_bampfa_art
-bundle exec ruby object_health.rb -bat --limit 500 --mnemonic=ucla_lib_frontera
-bundle exec ruby object_health.rb -bat --limit 500 --mnemonic=ucla_lib_str_frontera
-bundle exec ruby object_health.rb -bat --limit 500 --mnemonic=ucr_lib_etd
-bundle exec ruby object_health.rb -bat --limit 500 --mnemonic=ucla_lib_etd
+bundle exec ruby object_health.rb -bat --limit 500 --tag=tag_test_set
 
 ```
 
 Build - Small Set
 ```
-bundle exec ruby object_health.rb -bat --limit 20 --mnemonic=merritt_demo
-#bundle exec ruby object_health.rb -bat --limit 20 --mnemonic=merritt_demo --clear-build
-bundle exec ruby object_health.rb -bat --limit 10 --mnemonic=ucm_lib_mclean
-bundle exec ruby object_health.rb -bat --limit 10 --mnemonic=ucb_lib_bancroft
-bundle exec ruby object_health.rb -bat --limit 10 --mnemonic=ucla_dash
-bundle exec ruby object_health.rb -bat --limit 10 --mnemonic=ucsc_lib_sc
-bundle exec ruby object_health.rb -bat --limit 10 --mnemonic=ucb_lib_church
-bundle exec ruby object_health.rb -bat --limit 10 --mnemonic=ucr_lib_nuxeo
-bundle exec ruby object_health.rb -bat --limit 10 --mnemonic=ucb_bampfa_art
-bundle exec ruby object_health.rb -bat --limit 10 --mnemonic=ucla_lib_frontera
-bundle exec ruby object_health.rb -bat --limit 10 --mnemonic=ucla_lib_str_frontera
-bundle exec ruby object_health.rb -bat --limit 10 --mnemonic=ucr_lib_etd
-bundle exec ruby object_health.rb -bat --limit 10 --mnemonic=ucla_lib_etd
-bundle exec ruby object_health.rb -bat --limit 10 --mnemonic=ucsf_ctp_archive
-bundle exec ruby object_health.rb -bat --limit 10 --mnemonic=ucb_lib_examiner
-bundle exec ruby object_health.rb -bat --limit 10 --mnemonic=ucb_lib_sugoroku
-bundle exec ruby object_health.rb -bat --limit 10 --mnemonic=colltax_cdl
-
+bundle exec ruby object_health.rb -bat --limit 20 --tag=tag_test_set --clear-build
 ```
 
 Re-build

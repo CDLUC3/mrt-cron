@@ -32,6 +32,11 @@ class ObjectHealth
     config_file = 'config/database.ssm.yml'
     config = Uc3Ssm::ConfigResolver.new.resolve_file_values(file: config_file, resolve_key: 'default', return_key: 'default')
     @config = JSON.parse(config.to_json, symbolize_names: true)
+    # map mnemonics to groups
+    @mnemonics = {}
+    # map collection taxonomy groups to mnemonics
+    @ct_groups = {}
+    load_collection_taxonomy
     $options = make_options(argv)
     @debug = {
       export_count: 0, 
@@ -39,13 +44,8 @@ class ObjectHealth
       print_count: 0, 
       print_max: @config.fetch(:debug, {}).fetch(:print_max, 1)
     }
-    # map mnemonics to groups
-    @mnemonics = {}
-    # map collection taxonomy groups to mnemonics
-    @ct_groups = {}
-    load_collection_taxonomy
-    $options[:query_params][:SKIPS] = @ct_groups[:CT_skip].map{|s| "'#{s}'"}.join(",")
-    @obj_health_db = ObjectHealthDb.new(@config, mode, $options[:query_params])
+    $options[:query_params][:SKIPS] = @ct_groups[:tag_skip].map{|s| "'#{s}'"}.join(",")
+    @obj_health_db = ObjectHealthDb.new(@config, mode, $options[:query_params], $options[:iterative_params], @mnemonics)
     @analysis_tasks = AnalysisTasks.new(self, @config)
     @obj_health_tests = ObjectHealthTests.new(self, @config)
     @build_config = @config.fetch(:build_config, {})
@@ -57,11 +57,17 @@ class ObjectHealth
     @config.fetch(:collection_taxonomy, []).each do |ctdef|
       next if ctdef.nil?
       ctdef.fetch(:groups, {}).keys.each do |g|
-        ctdef.fetch(:mnemonics, {}).keys.each do |m|
+        ctdef.fetch(:mnemonics, {}).each do |m, mdef|
           @mnemonics[m] = [] unless @mnemonics.key?(m)
           @mnemonics[m].append(g)
           @ct_groups[g] = [] unless @ct_groups.key?(g)
           @ct_groups[g].append(m)
+          next if mdef.nil?
+          mdef.fetch(:tags, {}).keys.each do |t|
+            @mnemonics[m].append(t)
+            @ct_groups[t] = [] unless @ct_groups.key?(t)
+            @ct_groups[t].append(m)
+          end
         end
       end
     end
@@ -94,11 +100,16 @@ class ObjectHealth
     @mnemonics.fetch(mnemonic, [])
   end
 
-  def make_options(argv)
-    options = {query_params: {}}
+  def make_query_param
+    qp = {}
     @config.fetch(:default_params, {}).each do |k,v|
-      options[:query_params][k.to_sym] = v
+      qp[k.to_sym] = v
     end
+    qp
+  end
+
+  def make_options(argv)
+    options = {query_params: {}, iterative_params: []}
     OptionParser.new do |opts|
       opts.banner = "Usage: ruby object_health.rb [--help] [--build] [--test]"
       opts.on('-h', '--help', 'Show help and exit') do
@@ -128,13 +139,22 @@ class ObjectHealth
       end
       # The following values may be edited into yaml queries... perform some sanitization on the values
       opts.on('--query=QUERY', 'Object Selection Query to Use') do |n|
+        options[:query_params].append(make_query_param) if options[:query_params].empty?
         options[:query_params][:QUERY] = n.gsub(%r[[^A-Za-z0-9_\-]], "")
       end
       opts.on('--mnemonic=MNEMONIC', 'Set Query Param Mnemonic') do |n|
+        options[:query_params].append(make_query_param) if options[:query_params].empty?
         options[:query_params][:MNEMONIC] = n.gsub(%r[[^a-z0-9_\-]], "")
         options[:query_params][:QUERY] = "collection"
       end
+      opts.on('--tag=TAG', 'Set Collection TAG to process') do |n|
+        @ct_groups.fetch(n.to_sym, []).each do |m|
+          options[:iterative_params].append({MNEMONIC: m})
+          options[:query_params][:QUERY] = "collection"
+        end
+      end
       opts.on('--id=ID', 'Set Query Param Id') do |n|
+        options[:query_params].append(make_query_param) if options[:query_params].empty?
         options[:query_params][:ID] = n.to_i
         options[:query_params][:QUERY] = "id"
       end
@@ -142,6 +162,7 @@ class ObjectHealth
         options[:query_params][:LIMIT] = n.to_i
       end
     end.parse(ARGV)
+    options[:iterative_params].append({}) if options[:iterative_params].empty?
     options    
   end
 
@@ -156,6 +177,9 @@ class ObjectHealth
     @obj_health_db.get_object_list.each do |id|
       process_object(id)
     end
+  end
+
+  def process_tag(tag)
   end
 
   def export_object(ohobj)

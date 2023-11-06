@@ -6,12 +6,13 @@ require_relative 'oh_object'
 
 class ObjectHealthDb
   DEFQ='select 1 where 1=1'
-  def initialize(config, mode, cliparams)
+  def initialize(config, mode, cliparams, iterative_params, mnemonics)
     nullquery = 'and 0 = 1'
     @config = config
     @dbconf = @config.fetch(:dbconf, {})
     gather = @config.fetch(:gather_ids, {})
     @cliparams = cliparams
+    @mnemonics = mnemonics
     select = gather.fetch(:select, DEFQ)
 
     if @cliparams.fetch(:QUERY, '') == "id"
@@ -25,12 +26,14 @@ class ObjectHealthDb
     defq = cliparams.fetch(:QUERY, 'collection').to_sym
     @queries = []
     q = gather.fetch(:queries, {}).fetch(defq, nullquery)
-    sql = add_user_params_to_sql("#{select} #{q} #{exclusion}")
-    @queries.append(sql)
+    iterative_params.each do |itp|
+      sql = add_user_params_to_sql("#{select} #{q} #{exclusion}", itp)
+      @queries.append(sql)
+    end
   end
 
-  def add_user_params_to_sql(q)
-    Mustache.render(q, @cliparams)
+  def add_user_params_to_sql(q, iterative_param)
+    Mustache.render(q, @cliparams.merge(iterative_param))
   end
 
   def get_db_cli
@@ -54,9 +57,9 @@ class ObjectHealthDb
       stmt.execute(*[]).each do |r|
         list.append(r.values[0])
       end
-      break unless list.empty?
     end
     conn.close
+    puts "\n** #{list.length} to process\n"
     list
   end
 
@@ -108,7 +111,7 @@ class ObjectHealthDb
     conn = get_db_cli
     stmt = conn.prepare(sql)
     stmt.execute(*[ohobj.id]).each do |r|
-      ohobj.build.build_object_representation(r)
+      ohobj.build.build_object_representation(r, @mnemonics)
     end
     conn.close
     ohobj

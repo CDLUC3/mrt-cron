@@ -114,14 +114,14 @@ default:
   collection_taxonomy:
     - name: Skip Tests
       groups: 
-        CT_skip:
+        tag_skip:
       mnemonics:
         ucb_open_context:
         cdl_dryad:
         cdl_uc3_etdreports:
     - name: Initial Test Set
       groups:
-        CT_test_set:
+        tag_test_set:
       mnemonics:
         merritt_demo:
         ucb_bampfa_art:
@@ -131,13 +131,18 @@ default:
         ucb_lib_sugoroku:
         ucla_dash:
         ucla_lib_etd:
+          tags:
+            tag_etd:
         ucla_lib_frontera:
         ucla_lib_str_frontera:
         ucm_lib_mclean:
         ucr_lib_etd:
+          tags:
+            tag_etd:
         ucr_lib_nuxeo:
         ucsc_lib_sc:
         ucsf_ctp_archive:
+        cdl_ipresbo:
     - name: TBD
       mnemonics:
         cdl_dsc_census:
@@ -145,7 +150,6 @@ default:
         cdl_ecoevo:
         cdl_escholarship_editions:
         cdl_escholarship_mtpo:
-        cdl_ipresbo:
         cdl_mcgrawhill_ebooks:
         cdl_oac:
         cdl_ptord:
