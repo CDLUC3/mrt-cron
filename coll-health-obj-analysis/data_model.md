@@ -376,4 +376,147 @@ _If present in the inventory database **inv_metadatas** table. Data contains a d
 
 ## Object Analysis Process
 
+The Analysis process is driven by a set of tests defined in the project's yaml config file.
+
+A set of **Analysis Tasks** are defined in yaml (along with the name of a class that will perform the task).
+
+Wherever possible, the results of the analysis process are configurable in the yaml file.
+
+<details>
+<summary>Sample Yaml File</summary>
+_The following snippet is an illustrative example of the data defined in yaml_
+
+```yaml
+  analysis_json:
+    # -------------------
+    # Organize known Merritt mime types by sustainability criteria.
+    # Organization of mime types will be updated over time to incorporate community best practices.
+    # Also, document the expected file extensions for each sustainable mime type.
+    # 
+    # The PASS and INFO mime types will be utilized to identify digital file content within an object.
+    # Each object will be expected to contain at least one file from each of these groups.
+    #
+    # Apache Tika has been used within Merritt to identify mime types (TBD verify).  
+    # Also, this information can be sent by depositors.
+    # The results of this analysis may suggest that Merritt should process all content files with file identification software.
+    # -------------------
+    mime:
+      class: MimeTask
+      PASS: &sustainable_mimes_pass 
+        text/plain: ["txt"]
+        application/xml: ["xml"]
+        image/jpeg: ["jpg", "jpeg"]
+      # Leave SKIP blank to help identify unfound mimes
+      SKIP:
+      FAIL:
+      # x-pkcs: Public-Key Cryptography Standards files provide for certificate storage
+        application/x-pkcs12: []
+        application/x-pkcs7-certificates: []
+      WARN: &sustainable_mimes_warn
+        application/octet-stream: []
+        application/vnd.chipnuts.karaoke-mmd: []
+        application/vnd.ms-excel.sheet.macroenabled.12: []
+      INFO: &sustainable_mimes_info
+        application/x-hdf: []
+        application/x-matlab-data: []
+        text/x-rsrc: []
+        application/x-gtar: ["gz"]
+    # -------------------
+    # Classify Object Producer Files based on an ordered set of rules
+    #
+    # Content Classifications
+    # - complex_object - container file found or preservation files of multiple mime types found within the object
+    # - has_multi_digital_files_with_derivatives - multiple preservation files of the same mime type found and derivative files found
+    # - has_multi_digital_files - multiple preservation files of the same mime type found
+    # - has_digital_file_with_derivatives - preservation and derivative files found
+    # - has_derivatives_only - only derivative content files found
+    # - has_single_digital_file - one identifiable content file
+    # - has_no_content - no identifiable content files
+    #
+    # Metadata Classifications
+    # - has_common_metadata_file: "Common" Merritt metadata file 
+    # - has_bag_metadata_file: Bag metadata file derived from a bagged object
+    # - has_etd_metadata_file: Metadata sidecar file for an ETD submission
+    # - has_nuxeo_style_metadata_file: Metadata sidecar file for a Nuxeo submission
+    # - has_metadata_with_secondary: Primary metadata sidecar file plus other metadata files
+    # - has_single_metadata_file: Primary metadata sidecar file
+    # - has_multi_metadata: Multiple potential metadata sidecar files
+    # - has_secondary_metadata_only: Files containing metadata that would not be classified as a sidecar file. A sidecar is assumed to have richer metadata than a Merritt ERC file.
+    # - has_no_sidecar_metadata: No identifiable metadat file found
+    # -------------------
+    classify:
+      class: ClassifyTask
+      # These categorizations are applied in ranked order allowing the re-use of blocks of mime types
+      metadata_types:
+        common_metadata:
+        nuxeo_style_metadata:
+        bag_metadata:
+        etd_metadata:
+        metadata:
+      categorize:
+      # If multiple common metadata files are found, the primary metadata file will be chosen in the following priority order
+      - name: common_metadata
+        # this indicates that the first match will be used regardless of the number of matches
+        ordered_paths: true
+        paths:
+        - mets.xml
+        - mets.txt
+        - mrt-dc.xml
+        - cdlmeta.tar.gz
+      # If ETD metadata is found, other metadata files will not affect the categorization
+      - name: etd_metadata
+        patterns:
+        - ^.*_(ucr|ucla)_.*_DATA.xml$
+      # If Nuxeo metadata is found, other metadata files will not affect the categorization.
+      # Allowable template values to look for:
+      # - ARK
+      - name: nuxeo_style_metadata
+        templates:
+        - "{{ARK}}.xml"
+        - "{{LOCALID}}.xml"
+      # If bag metadata is found, other metadata files will not affect the categorization.
+      - name: bag_metadata
+        paths:
+        - bag-info.txt
+      # Secondary metadata files may contain metadata, but they are not considered to be a good choice as a "primary" metadata file
+      - name: secondary
+        mimes:
+          text/plain:
+          application/xhtml+xml:
+          application/atom+xml:
+          text/html:
+        patterns:
+        - ^.*-media\.json$
+        paths:
+        - mrt-erc.txt
+      # If mutliple metadata files are found the categorization will indicate that the primary file cannot be identified.
+      - name: metadata
+        mimes:
+          application/xml:
+          application/json:
+      # Complex files may contain multiple types of digital files.  The object will need to be downloaded and expanded in order to introspect the object.
+      - name: complex
+        mimes:
+          application/x-gzip:
+          application/zip:
+          application/gzip:
+      # Common derivative file types.  These file types are not generally good choices for preservation on their own.  These files will generally accompany primary content files.
+      - name: derivatives
+        mimes:
+          video/mp4:
+          audio/mpeg3:
+          image/jpeg:
+          image/gif:
+      # Common digitial files types for preservation
+      # Note that this section is linking out to the sustainable mime type definitions elsewhere in the yaml file.
+      # Any metadata or derivative file types should be categorized in the sections above.
+      - name: content
+        mimes:
+          <<: *sustainable_mimes_pass
+          <<: *sustainable_mimes_info
+      # everything else is classified as :na
+
+```
+</details>
+
 ## Object Health Tests Process
