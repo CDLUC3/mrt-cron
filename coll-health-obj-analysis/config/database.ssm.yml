@@ -143,6 +143,21 @@ default:
         ucsc_lib_sc:
         ucsf_ctp_archive:
         cdl_ipresbo:
+    - name: Test Set 2
+      groups:
+        tag_test_set2:
+      mnemonics:
+        lsta_csu_mbl:
+        ucb_lib_immanu:
+        ucb_lib_bancroft_general:
+        ucb_lib_bancroft_select:
+        ucb_lib_bonney:
+        ucb_lib_eal_books:
+        ucm_lib_ucce_sjo:
+        uci_lib_legacy:
+        ucsc_lib_grateful_dead:
+        ucsf_lib_actup:
+        ucsf_lib_bobbicampbell:
     - name: TBD
       mnemonics:
         cdl_dsc_census:
@@ -180,7 +195,6 @@ default:
         lsta_csufullerton:
         lsta_csula_lib:
         lsta_csus_lib:
-        lsta_csu_mbl:
         lsta_csu_stanislaus:
         lsta_dublinhm:
         lsta_escondidopl:
@@ -273,9 +287,7 @@ default:
         ucb_lib_arrowgb:
         ucb_lib_asami:
         ucb_lib_banclc:
-        ucb_lib_bancroft_general:
         ucb_lib_bancroft_inhouse:
-        ucb_lib_bancroft_select:
         ucb_lib_banc_ctcn:
         ucb_lib_banc_ge:
         ucb_lib_banc_nc:
@@ -286,7 +298,6 @@ default:
         ucb_lib_bart:
         ucb_lib_bios:
         ucb_lib_bmtn:
-        ucb_lib_bonney:
         ucb_lib_call_bulletin:
         ucb_lib_cal_cultures:
         ucb_lib_cal_heritage:
@@ -314,7 +325,6 @@ default:
         ucb_lib_ealjas:
         ucb_lib_ealjr:
         ucb_lib_ealselect:
-        ucb_lib_eal_books:
         ucb_lib_earlyreaders:
         ucb_lib_eckbo:
         ucb_lib_elecephemera:
@@ -344,7 +354,6 @@ default:
         ucb_lib_hpc:
         ucb_lib_huafnc:
         ucb_lib_igsdigital:
-        ucb_lib_immanu:
         ucb_lib_irle:
         ucb_lib_jais:
         ucb_lib_jan:
@@ -428,7 +437,6 @@ default:
         uci_lib_bgilmore:
         uci_lib_diskimage:
         uci_lib_etd:
-        uci_lib_legacy:
         uci_lib_sca_crit:
         uci_lib_sca_orange:
         uci_lib_sca_sc:
@@ -461,7 +469,6 @@ default:
         ucm_lib_ucce_modoc:
         ucm_lib_ucce_sbslo:
         ucm_lib_ucce_sd:
-        ucm_lib_ucce_sjo:
         ucm_lib_ucce_syu:
         ucm_lib_ucce_tulare:
         ucm_lib_ucce_ventura:
@@ -477,16 +484,13 @@ default:
         ucsc_dash:
         ucsc_lib_cabrillo:
         ucsc_lib_etd:
-        ucsc_lib_grateful_dead:
         ucsc_lib_hollzahawi:
         ucsc_lib_kmankoff:
         ucsc_lib_promweek:
         ucsc_lib_regional_history:
         ucsd_lib_etd:
         ucsf_datashare:
-        ucsf_lib_actup:
         ucsf_lib_av:
-        ucsf_lib_bobbicampbell:
         ucsf_lib_calcultures:
         ucsf_lib_cambodiaprotests:
         ucsf_lib_datashare:
