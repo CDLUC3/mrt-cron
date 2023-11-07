@@ -117,8 +117,6 @@ _The following snippet is an illustrative example of the data defined in yaml_
         subgraph TestsStructure
         end
       end
-      OpenSearch((OpenSearch))
-      JsonObject --> OpenSearch
 ```
 
 The **Build** process is intended to extract and assemble known information about an object.
@@ -505,8 +503,6 @@ _If present in the inventory database **inv_metadatas** table. Data contains a d
         subgraph TestsStructure
         end
       end
-      OpenSearch((OpenSearch))
-      JsonObject --> OpenSearch
 ```
 
 The Analysis process is driven by a set of tests defined in the project's yaml config file.
@@ -684,10 +680,41 @@ _The following snippet is an illustrative example of the data defined in yaml_
           ObjectStatus
         end
       end
+```
+
+## Publish to OpenSearch 
+
+```mermaid
+  graph TD;
+      OH(Object Health Process)
+      OH --> JsonObject
+      subgraph JsonObject
+        ID
+        subgraph BuildStructure
+          ObjectIdentifiers
+          ObjectContainerNames
+          ObjectMetadata
+          ObjectFiles
+        end
+        subgraph AnalysisStructure
+          FileMimeClassifications
+          ObjectClassifications
+          PrimaryMetadataFile
+        end
+        subgraph TestsStructure
+          PassingTests
+          SkippedTests
+          FailingTests
+          WarningTests
+          InfoTests
+          ObjectStatus
+        end
+      end
       OpenSearch((OpenSearch))
       JsonObject --> OpenSearch
 ```
 
-## Open Search for Faceting and Filtering Json Objects
+
+### Use OpenSearch for Faceting and Filtering Json Objects
 
 <img width="2094" alt="image" src="https://github.com/CDLUC3/mrt-cron/assets/1111057/0c6906e8-0e8d-41e5-948f-e89d51bb52ed">
