@@ -14,7 +14,9 @@ The process consists of 3 phases which will be captured within the object JSON.
   - INFO: The object does not meet the optimal criteria for a Merritt object but no action is expected
   - WARN: The object does not meet the optimal criteria for a Merritt object and some investigation is recommended 
   - FAIL: The object does not meet the criteria for a Merritt object and remediation is recommended
- 
+
+## Collection Taxonomy
+
 The object health process is configured by a yaml file that defines that processing that will be applied.
 
 Merritt content can be categorized into a taxonomy of collections.  
