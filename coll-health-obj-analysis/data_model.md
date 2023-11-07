@@ -1,5 +1,23 @@
 # Merritt Object Health Data Model
 
+```mermaid
+  graph TD;
+      subgraph Merritt Inventory Database
+        Collection --> Object
+        Object --> Metadata
+        Object --> Files
+      end
+      OH(Object Health Process)
+      Object --> OH
+      OH --> JsonObject
+      subgraph JsonObject
+        ID
+        BuildStructure
+        AnalysisStructure
+        TestsStructure
+      end
+```
+
 The Merritt Object Health process will build a highly structured JSON document for each of the 4 million+ objects stored in the Merritt preservation system.
 
 The JSON documents will be designed to support searching, filtering and faceting using OpenSearch for analysis.
