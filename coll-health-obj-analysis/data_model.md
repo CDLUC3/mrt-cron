@@ -1,4 +1,11 @@
-## Data Model
+# Merritt Object Health Data Model
+
+## Object Build Process
+The **Build** process is intended to extract and assemble known information about an object.
+
+Because some Merritt objects contain tens of thousands of objects, this phase of processing does perform minimal analysis of each file within an object.  
+
+Only the first 1000 files within an object will be detailed in the build structure.
 
 ### Create an object using the Merritt _inv_object_id_ as an identifier
 
@@ -351,3 +358,7 @@ _If present in the inventory database **inv_metadatas** table. Data contains a d
 }
 ```
 </details>
+
+## Object Analysis Process
+
+## Object Health Tests Process
