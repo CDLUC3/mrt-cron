@@ -1,6 +1,10 @@
 ## Data Model
 
-### Create an Object using the Merritt inv_object_id as an identifier
+### Create an object using the Merritt _inv_object_id_ as an identifier
+
+<details>
+<summary>Sample Json</summary>
+    
 ```json
 {
     "id": 3632877,
@@ -8,7 +12,12 @@
 }
 ```
 
-### Create a build Object to capture information known about the object the the Merritt Inventory Database
+</details>
+
+### Create the _build_ property to capture information known about the object the the Merritt Inventory Database
+<details>
+<summary>Sample Json</summary>
+    
 ```json
 {
     "id": 3632877,
@@ -20,7 +29,15 @@
 }
 ```
 
-### Add identfiers for the object.  These can be used to locate the object in Merritt or in OpenSearch.
+</details>
+
+### Add identfiers for the object.  
+
+These can be used to locate the object in Merritt or in OpenSearch.
+
+<details>
+<summary>Sample Json</summary>
+    
 ```json
 {
     "id": 3632877,
@@ -38,7 +55,14 @@
 }
 ```
 
-### Add information about the containers for the object.  These allow for filtering for similar objects.
+</details>
+
+### Add information about the containers for the object.  
+
+These allow for filtering for similar objects.
+
+<details>
+<summary>Sample Json</summary>
 ```json
 {
     "id": 3632877,
@@ -62,7 +86,15 @@
 }
 ```
 
-### Add metadata for the object.  The Merritt inventory database maintains minimal metadata for each object.
+</details>
+
+### Add metadata for the object.  
+
+The Merritt inventory database maintains minimal metadata (what, who, when, where) for each object.
+
+<details>
+<summary>Sample Json</summary>
+
 ```json
 {
     "id": 3632877,
@@ -82,7 +114,14 @@
 }
 ```
 
+</details>
+
 ### Add detailed information about Merritt System Files for the object.
+
+
+<details>
+<summary>Sample Json</summary>
+
 ```json
 {
     "id": 3632877,
@@ -124,9 +163,15 @@
     "@timestamp": "2023-11-06T13:44:35-0800",
 }
 ```
+</details>
 
 ### Add detailed information about Merritt Producer Files for the object.
 _Detailed information will be recorded for up to 1000 objects._
+
+
+<details>
+<summary>Sample Json</summary>
+
 ```json
 {
     "id": 3632877,
@@ -169,9 +214,15 @@ _Detailed information will be recorded for up to 1000 objects._
     "@timestamp": "2023-11-06T13:44:35-0800",
 }
 ```
+</details>
 
 ### Add summary information about the set of files found in the object
 _includes ALL files, not just the first 1000 files_
+
+
+<details>
+<summary>Sample Json</summary>
+
 ```json
 {
     "id": 3632877,
@@ -203,8 +254,13 @@ _includes ALL files, not just the first 1000 files_
     "@timestamp": "2023-11-06T13:44:35-0800",
 }
 ```
+</details>
 
 ### Capture version information about the object and the last modified date
+
+<details>
+<summary>Sample Json</summary>
+
 ```json
 {
     "id": 3632877,
@@ -224,8 +280,13 @@ _includes ALL files, not just the first 1000 files_
     "@timestamp": "2023-11-06T13:44:35-0800",
 }
 ```
+</details>
 
 ### Capture embargo information about the object (if present)
+
+<details>
+<summary>Sample Json</summary>
+
 ```json
 {
     "id": 3632877,
@@ -246,9 +307,14 @@ _includes ALL files, not just the first 1000 files_
     "@timestamp": "2023-11-06T13:44:35-0800",
 }
 ```
+</details>
 
 ### Capture metadata sidecar information about the object
 _If present in the inventory database **inv_metadatas** table. Data contains a dump of dublin core type metadata._
+
+
+<details>
+<summary>Sample Json</summary>
 ```json
 {
     "id": 3632877,
@@ -284,3 +350,4 @@ _If present in the inventory database **inv_metadatas** table. Data contains a d
     "@timestamp": "2023-11-06T13:44:35-0800",
 }
 ```
+</details>
