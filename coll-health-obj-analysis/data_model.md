@@ -13,7 +13,58 @@ The process consists of 3 phases which will be captured within the object JSON.
   - PASS: The object meets the optimal criteria for a Merritt object
   - INFO: The object does not meet the optimal criteria for a Merritt object but no action is expected
   - WARN: The object does not meet the optimal criteria for a Merritt object and some investigation is recommended 
-  - FAIL: The object does not meet the criteria for a Merritt object and remediation is recommended 
+  - FAIL: The object does not meet the criteria for a Merritt object and remediation is recommended
+ 
+The object health process is configured by a yaml file that defines that processing that will be applied.
+
+Merritt content can be categorized into a taxonomy of collections.  
+
+Tasks can be applied to objects based on this taxonomy.  The collections to prioritize for this analyis will also be controlled by this taxonomy.
+
+<details>
+<summary>Sample Yaml Snippet</summary>
+_The following snippet is an illustrative example of the data defined in yaml_
+
+```yaml
+  # -------------------
+  # Collection Taxonomy
+  #   This can be used to include/exclude specific collections from specific Analysis Tasks and Tests
+  # -------------------
+  collection_taxonomy:
+    - name: Skip Tests
+      groups: 
+        tag_skip:
+      mnemonics:
+        ucb_open_context:
+        cdl_dryad:
+        cdl_uc3_etdreports:
+    - name: Initial Test Set
+      groups:
+        tag_test_set:
+      mnemonics:
+        merritt_demo:
+        ucb_bampfa_art:
+        ucb_lib_bancroft:
+        ucb_lib_church:
+        ucb_lib_examiner:
+        ucb_lib_sugoroku:
+        ucla_dash:
+        ucla_lib_etd:
+          tags:
+            tag_etd:
+        ucla_lib_frontera:
+        ucla_lib_str_frontera:
+        ucm_lib_mclean:
+        ucr_lib_etd:
+          tags:
+            tag_etd:
+        ucr_lib_nuxeo:
+        ucsc_lib_sc:
+        ucsf_ctp_archive:
+        cdl_ipresbo:
+```
+
+</details>
 
 ## Object Build Process
 The **Build** process is intended to extract and assemble known information about an object.
@@ -383,7 +434,7 @@ A set of **Analysis Tasks** are defined in yaml (along with the name of a class 
 Wherever possible, the results of the analysis process are configurable in the yaml file.
 
 <details>
-<summary>Sample Yaml File</summary>
+<summary>Sample Yaml Snippet</summary>
 _The following snippet is an illustrative example of the data defined in yaml_
 
 ```yaml
