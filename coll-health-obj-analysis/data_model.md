@@ -2,20 +2,27 @@
 
 ```mermaid
   graph TD;
-      subgraph Merritt Inventory Database
+      subgraph Merritt_Inventory_DB
         Collection --> Object
         Object --> Metadata
         Object --> Files
       end
       OH(Object Health Process)
-      Object --> OH
+      Yaml[/Yaml Config/]
+      Yaml --> OH
+      Merritt_Inventory_DB --> OH
       OH --> JsonObject
       subgraph JsonObject
         ID
-        BuildStructure
-        AnalysisStructure
-        TestsStructure
+        subgraph BuildStructure
+        end
+        subgraph AnalysisStructure
+        end
+        subgraph TestsStructure
+        end
       end
+      OpenSearch((OpenSearch))
+      JsonObject --> OpenSearch
 ```
 
 The Merritt Object Health process will build a highly structured JSON document for each of the 4 million+ objects stored in the Merritt preservation system.
@@ -87,6 +94,33 @@ _The following snippet is an illustrative example of the data defined in yaml_
 </details>
 
 ## Object Build Process
+
+```mermaid
+  graph TD;
+      subgraph Merritt_Inventory_DB
+      end
+      OH(Object Health Process)
+      Yaml[/Yaml Config/]
+      Yaml --> OH
+      Merritt_Inventory_DB --> OH
+      OH --> JsonObject
+      subgraph JsonObject
+        ID
+        subgraph BuildStructure
+          ObjectIdentifiers
+          ObjectContainerNames
+          ObjectMetadata
+          ObjectFiles
+        end
+        subgraph AnalysisStructure
+        end
+        subgraph TestsStructure
+        end
+      end
+      OpenSearch((OpenSearch))
+      JsonObject --> OpenSearch
+```
+
 The **Build** process is intended to extract and assemble known information about an object.
 
 Because some Merritt objects contain tens of thousands of objects, this phase of processing does perform minimal analysis of each file within an object.  
@@ -447,6 +481,34 @@ _If present in the inventory database **inv_metadatas** table. Data contains a d
 
 ## Object Analysis Process
 
+```mermaid
+  graph TD;
+      OH(Object Health Process)
+      Yaml[/Yaml Config/]
+      Yaml --> OH
+      Tasks[[Analysis Task Definitions]]
+      Tasks --> Yaml
+      OH --> JsonObject
+      subgraph JsonObject
+        ID
+        subgraph BuildStructure
+          ObjectIdentifiers
+          ObjectContainerNames
+          ObjectMetadata
+          ObjectFiles
+        end
+        subgraph AnalysisStructure
+          FileMimeClassifications
+          ObjectClassifications
+          PrimaryMetadataFile
+        end
+        subgraph TestsStructure
+        end
+      end
+      OpenSearch((OpenSearch))
+      JsonObject --> OpenSearch
+```
+
 The Analysis process is driven by a set of tests defined in the project's yaml config file.
 
 A set of **Analysis Tasks** are defined in yaml (along with the name of a class that will perform the task).
@@ -591,3 +653,37 @@ _The following snippet is an illustrative example of the data defined in yaml_
 </details>
 
 ## Object Health Tests Process
+
+```mermaid
+  graph TD;
+      OH(Object Health Process)
+      Yaml[/Yaml Config/]
+      Yaml --> OH
+      Tests[[Object Test Definitions]]
+      Tests --> Yaml
+      OH --> JsonObject
+      subgraph JsonObject
+        ID
+        subgraph BuildStructure
+          ObjectIdentifiers
+          ObjectContainerNames
+          ObjectMetadata
+          ObjectFiles
+        end
+        subgraph AnalysisStructure
+          FileMimeClassifications
+          ObjectClassifications
+          PrimaryMetadataFile
+        end
+        subgraph TestsStructure
+          PassingTests
+          SkippedTests
+          FailingTests
+          WarningTests
+          InfoTests
+          ObjectStatus
+        end
+      end
+      OpenSearch((OpenSearch))
+      JsonObject --> OpenSearch
+```
