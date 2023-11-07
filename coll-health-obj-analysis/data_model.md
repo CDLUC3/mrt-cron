@@ -1,5 +1,20 @@
 # Merritt Object Health Data Model
 
+The Merritt Object Health process will build a highly structured JSON document for each of the 4 million+ objects stored in the Merritt preservation system.
+
+The JSON documents will be designed to support searching, filtering and faceting using OpenSearch for analysis.
+
+The process consists of 3 phases which will be captured within the object JSON.
+
+- **Build**: Extract known information about an object from the inventory database
+- **Analysis**: Apply a set of **Analysis Tasks** to the build structure to classify and categorize the objects
+- **Tests**: Apply a set of **Object Tests** against the build and analysis structures each of which will result in one of the following status values
+  - SKIP: A test is skipped if it is not applicable to a specific object or to its containing collection
+  - PASS: The object meets the optimal criteria for a Merritt object
+  - INFO: The object does not meet the optimal criteria for a Merritt object but no action is expected
+  - WARN: The object does not meet the optimal criteria for a Merritt object and some investigation is recommended 
+  - FAIL: The object does not meet the criteria for a Merritt object and remediation is recommended 
+
 ## Object Build Process
 The **Build** process is intended to extract and assemble known information about an object.
 
