@@ -457,6 +457,38 @@ Capture embargo information about the object (if present)
 ```
 </details>
 
+### Ignored Files
+
+Capture specific files (based on file name) that will be ignored by all subsequent analysis steps.
+
+<details>
+<summary>Sample Json</summary>
+
+```json
+{
+    "id": 3632877,
+    "@timestamp": "2023-11-06T13:44:35-0800",
+    "build": {
+      "id": 3632877,
+      "identifiers": {},
+      "containers": {},
+      "metadata": {},
+      "system": [],
+      "producer": [],
+      "file_counts": {},
+      "mimes_for_object": [],
+      "version": 2,
+      "modified": "2023-10-30T16:29:29-07:00",
+      "embargo_end_date": "",
+      "ignore_files": [
+        "producer/Thumbs.db",
+      ]
+    },
+    "@timestamp": "2023-11-06T13:44:35-0800",
+}
+```
+</details>
+
 ### Sidecar Metadata
 
 Capture metadata sidecar information about the object
