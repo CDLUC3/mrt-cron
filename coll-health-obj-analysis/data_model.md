@@ -188,6 +188,7 @@ These allow for filtering for similar objects.
 
 <details>
 <summary>Sample Json</summary>
+  
 ```json
 {
     "id": 3632877,
@@ -440,6 +441,7 @@ _If present in the inventory database **inv_metadatas** table. Data contains a d
 
 <details>
 <summary>Sample Json</summary>
+  
 ```json
 {
     "id": 3632877,
@@ -475,6 +477,7 @@ _If present in the inventory database **inv_metadatas** table. Data contains a d
     "@timestamp": "2023-11-06T13:44:35-0800",
 }
 ```
+
 </details>
 
 ## Object Analysis Process
