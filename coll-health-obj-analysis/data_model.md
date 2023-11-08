@@ -125,7 +125,9 @@ Because some Merritt objects contain tens of thousands of objects, this phase of
 
 Only the first 1000 files within an object will be detailed in the build structure.
 
-### Create an object using the Merritt _inv_object_id_ as an identifier
+### Create JSON object
+
+Create a JSON object using the Merritt _inv_object_id_ as an identifier
 
 <details>
 <summary>Sample Json</summary>
@@ -139,7 +141,10 @@ Only the first 1000 files within an object will be detailed in the build structu
 
 </details>
 
-### Create the _build_ property to capture information known about the object the the Merritt Inventory Database
+### Create _build_ property
+
+Create the build property to capture information known about the object the the Merritt Inventory Database
+
 <details>
 <summary>Sample Json</summary>
     
@@ -156,7 +161,9 @@ Only the first 1000 files within an object will be detailed in the build structu
 
 </details>
 
-### Add identfiers for the object.  
+### Object Identifiers
+
+Add identfiers for the object.  
 
 These can be used to locate the object in Merritt or in OpenSearch.
 
@@ -182,7 +189,9 @@ These can be used to locate the object in Merritt or in OpenSearch.
 
 </details>
 
-### Add information about the containers for the object.  
+### Object Containers
+
+Add information about the containers for the object.  
 
 These allow for filtering for similar objects.
 
@@ -214,7 +223,9 @@ These allow for filtering for similar objects.
 
 </details>
 
-### Add metadata for the object.  
+### Object Metadata
+
+Add metadata for the object.  
 
 The Merritt inventory database maintains minimal metadata (what, who, when, where) for each object.
 
@@ -242,8 +253,9 @@ The Merritt inventory database maintains minimal metadata (what, who, when, wher
 
 </details>
 
-### Add detailed information about Merritt System Files for the object.
+### System Files
 
+Add detailed information about Merritt System Files for the object.
 
 <details>
 <summary>Sample Json</summary>
@@ -291,7 +303,10 @@ The Merritt inventory database maintains minimal metadata (what, who, when, wher
 ```
 </details>
 
-### Add detailed information about Merritt Producer Files for the object.
+### Producer Files
+
+Add detailed information about Merritt Producer Files for the object.
+
 _Detailed information will be recorded for up to 1000 objects._
 
 
@@ -342,8 +357,11 @@ _Detailed information will be recorded for up to 1000 objects._
 ```
 </details>
 
-### Add summary information about the set of files found in the object
-_includes ALL files, not just the first 1000 files_
+### Summary information about object files
+
+Add summary information about the set of files found in the object
+
+_Includes ALL files, not just the first 1000 files_
 
 
 <details>
@@ -382,7 +400,9 @@ _includes ALL files, not just the first 1000 files_
 ```
 </details>
 
-### Capture version information about the object and the last modified date
+### Version and Date Modified
+
+Capture version information about the object and the last modified date
 
 <details>
 <summary>Sample Json</summary>
@@ -408,7 +428,9 @@ _includes ALL files, not just the first 1000 files_
 ```
 </details>
 
-### Capture embargo information about the object (if present)
+### Embargo
+
+Capture embargo information about the object (if present)
 
 <details>
 <summary>Sample Json</summary>
@@ -435,7 +457,10 @@ _includes ALL files, not just the first 1000 files_
 ```
 </details>
 
-### Capture metadata sidecar information about the object
+### Sidecar Metadata
+
+Capture metadata sidecar information about the object
+
 _If present in the inventory database **inv_metadatas** table. Data contains a dump of dublin core type metadata._
 
 
@@ -747,6 +772,8 @@ _The following snippet is an illustrative example of the data defined in yaml_
       JsonObject --> OpenSearch
 ```
 
-### Use OpenSearch for Faceting and Filtering Json Objects
+### OpenSearch Query
+
+Use OpenSearch for Faceting and Filtering Json Objects
 
 <img width="2094" alt="image" src="https://github.com/CDLUC3/mrt-cron/assets/1111057/0c6906e8-0e8d-41e5-948f-e89d51bb52ed">
