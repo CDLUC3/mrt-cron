@@ -126,9 +126,9 @@ Because some Merritt objects contain tens of thousands of objects, this phase of
 Only the first 1000 files within an object will be detailed in the build structure.
 
 <details>
-<summary><h4>JSON Snippets for the BUILD Property</h4></summary>
+<summary><h3>JSON Snippets for the BUILD Property</h3></summary>
 
-### Create JSON object
+#### Create JSON object
 
 Create a JSON object using the Merritt _inv_object_id_ as an identifier
 
@@ -144,7 +144,7 @@ Create a JSON object using the Merritt _inv_object_id_ as an identifier
 
 </details>
 
-### Create _build_ property
+#### Create _build_ property
 
 Create the build property to capture information known about the object the the Merritt Inventory Database
 
@@ -164,7 +164,7 @@ Create the build property to capture information known about the object the the 
 
 </details>
 
-### Object Identifiers
+#### Object Identifiers
 
 Add identfiers for the object.  
 
@@ -192,7 +192,7 @@ These can be used to locate the object in Merritt or in OpenSearch.
 
 </details>
 
-### Object Containers
+#### Object Containers
 
 Add information about the containers for the object.  
 
@@ -226,7 +226,7 @@ These allow for filtering for similar objects.
 
 </details>
 
-### Object Metadata
+#### Object Metadata
 
 Add metadata for the object.  
 
@@ -256,7 +256,7 @@ The Merritt inventory database maintains minimal metadata (what, who, when, wher
 
 </details>
 
-### System Files
+#### System Files
 
 Add detailed information about Merritt System Files for the object.
 
@@ -306,7 +306,7 @@ Add detailed information about Merritt System Files for the object.
 ```
 </details>
 
-### Producer Files
+#### Producer Files
 
 Add detailed information about Merritt Producer Files for the object.
 
@@ -360,7 +360,7 @@ _Detailed information will be recorded for up to 1000 objects._
 ```
 </details>
 
-### File counts
+#### File counts
 
 Add summary information about the set of files found in the object
 
@@ -403,7 +403,7 @@ _Includes ALL files, not just the first 1000 files_
 ```
 </details>
 
-### Version and Date Modified
+#### Version and Date Modified
 
 Capture version information about the object and the last modified date
 
@@ -431,7 +431,7 @@ Capture version information about the object and the last modified date
 ```
 </details>
 
-### Embargo
+#### Embargo
 
 Capture embargo information about the object (if present)
 
@@ -460,7 +460,7 @@ Capture embargo information about the object (if present)
 ```
 </details>
 
-### Ignored Files
+#### Ignored Files
 
 Capture specific files (based on file name) that will be ignored by all subsequent analysis steps.
 
@@ -492,7 +492,7 @@ Capture specific files (based on file name) that will be ignored by all subseque
 ```
 </details>
 
-### Sidecar Metadata
+#### Sidecar Metadata
 
 Capture metadata sidecar information about the object
 
@@ -717,9 +717,9 @@ _The following snippet is an illustrative example of the data defined in yaml_
 
 
 <details>
-<summary><h4>JSON Snippets for the ANALYSIS Property</h4></summary>
+<summary><h3>JSON Snippets for the ANALYSIS Property</h3></summary>
 
-### Note
+#### Note
 
 <details>
 <summary>Sample Json</summary>
@@ -769,9 +769,9 @@ _The following snippet is an illustrative example of the data defined in yaml_
 ```
 
 <details>
-<summary><h4>JSON Snippets for the TESTS Property</h4></summary>
+<summary><h3>JSON Snippets for the TESTS Property</h3></summary>
 
-### Note
+#### Note
 
 <details>
 <summary>Sample Json</summary>
