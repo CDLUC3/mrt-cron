@@ -125,6 +125,9 @@ Because some Merritt objects contain tens of thousands of objects, this phase of
 
 Only the first 1000 files within an object will be detailed in the build structure.
 
+<details>
+<summary><h4>JSON Snippets for the BUILD Property</h4></summary>
+
 ### Create JSON object
 
 Create a JSON object using the Merritt _inv_object_id_ as an identifier
@@ -537,6 +540,8 @@ _If present in the inventory database **inv_metadatas** table. Data contains a d
 
 </details>
 
+</details>
+
 ---
 
 ## Object Analysis Process
@@ -710,6 +715,10 @@ _The following snippet is an illustrative example of the data defined in yaml_
 ```
 </details>
 
+
+<details>
+<summary><h4>JSON Snippets for the ANALYSIS Property</h4></summary>
+
 ### Note
 
 <details>
@@ -722,6 +731,7 @@ _The following snippet is an illustrative example of the data defined in yaml_
 
 </details>
 
+</details>
 ---
 
 ## Object Health Tests Process
@@ -758,6 +768,9 @@ _The following snippet is an illustrative example of the data defined in yaml_
       end
 ```
 
+<details>
+<summary><h4>JSON Snippets for the TESTS Property</h4></summary>
+
 ### Note
 
 <details>
@@ -767,6 +780,8 @@ _The following snippet is an illustrative example of the data defined in yaml_
 {
 }
 ```
+
+</details>
 
 </details>
 
