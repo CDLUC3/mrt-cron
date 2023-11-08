@@ -726,6 +726,68 @@ _The following snippet is an illustrative example of the data defined in yaml_
     
 ```json
 {
+    "id": 3632877,
+    "@timestamp": "2023-11-06T13:44:35-0800",
+    "analysis": {
+      "mimes_by_status": {
+        "SKIP": [],
+        "PASS": [
+          "text/plain"
+        ],
+        "INFO": [
+          "text/x-web-markdown"
+        ],
+        "WARN": [],
+        "FAIL": []
+      },
+      "mime_ext_mismatch": [
+        {
+          "mime": "text/plain",
+          "ext": "v2",
+          "count": 1
+        }
+      ],
+      "classification": {
+        "na": 0,
+        "common_metadata": 0,
+        "etd_metadata": 0,
+        "nuxeo_style_metadata": 0,
+        "bag_metadata": 0,
+        "secondary": 1,
+        "metadata": 0,
+        "complex": 0,
+        "derivatives": 0,
+        "content": 1
+      },
+      "mime_file_classification": {
+        "na": [],
+        "common_metadata": [],
+        "etd_metadata": [],
+        "nuxeo_style_metadata": [],
+        "bag_metadata": [],
+        "secondary": [
+          "text/plain"
+        ],
+        "metadata": [],
+        "complex": [],
+        "derivatives": [],
+        "content": [
+          "text/x-web-markdown"
+        ]
+      },
+      "metadata_paths": {
+        "common_metadata": [],
+        "nuxeo_style_metadata": [],
+        "bag_metadata": [],
+        "etd_metadata": [],
+        "metadata": []
+      },
+      "object_classification": "has_single_digital_file",
+      "metadata_classification": "has_secondary_metadata_only",
+      "primary_metadata_file": "NA"
+    },
+    "build": {},
+    "@timestamp": "2023-11-06T13:44:35-0800"
 }
 ```
 
