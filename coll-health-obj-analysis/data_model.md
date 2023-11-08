@@ -934,6 +934,8 @@ Classify each producer file by the role it plays.
 
 #### Identify the path of the primary metadata file for the object
 
+The path will be set if found.  Otherwise, the value will be set to "NA".
+
 <details>
 <summary>Sample Json</summary>
     
@@ -958,8 +960,8 @@ Classify each producer file by the role it plays.
 
 </details>
 
-
 </details>
+
 ---
 
 ## Object Health Tests Process
@@ -999,13 +1001,172 @@ Classify each producer file by the role it plays.
 <details>
 <summary><h3>JSON Snippets for the TESTS Property</h3></summary>
 
-#### Note
+#### Record the status for each test
 
 <details>
 <summary>Sample Json</summary>
     
 ```json
 {
+    "id": 3632877,
+    "@timestamp": "2023-11-06T13:44:35-0800",
+    "analysis": {},
+    "build": {},
+    "tests": {
+      "sustainable-mime": "INFO",
+      "mime-extension-mismatch": "FAIL",
+      "mime-not-found": "PASS",
+      "has-ignored-file": "PASS",
+      "object-classification": "PASS",
+      "metadata-classification": "WARN",
+      "ext-url-like-pathname": "PASS",
+      "ext-not-present": "PASS",
+      "empty-file": "PASS",
+      "has-delete": "PASS",
+      "doesnt-have-meaningful-erc-what": "PASS",
+      "doesnt-have-meaningful-erc-who": "WARN",
+      "doesnt-have-meaningful-erc-when": "WARN",
+      "has-embargo": "PASS",
+      "no-local-id": "SKIP",
+    }
+  },
+  "@timestamp": "2023-11-06T13:44:35-0800"
+}
+```
+
+</details>
+
+</details>
+
+#### Capture Test Results by Status
+
+<details>
+<summary>Sample Json</summary>
+    
+```json
+{
+    "id": 3632877,
+    "@timestamp": "2023-11-06T13:44:35-0800",
+    "analysis": {},
+    "build": {},
+    "tests": {
+      "by_status": {
+        "INFO": [
+          "sustainable-mime"
+        ],
+        "FAIL": [
+          "mime-extension-mismatch"
+        ],
+        "PASS": [
+          "mime-not-found",
+          "has-ignored-file",
+          "object-classification",
+          "ext-url-like-pathname",
+          "ext-not-present",
+          "empty-file",
+          "has-delete",
+          "doesnt-have-meaningful-erc-what",
+          "has-embargo"
+        ],
+        "WARN": [
+          "metadata-classification",
+          "doesnt-have-meaningful-erc-who",
+          "doesnt-have-meaningful-erc-when"
+        ],
+        "SKIP": [
+          "no-local-id"
+        ]
+      },
+    }
+  },
+  "@timestamp": "2023-11-06T13:44:35-0800"
+}
+```
+
+</details>
+
+</details>
+
+#### Count Test Results by Status
+
+<details>
+<summary>Sample Json</summary>
+    
+```json
+{
+    "id": 3632877,
+    "@timestamp": "2023-11-06T13:44:35-0800",
+    "analysis": {},
+    "build": {},
+    "tests": {
+      "SKIP": 1,
+      "PASS": 9,
+      "INFO": 1,
+      "WARN": 3,
+      "FAIL": 1,
+      "by_status": {},
+    }
+  },
+  "@timestamp": "2023-11-06T13:44:35-0800"
+}
+```
+
+</details>
+
+</details>
+
+#### Identify Non-Passing and Failing Tests
+
+<details>
+<summary>Sample Json</summary>
+    
+```json
+{
+    "id": 3632877,
+    "@timestamp": "2023-11-06T13:44:35-0800",
+    "analysis": {},
+    "build": {},
+    "tests": {
+      "failures": [],
+      "summary": [
+        "sustainable-mime",
+        "mime-extension-mismatch",
+        "metadata-classification",
+        "doesnt-have-meaningful-erc-who",
+        "doesnt-have-meaningful-erc-when",
+        "no-local-id"
+      ],
+      "sustainable-mime": "INFO",
+      "by_status": {},
+    }
+  },
+  "@timestamp": "2023-11-06T13:44:35-0800"
+}
+```
+
+</details>
+
+</details>
+
+#### Set and Overall Status for the Object
+
+<details>
+<summary>Sample Json</summary>
+    
+```json
+{
+    "id": 3632877,
+    "@timestamp": "2023-11-06T13:44:35-0800",
+    "analysis": {},
+    "build": {},
+    "tests": {
+      "failures": [],
+      "summary": [],
+      "by_status": {},
+      "state": "FAIL"
+    }
+  },
+  "@timestamp": "2023-11-06T13:44:35-0800"
 }
 ```
 
