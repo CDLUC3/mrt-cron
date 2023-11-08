@@ -480,6 +480,8 @@ _If present in the inventory database **inv_metadatas** table. Data contains a d
 
 </details>
 
+---
+
 ## Object Analysis Process
 
 ```mermaid
@@ -651,6 +653,20 @@ _The following snippet is an illustrative example of the data defined in yaml_
 ```
 </details>
 
+### Note
+
+<details>
+<summary>Sample Json</summary>
+    
+```json
+{
+}
+```
+
+</details>
+
+---
+
 ## Object Health Tests Process
 
 ```mermaid
@@ -685,6 +701,20 @@ _The following snippet is an illustrative example of the data defined in yaml_
       end
 ```
 
+### Note
+
+<details>
+<summary>Sample Json</summary>
+    
+```json
+{
+}
+```
+
+</details>
+
+---
+
 ## Publish to OpenSearch 
 
 ```mermaid
@@ -716,7 +746,6 @@ _The following snippet is an illustrative example of the data defined in yaml_
       OpenSearch((OpenSearch))
       JsonObject --> OpenSearch
 ```
-
 
 ### Use OpenSearch for Faceting and Filtering Json Objects
 
