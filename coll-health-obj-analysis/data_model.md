@@ -1036,8 +1036,6 @@ The path will be set if found.  Otherwise, the value will be set to "NA".
 
 </details>
 
-</details>
-
 #### Capture Test Results by Status
 
 <details>
@@ -1085,8 +1083,6 @@ The path will be set if found.  Otherwise, the value will be set to "NA".
 
 </details>
 
-</details>
-
 #### Count Test Results by Status
 
 <details>
@@ -1110,8 +1106,6 @@ The path will be set if found.  Otherwise, the value will be set to "NA".
   "@timestamp": "2023-11-06T13:44:35-0800"
 }
 ```
-
-</details>
 
 </details>
 
@@ -1143,8 +1137,6 @@ The path will be set if found.  Otherwise, the value will be set to "NA".
   "@timestamp": "2023-11-06T13:44:35-0800"
 }
 ```
-
-</details>
 
 </details>
 
