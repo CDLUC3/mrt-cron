@@ -119,6 +119,7 @@ default:
         ucb_open_context:
         cdl_dryad:
         cdl_uc3_etdreports:
+        ucr_lib_dash:
     - name: Initial Test Set
       groups:
         tag_test_set:
@@ -158,6 +159,37 @@ default:
         ucsc_lib_grateful_dead:
         ucsf_lib_actup:
         ucsf_lib_bobbicampbell:
+
+    - name: Test Set 3
+      groups:
+        tag_test_set3:
+      mnemonics:
+        uci_honors_theses:
+        uci_lib_bgilmore:
+        uci_lib_diskimage:
+        uci_lib_etd:
+          tags:
+            tag_etd:
+        uci_lib_sca_crit:
+        uci_lib_sca_orange:
+        uci_lib_sca_sc:
+        uci_lib_sca_se_asian:
+        uci_lib_sca_ua:
+        uci_lib_sca_upub:
+        uci_lib_ucispace:
+        uci_lib_vaohp:
+        ucr_lib_eatonfz:
+        ucr_lib_wrca_laaqua:
+        ucr_lib_wrca_wwaters:
+        ucsc_lib_cabrillo:
+        ucsc_lib_etd:
+          tags:
+            tag_etd:
+        ucsc_lib_hollzahawi:
+        ucsc_lib_kmankoff:
+        ucsc_lib_promweek:
+        ucsc_lib_regional_history:
+
     - name: TBD
       mnemonics:
         cdl_dsc_census:
@@ -433,18 +465,6 @@ default:
         ucd_lib_misc:
         ucd_lib_yolo:
         uci_dash:
-        uci_honors_theses:
-        uci_lib_bgilmore:
-        uci_lib_diskimage:
-        uci_lib_etd:
-        uci_lib_sca_crit:
-        uci_lib_sca_orange:
-        uci_lib_sca_sc:
-        uci_lib_sca_se_asian:
-        uci_lib_sca_ua:
-        uci_lib_sca_upub:
-        uci_lib_ucispace:
-        uci_lib_vaohp:
         ucla_lib_hoover:
         ucla_womenshealth_lbwhc_resources:
         ucm_admin_misc:
@@ -473,21 +493,11 @@ default:
         ucm_lib_ucce_tulare:
         ucm_lib_ucce_ventura:
         ucr_bcoe_2dmaterials:
-        ucr_lib_dash:
-        ucr_lib_eatonfz:
-        ucr_lib_wrca_laaqua:
-        ucr_lib_wrca_wwaters:
         ucsb_admin_misc:
         ucsb_dash:
         ucsb_lib_calcultures:
         ucsb_lib_etd:
         ucsc_dash:
-        ucsc_lib_cabrillo:
-        ucsc_lib_etd:
-        ucsc_lib_hollzahawi:
-        ucsc_lib_kmankoff:
-        ucsc_lib_promweek:
-        ucsc_lib_regional_history:
         ucsd_lib_etd:
         ucsf_datashare:
         ucsf_lib_av:
