@@ -259,16 +259,16 @@ class ObjectHealthObjectTests < ObjectHealthObjectComponent
   end
             
   def default_object
-    tres = {failures: [], summary: [], test_run_log: []}
+    tres = {failures: [], summary: [], results: {}, counts: {}}
     ObjectHealth.status_values.each do |stat|
-      tres[stat] = 0
+      tres[:counts][stat] = 0
     end
     tres
   end
 
   def record_test(name, status)
-    set_key(name.to_sym, status)
-    increment_key(status)
+    set_subkey(:results, name.to_sym, status)
+    increment_subkey(:counts, status)
     append_subkey(:by_status, status, name)
     #append_key(:failures, name) if status == :FAIL
   end    

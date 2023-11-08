@@ -1013,21 +1013,23 @@ The path will be set if found.  Otherwise, the value will be set to "NA".
     "analysis": {},
     "build": {},
     "tests": {
-      "sustainable-mime": "INFO",
-      "mime-extension-mismatch": "FAIL",
-      "mime-not-found": "PASS",
-      "has-ignored-file": "PASS",
-      "object-classification": "PASS",
-      "metadata-classification": "WARN",
-      "ext-url-like-pathname": "PASS",
-      "ext-not-present": "PASS",
-      "empty-file": "PASS",
-      "has-delete": "PASS",
-      "doesnt-have-meaningful-erc-what": "PASS",
-      "doesnt-have-meaningful-erc-who": "WARN",
-      "doesnt-have-meaningful-erc-when": "WARN",
-      "has-embargo": "PASS",
-      "no-local-id": "SKIP",
+      "results": {
+        "sustainable-mime": "INFO",
+        "mime-extension-mismatch": "FAIL",
+        "mime-not-found": "PASS",
+        "has-ignored-file": "PASS",
+        "object-classification": "PASS",
+        "metadata-classification": "WARN",
+        "ext-url-like-pathname": "PASS",
+        "ext-not-present": "PASS",
+        "empty-file": "PASS",
+        "has-delete": "PASS",
+        "doesnt-have-meaningful-erc-what": "PASS",
+        "doesnt-have-meaningful-erc-who": "WARN",
+        "doesnt-have-meaningful-erc-when": "WARN",
+        "has-embargo": "PASS",
+        "no-local-id": "SKIP"
+      }
     }
   },
   "@timestamp": "2023-11-06T13:44:35-0800"
@@ -1048,6 +1050,7 @@ The path will be set if found.  Otherwise, the value will be set to "NA".
     "analysis": {},
     "build": {},
     "tests": {
+      "results": {},
       "by_status": {
         "INFO": [
           "sustainable-mime"
@@ -1095,11 +1098,14 @@ The path will be set if found.  Otherwise, the value will be set to "NA".
     "analysis": {},
     "build": {},
     "tests": {
-      "SKIP": 1,
-      "PASS": 9,
-      "INFO": 1,
-      "WARN": 3,
-      "FAIL": 1,
+      "results": {},
+      "counts": {
+        "SKIP": 1,
+        "PASS": 9,
+        "INFO": 1,
+        "WARN": 3,
+        "FAIL": 1
+      },
       "by_status": {},
     }
   },
@@ -1121,6 +1127,9 @@ The path will be set if found.  Otherwise, the value will be set to "NA".
     "analysis": {},
     "build": {},
     "tests": {
+      "results": {},
+      "counts": {},
+      "by_status": {},
       "failures": [],
       "summary": [
         "sustainable-mime",
@@ -1129,9 +1138,7 @@ The path will be set if found.  Otherwise, the value will be set to "NA".
         "doesnt-have-meaningful-erc-who",
         "doesnt-have-meaningful-erc-when",
         "no-local-id"
-      ],
-      "sustainable-mime": "INFO",
-      "by_status": {},
+      ]
     }
   },
   "@timestamp": "2023-11-06T13:44:35-0800"
@@ -1152,6 +1159,8 @@ The path will be set if found.  Otherwise, the value will be set to "NA".
     "analysis": {},
     "build": {},
     "tests": {
+      "results": {},
+      "counts": {},
       "failures": [],
       "summary": [],
       "by_status": {},
