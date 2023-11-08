@@ -719,7 +719,9 @@ _The following snippet is an illustrative example of the data defined in yaml_
 <details>
 <summary><h3>JSON Snippets for the ANALYSIS Property</h3></summary>
 
-#### Note
+#### Producer File Mime Sustainability
+
+Analyze all producer mime types by sustainability status (defined in yaml)
 
 <details>
 <summary>Sample Json</summary>
@@ -740,6 +742,27 @@ _The following snippet is an illustrative example of the data defined in yaml_
         "WARN": [],
         "FAIL": []
       },
+    },
+    "build": {},
+    "@timestamp": "2023-11-06T13:44:35-0800"
+}
+```
+
+</details>
+
+#### File Extension Mismatch
+
+Identify file extensions that are inconsistent with the file mime type.
+
+<details>
+<summary>Sample Json</summary>
+    
+```json
+{
+    "id": 3632877,
+    "@timestamp": "2023-11-06T13:44:35-0800",
+    "analysis": {
+      "mimes_by_status": {},
       "mime_ext_mismatch": [
         {
           "mime": "text/plain",
@@ -747,18 +770,28 @@ _The following snippet is an illustrative example of the data defined in yaml_
           "count": 1
         }
       ],
-      "classification": {
-        "na": 0,
-        "common_metadata": 0,
-        "etd_metadata": 0,
-        "nuxeo_style_metadata": 0,
-        "bag_metadata": 0,
-        "secondary": 1,
-        "metadata": 0,
-        "complex": 0,
-        "derivatives": 0,
-        "content": 1
-      },
+    },
+    "build": {},
+    "@timestamp": "2023-11-06T13:44:35-0800"
+}
+```
+
+</details>
+
+#### Classify each producer file
+
+Classify each producer file by the role it plays.
+
+<details>
+<summary>Sample Json</summary>
+    
+```json
+{
+    "id": 3632877,
+    "@timestamp": "2023-11-06T13:44:35-0800",
+    "analysis": {
+      "mimes_by_status": {},
+      "mime_ext_mismatch": [],
       "mime_file_classification": {
         "na": [],
         "common_metadata": [],
@@ -774,14 +807,69 @@ _The following snippet is an illustrative example of the data defined in yaml_
         "content": [
           "text/x-web-markdown"
         ]
-      },
+      }
+    },
+    "build": {},
+    "@timestamp": "2023-11-06T13:44:35-0800"
+}
+```
+
+</details>
+
+#### Capture Metadata Path Names
+
+<details>
+<summary>Sample Json</summary>
+    
+```json
+{
+    "id": 3632877,
+    "@timestamp": "2023-11-06T13:44:35-0800",
+    "analysis": {
+      "mimes_by_status": {},
+      "mime_ext_mismatch": [],
+      "mime_file_classification": {},
       "metadata_paths": {
         "common_metadata": [],
         "nuxeo_style_metadata": [],
         "bag_metadata": [],
         "etd_metadata": [],
         "metadata": []
+      }
+    },
+    "build": {},
+    "@timestamp": "2023-11-06T13:44:35-0800"
+}
+```
+
+</details>
+
+#### Count files by a taxonomy of file types
+
+<details>
+<summary>Sample Json</summary>
+    
+```json
+{
+    "id": 3632877,
+    "@timestamp": "2023-11-06T13:44:35-0800",
+    "analysis": {
+      "mimes_by_status": {},
+      "mime_ext_mismatch": [],
+      "classification": {
+        "na": 0,
+        "common_metadata": 0,
+        "etd_metadata": 0,
+        "nuxeo_style_metadata": 0,
+        "bag_metadata": 0,
+        "secondary": 1,
+        "metadata": 0,
+        "complex": 0,
+        "derivatives": 0,
+        "content": 1
       },
+      "mime_file_classification": {},
+      "metadata_paths": {},
       "object_classification": "has_single_digital_file",
       "metadata_classification": "has_secondary_metadata_only",
       "primary_metadata_file": "NA"
@@ -792,6 +880,84 @@ _The following snippet is an illustrative example of the data defined in yaml_
 ```
 
 </details>
+
+#### Categorize Object Content based on File Types
+
+<details>
+<summary>Sample Json</summary>
+    
+```json
+{
+    "id": 3632877,
+    "@timestamp": "2023-11-06T13:44:35-0800",
+    "analysis": {
+      "mimes_by_status": {},
+      "mime_ext_mismatch": [],
+      "classification": {},
+      "mime_file_classification": {},
+      "metadata_paths": {},
+      "object_classification": "has_single_digital_file",
+      "metadata_classification": "has_secondary_metadata_only",
+      "primary_metadata_file": "NA"
+    },
+    "build": {},
+    "@timestamp": "2023-11-06T13:44:35-0800"
+}
+```
+
+</details>
+
+#### Categorize Object Metadata based on File Types
+
+<details>
+<summary>Sample Json</summary>
+    
+```json
+{
+    "id": 3632877,
+    "@timestamp": "2023-11-06T13:44:35-0800",
+    "analysis": {
+      "mimes_by_status": {},
+      "mime_ext_mismatch": [],
+      "classification": {},
+      "mime_file_classification": {},
+      "metadata_paths": {},
+      "object_classification": "has_single_digital_file",
+      "metadata_classification": "has_secondary_metadata_only",
+    },
+    "build": {},
+    "@timestamp": "2023-11-06T13:44:35-0800"
+}
+```
+
+</details>
+
+#### Identify the path of the primary metadata file for the object
+
+<details>
+<summary>Sample Json</summary>
+    
+```json
+{
+    "id": 3632877,
+    "@timestamp": "2023-11-06T13:44:35-0800",
+    "analysis": {
+      "mimes_by_status": {},
+      "mime_ext_mismatch": [],
+      "classification": {},
+      "mime_file_classification": {},
+      "metadata_paths": {},
+      "object_classification": "has_single_digital_file",
+      "metadata_classification": "has_secondary_metadata_only",
+      "primary_metadata_file": "NA"
+    },
+    "build": {},
+    "@timestamp": "2023-11-06T13:44:35-0800"
+}
+```
+
+</details>
+
 
 </details>
 ---
