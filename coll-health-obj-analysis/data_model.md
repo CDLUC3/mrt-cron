@@ -1030,9 +1030,8 @@ The path will be set if found.  Otherwise, the value will be set to "NA".
         "has-embargo": "PASS",
         "no-local-id": "SKIP"
       }
-    }
-  },
-  "@timestamp": "2023-11-06T13:44:35-0800"
+    },
+    "@timestamp": "2023-11-06T13:44:35-0800"
 }
 ```
 
@@ -1077,10 +1076,9 @@ The path will be set if found.  Otherwise, the value will be set to "NA".
         "SKIP": [
           "no-local-id"
         ]
-      },
-    }
-  },
-  "@timestamp": "2023-11-06T13:44:35-0800"
+      }
+    },
+    "@timestamp": "2023-11-06T13:44:35-0800"
 }
 ```
 
@@ -1107,9 +1105,8 @@ The path will be set if found.  Otherwise, the value will be set to "NA".
         "FAIL": 1
       },
       "by_status": {},
-    }
-  },
-  "@timestamp": "2023-11-06T13:44:35-0800"
+    },
+    "@timestamp": "2023-11-06T13:44:35-0800"
 }
 ```
 
@@ -1139,9 +1136,8 @@ The path will be set if found.  Otherwise, the value will be set to "NA".
         "doesnt-have-meaningful-erc-when",
         "no-local-id"
       ]
-    }
-  },
-  "@timestamp": "2023-11-06T13:44:35-0800"
+    },
+    "@timestamp": "2023-11-06T13:44:35-0800"
 }
 ```
 
@@ -1165,9 +1161,8 @@ The path will be set if found.  Otherwise, the value will be set to "NA".
       "summary": [],
       "by_status": {},
       "state": "FAIL"
-    }
-  },
-  "@timestamp": "2023-11-06T13:44:35-0800"
+    },
+    "@timestamp": "2023-11-06T13:44:35-0800"
 }
 ```
 
