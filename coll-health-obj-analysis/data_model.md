@@ -357,7 +357,7 @@ _Detailed information will be recorded for up to 1000 objects._
 ```
 </details>
 
-### Summary information about object files
+### File counts
 
 Add summary information about the set of files found in the object
 
