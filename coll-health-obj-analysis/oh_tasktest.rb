@@ -53,11 +53,13 @@ class ObjHealthTest < ObjHealthTask
     :SKIP
   end
 
-  def report_status(condition: nil)
+  def report_status(cond: nil)
     @taskdef.fetch(:report_status, {}).each do |k,v|
-      return k if condition.nil? || v.nil?
-      return k if condition == v.to_sym
-      return k if condition == v
+      return k if cond.nil? && v.nil?
+      return k if v.nil?
+      next if cond.nil?
+      return k if cond == v.to_sym
+      return k if cond == v
     end
     :SKIP
   end

@@ -139,11 +139,9 @@ class ObjectHealth
       end
       # The following values may be edited into yaml queries... perform some sanitization on the values
       opts.on('--query=QUERY', 'Object Selection Query to Use') do |n|
-        options[:query_params].append(make_query_param) if options[:query_params].empty?
         options[:query_params][:QUERY] = n.gsub(%r[[^A-Za-z0-9_\-]], "")
       end
       opts.on('--mnemonic=MNEMONIC', 'Set Query Param Mnemonic') do |n|
-        options[:query_params].append(make_query_param) if options[:query_params].empty?
         options[:query_params][:MNEMONIC] = n.gsub(%r[[^a-z0-9_\-]], "")
         options[:query_params][:QUERY] = "collection"
       end
@@ -154,7 +152,6 @@ class ObjectHealth
         end
       end
       opts.on('--id=ID', 'Set Query Param Id') do |n|
-        options[:query_params].append(make_query_param) if options[:query_params].empty?
         options[:query_params][:ID] = n.to_i
         options[:query_params][:QUERY] = "id"
       end

@@ -80,6 +80,7 @@ Provide a means to:
 
 # Collection Health Object Analysis
 
+- [Understanding the Object Health Data Model](data_model.md)
 
 ## Set environment (DEV)
 ```

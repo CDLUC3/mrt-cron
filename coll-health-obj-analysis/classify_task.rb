@@ -15,7 +15,7 @@ class ClassifyTask < ObjHealthTask
     name = cat.fetch(:name, 'na').to_sym
     @catmap[name] = cat
     ohobj.analysis.zero_subkey(:classification, name)
-    ohobj.analysis.set_subkey(:mime_classification, name, [])
+    ohobj.analysis.set_subkey(:mime_file_classification, name, [])
     @metadata_types.keys.each do |mt|
       ohobj.analysis.set_subkey(:metadata_paths, mt, [])
     end
@@ -33,12 +33,20 @@ class ClassifyTask < ObjHealthTask
       set_metadata_paths(name, basename, ohobj)
       return name
     end
+
+    if mime.to_s =~ %r[;]
+      tmime = mime.to_s.split(";")[0]
+      if ObjectHealth.match_criteria(criteria: cat, key: tmime, ohobj: ohobj, criteria_list: :mimes)
+        set_metadata_paths(name, basename, ohobj)
+        return name
+      end
+    end  
     :na
   end
 
   def run_task(ohobj)
     ohobj.analysis.zero_subkey(:classification, :na)
-    ohobj.analysis.set_subkey(:mime_classification, :na, [])
+    ohobj.analysis.set_subkey(:mime_file_classification, :na, [])
     @categories.each do |cat|
       category_init(ohobj, cat)
     end
@@ -54,8 +62,11 @@ class ClassifyTask < ObjHealthTask
         break if categorization != :na
       end
       ohobj.analysis.increment_subkey(:classification, categorization)
-      unless ohobj.analysis.get_object.fetch(:mime_classification, {}).fetch(categorization, []).include?(mime)
-        ohobj.analysis.append_subkey(:mime_classification, categorization, mime) 
+      unless ohobj.analysis.get_object.fetch(:mime_file_classification, {}).fetch(categorization, []).include?(mime)
+        ohobj.analysis.append_subkey(:mime_file_classification, categorization, mime) 
+      end
+      if categorization == :na
+        ohobj.analysis.append_key(:unclassified_mime_files, {path: path, mime: mime})
       end
     end
 
@@ -72,7 +83,7 @@ class ClassifyTask < ObjHealthTask
   end
 
   def count_distinct_mimes(ohobj)
-    omimes = ohobj.analysis.get_object.fetch(:mime_classification, {})
+    omimes = ohobj.analysis.get_object.fetch(:mime_file_classification, {})
     omimes.fetch(:content, []).length
   end
 
