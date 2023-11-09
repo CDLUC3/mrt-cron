@@ -191,6 +191,8 @@ default:
         ucsc_lib_regional_history:
 
     - name: TBD
+      groups:
+        tag_test_rem:
       mnemonics:
         cdl_dsc_census:
         cdl_eartharxiv:
@@ -362,6 +364,8 @@ default:
         ucb_lib_elecephemera:
         ucb_lib_eqf:
         ucb_lib_etd:
+          tags:
+            tag_etd:
         ucb_lib_ethnodocs:
         ucb_lib_farrand:
         ucb_lib_friedman:
@@ -462,6 +466,8 @@ default:
         ucd_lib_dash:
         ucd_lib_eastman:
         ucd_lib_etd:
+          tags:
+            tag_etd:
         ucd_lib_misc:
         ucd_lib_yolo:
         uci_dash:
@@ -475,6 +481,8 @@ default:
         ucm_lib_dsc:
         ucm_lib_elowe:
         ucm_lib_etd:
+          tags:
+            tag_etd:
         ucm_lib_jaac_newsletters:
         ucm_lib_mcdaniel:
         ucm_lib_nuxeo:
@@ -497,14 +505,20 @@ default:
         ucsb_dash:
         ucsb_lib_calcultures:
         ucsb_lib_etd:
+          tags:
+            tag_etd:
         ucsc_dash:
         ucsd_lib_etd:
+          tags:
+            tag_etd:
         ucsf_datashare:
         ucsf_lib_av:
         ucsf_lib_calcultures:
         ucsf_lib_cambodiaprotests:
         ucsf_lib_datashare:
         ucsf_lib_etd:
+          tags:
+            tag_etd:
         ucsf_lib_lectures:
         ucsf_lib_misc:
         ucsf_lib_robertday:
@@ -587,7 +601,8 @@ default:
         application/gzip: ["gzip", "gz"]
         application/vnd.ms-excel: ["xls"]
         video/mp4: ["mp4"]
-        video/quicktime: []
+        video/quicktime: ["mov"]
+        audio/vnd.wave: ["wav"]
         application/vnd.openxmlformats-officedocument.presentationml.presentation: ["pptx"]
         application/vnd.ms-powerpoint: ["ppt"]
       # Leave SKIP blank to help identify unfound mimes
@@ -620,7 +635,6 @@ default:
         application/postscript: []
         text/x-actionscript: []
         image/vnd.adobe.photoshop: ["psd"]
-        audio/vnd.wave: []
         application/x-tika-msoffice: ["db"]
         application/x-rar-compressed: []
         application/x-netcdf: []
@@ -677,7 +691,7 @@ default:
         application/vnd.ms-outlook: []
         text/x-c++src: []
         application/vnd.google-earth.kmz: []
-        text/css: []
+        text/css: ["css"]
         application/x-elc: []
         application/x-tex: []
         text/troff: []
@@ -850,7 +864,7 @@ default:
       # If ETD metadata is found, other metadata files will not affect the categorization
       - name: etd_metadata
         patterns:
-        - ^.*_(ucr|ucla)_.*_DATA.xml$
+        - ^.*_(ucb|ucd|uci|ucla|ucm|ucr|ucsb|ucsc|ucsd|ucsf)_.*_DATA.xml$
       # If Nuxeo metadata is found, other metadata files will not affect the categorization.
       # Allowable template values to look for:
       # - ARK
