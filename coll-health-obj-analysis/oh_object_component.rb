@@ -86,7 +86,7 @@ class ObjectHealthObjectBuild < ObjectHealthObjectComponent
     }
   end
 
-  def build_object_representation(r, mnemonics)
+  def build_object_representation(r)
     loc = r.fetch('localids', '')
     loc = '' if loc.nil?
     set_key(:identifiers, {
@@ -100,7 +100,6 @@ class ObjectHealthObjectBuild < ObjectHealthObjectComponent
       coll_ark: r.fetch('coll_ark', ''),
       coll_name: r.fetch('coll_name', ''),
       mnemonic: m,
-      collection_tags: mnemonics.fetch(m.to_sym, []),
       campus: campus(r.fetch('coll_name', ''))
     })
     set_key(:metadata, {

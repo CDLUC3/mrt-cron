@@ -45,7 +45,7 @@ class ObjectHealth
       print_max: @config.fetch(:debug, {}).fetch(:print_max, 1)
     }
     $options[:query_params][:SKIPS] = @ct_groups[:tag_skip].map{|s| "'#{s}'"}.join(",")
-    @obj_health_db = ObjectHealthDb.new(@config, mode, $options[:query_params], $options[:iterative_params], @mnemonics)
+    @obj_health_db = ObjectHealthDb.new(@config, mode, $options[:query_params], $options[:iterative_params])
     @analysis_tasks = AnalysisTasks.new(self, @config)
     @obj_health_tests = ObjectHealthTests.new(self, @config)
     @build_config = @config.fetch(:build_config, {})
@@ -303,7 +303,7 @@ class ObjectHealth
       end
     end
     mapping
-  end  
+  end
 end
 
 oh = ObjectHealth.new(ARGV)

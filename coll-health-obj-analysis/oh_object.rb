@@ -51,6 +51,10 @@ class ObjectHealthObject
     @osobj[:build].fetch(:containers, {}).fetch(:mnemonic, "")
   end
 
+  def ark
+    @osobj[:build].fetch(:identifiers, {}).fetch(:ark, "")
+  end
+
   def set_key(compkey, key, val)
     @osobj[compkey][key] = val
   end

@@ -6,13 +6,12 @@ require_relative 'oh_object'
 
 class ObjectHealthDb
   DEFQ='select 1 where 1=1'
-  def initialize(config, mode, cliparams, iterative_params, mnemonics)
+  def initialize(config, mode, cliparams, iterative_params)
     nullquery = 'and 0 = 1'
     @config = config
     @dbconf = @config.fetch(:dbconf, {})
     gather = @config.fetch(:gather_ids, {})
     @cliparams = cliparams
-    @mnemonics = mnemonics
     select = gather.fetch(:select, DEFQ)
 
     if @cliparams.fetch(:QUERY, '') == "id"
@@ -111,7 +110,7 @@ class ObjectHealthDb
     conn = get_db_cli
     stmt = conn.prepare(sql)
     stmt.execute(*[ohobj.id]).each do |r|
-      ohobj.build.build_object_representation(r, @mnemonics)
+      ohobj.build.build_object_representation(r)
     end
     conn.close
     ohobj

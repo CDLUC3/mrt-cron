@@ -594,13 +594,13 @@ default:
         application/zip: ["zip"]
         application/msword: ["doc"]
         audio/x-wav: ["wav"]
-        audio/mpeg: ["mpeg"]
+        audio/mpeg: ["mpeg", "mp3"]
         application/vnd.openxmlformats-officedocument.spreadsheetml.sheet: ["xlsx"]
         application/json: ["json"]
         application/mxf: ["mxf"]
         application/gzip: ["gzip", "gz"]
         application/vnd.ms-excel: ["xls"]
-        video/mp4: ["mp4"]
+        video/mp4: ["mp4", "m4a"]
         video/quicktime: ["mov"]
         audio/vnd.wave: ["wav"]
         application/vnd.openxmlformats-officedocument.presentationml.presentation: ["pptx"]
@@ -913,6 +913,8 @@ default:
           <<: *sustainable_mimes_pass
           <<: *sustainable_mimes_info
       # everything else is classified as :na
+    collection-tags:
+      class: CollectionTagTask
 
   # -------------------
   # Bitstream Analysis: these functions are not yet in scope for Merritt
