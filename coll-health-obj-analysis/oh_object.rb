@@ -55,6 +55,15 @@ class ObjectHealthObject
     @osobj[:build].fetch(:identifiers, {}).fetch(:ark, "")
   end
 
+  def localids
+    @osobj[:build].fetch(:identifiers, {}).fetch(:localids, [])
+  end
+
+  def first_localid
+    localids.empty? ? "" : localids[0]
+  end
+
+
   def set_key(compkey, key, val)
     @osobj[compkey][key] = val
   end

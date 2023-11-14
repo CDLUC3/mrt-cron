@@ -575,6 +575,11 @@ default:
     # Also, this information can be sent by depositors.
     # The results of this analysis may suggest that Merritt should process all content files with file identification software.
     # -------------------
+    test-data:
+      class: IdentifyTestDataTask
+      collection_scope:
+        apply:
+        - merritt_demo
     mime:
       class: MimeTask
       PASS: &sustainable_mimes_pass
@@ -632,7 +637,7 @@ default:
         application/x-gtar: ["gz"]
         application/rtf: ["rtf"]
         audio/x-aiff: ["aif"]
-        application/postscript: []
+        application/postscript: ["ps"]
         text/x-actionscript: []
         image/vnd.adobe.photoshop: ["psd"]
         application/x-tika-msoffice: ["db"]
@@ -647,7 +652,7 @@ default:
         application/x-7z-compressed: []
         application/x-shapefile: []
         text/x-vcard: []
-        video/x-matroska: []
+        video/x-matroska: ["mkv"]
         application/x-tar: []
         image/svg+xml: []
         image/x-raw-canon: []
@@ -686,7 +691,7 @@ default:
         application/x-iso9660-image: []
         image/bmp: []
         application/javascript: []
-        application/vnd.oasis.opendocument.text: []
+        application/vnd.oasis.opendocument.text: ["odt"]
         text/x-csrc: []
         application/vnd.ms-outlook: []
         text/x-c++src: []
@@ -772,7 +777,7 @@ default:
         text/x-assembly: []
         text/x-basic: []
         text/x-yaml: []
-        application/msword2: []
+        application/msword2: ["doc"]
         application/vnd.ms-tnef: []
         image/x-portable-pixmap: []
         application/vnd.ms-word2006ml: []

@@ -18,7 +18,7 @@ class ObjHealthTask
       return true if @apply.include?(g)
       return false if @skip.include?(g)
     end
-    true
+    @apply.empty?
   end
 
   def name

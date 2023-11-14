@@ -18,6 +18,7 @@ class MimeTask < ObjHealthTask
   end
 
   def run_task(ohobj)
+    return ohobj if ohobj.analysis.get_object.fetch(:merritt_test_data, false)
     map = {}
     objmap = {}
     objmap_ext_mismatch = {}
@@ -51,17 +52,22 @@ class MimeTask < ObjHealthTask
       unless ext.empty?
         unless @mimeext.fetch(mime, []).include?(ext.to_s)
           objmap_ext_mismatch[mime] = objmap_ext_mismatch.fetch(mime, {})
-          objmap_ext_mismatch[mime][ext] = objmap_ext_mismatch.fetch(mime, {}).fetch(ext, 0) + 1
+          objmap_ext_mismatch[mime][ext] = objmap_ext_mismatch.fetch(mime, {}).fetch(ext, []).append(f.fetch(:pathname, ''))
         end
       end
     end
     arr = []
     objmap_ext_mismatch.each do |mime,v|
-      objmap_ext_mismatch[mime].each do |ext, count|
-        arr.push({mime: mime, ext: ext, count: count})
+      objmap_ext_mismatch[mime].each do |ext, arr|
+        ohobj.analysis.append_key(:mime_ext_mismatch, {
+          mime: mime,
+          ext: ext,
+          key: "#{mime}: #{ext}", 
+          count: arr.length,
+          files: arr
+        })
       end
     end
-    ohobj.analysis.set_key(:mime_ext_mismatch, arr)
 
     ohobj
   end
