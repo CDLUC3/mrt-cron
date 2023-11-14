@@ -596,6 +596,10 @@ default:
           tif:
           tiff: 
           iiq: WARN
+        image/jp2:
+          jp2:
+        image/x-dpx:
+          dpx:
         application/xhtml+xml: 
           xhtml:
         application/pdf: 
@@ -687,6 +691,7 @@ default:
           rtf:
         audio/x-aiff: 
           aif:
+          aiff:
         application/postscript: 
           ps:
         text/x-actionscript: 
@@ -707,7 +712,8 @@ default:
         # x-raw-panasonic: apparently .raw, but could also correspond to other camera raw formats
         image/x-raw-panasonic: 
         text/x-matlab: 
-        application/x-dbf: 
+        application/x-dbf:
+          dbf: 
         application/x-7z-compressed: 
           7z:
         application/x-shapefile: 
@@ -733,8 +739,10 @@ default:
           wma:
         application/x-shockwave-flash: 
         text/x-python: 
+          py:
         video/x-m4v: 
         application/x-sh: 
+          sh:
         application/x-dosexec: 
         application/java-vm: 
         image/x-ms-bmp: 
@@ -744,10 +752,14 @@ default:
         message/rfc822: 
         application/vnd.ms-pki.stl: 
         text/x-ruby: 
+          rb:
         application/x-tika-ooxml: 
         text/x-log: 
+          log:
         text/x-perl: 
+          pl:
         application/marc: 
+          mrc:
         text/x-web-markdown: 
           md:
         application/dicom: 
@@ -755,6 +767,7 @@ default:
         application/x-adobe-indesign: 
         video/x-flv: 
         audio/mp4: 
+          m4a:
         application/vnd.quark.quarkxpress: 
         application/vnd.syncml.dm+wbxml: 
         text/x-php: 
@@ -762,7 +775,9 @@ default:
         application/x-sqlite3: 
         application/x-iso9660-image: 
         image/bmp: 
+          bmp:
         application/javascript: 
+          js:
         application/vnd.oasis.opendocument.text: 
           odt:
         text/x-csrc: 
@@ -804,6 +819,7 @@ default:
         application/vnd.oasis.opendocument.base: 
         video/x-ms-asf: 
         text/x-sql: 
+          sql:
         application/x-stuffit: 
         application/vnd.apple.numbers: 
         application/vnd.rn-realmedia: 
@@ -831,6 +847,7 @@ default:
         audio/midi: 
         application/x-mspublisher: 
         image/vnd.microsoft.icon: 
+          ico:
         application/x-bibtex-text-file: 
         application/x-compress: 
         application/x-mobipocket-ebook: 
@@ -852,6 +869,8 @@ default:
         text/x-assembly: 
         text/x-basic: 
         text/x-yaml: 
+          yaml: 
+          yml:
         application/msword2: 
           doc:
         application/vnd.ms-tnef: 
@@ -860,6 +879,7 @@ default:
         text/x-vbasic: 
         application/x-ms-owner: 
         text/x-ini: 
+          ini:
         application/vnd.yamaha.smaf-phrase: 
         application/vnd.ms-excel.sheet.3: 
         image/x-icon: 
