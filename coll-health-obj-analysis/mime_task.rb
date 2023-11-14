@@ -22,6 +22,7 @@ class MimeTask < ObjHealthTask
     map = {}
     objmap = {}
     objmap_ext_mismatch = {}
+    objmap_ext_status = {}
     ObjectHealth.status_values.each do |stat|
       objmap[stat] = []
     end
@@ -51,7 +52,16 @@ class MimeTask < ObjHealthTask
 
       mime = f.fetch(:mime_type, '').to_sym
       unless ext.empty?
-        unless @mimeext.fetch(mime, []).include?(ext.to_s)
+        cmimeext = @mimeext.fetch(mime, {})
+        cmimeext = {} if cmimeext.nil?
+        if cmimeext.key?(ext)
+          cmimestat = cmimeext.fetch(ext, :PASS)
+          cmimestat = cmimestat.nil? ? :PASS : cmimestat.to_sym
+          unless cmimestat == :PASS
+            objmap_ext_status[mime] = objmap_ext_status.fetch(mime, {})
+            objmap_ext_status[mime][ext] = cmimestat
+          end
+        else
           objmap_ext_mismatch[mime] = objmap_ext_mismatch.fetch(mime, {})
           objmap_ext_mismatch[mime][ext] = objmap_ext_mismatch.fetch(mime, {}).fetch(ext, []).append(f.fetch(:pathname, ''))
         end
@@ -66,6 +76,15 @@ class MimeTask < ObjHealthTask
           key: "#{mime}: #{ext}", 
           count: arr.length,
           files: arr
+        })
+      end
+    end
+    objmap_ext_status.each do |mime,v|
+      objmap_ext_status[mime].each do |ext, stat|
+        ohobj.analysis.append_key(:mime_ext_status, {
+          mime: mime,
+          ext: ext,
+          status: stat
         })
       end
     end

@@ -27,6 +27,21 @@ class MimeExtTest < ObjHealthTest
   end
 end
 
+class UnexpectedMimeExtTest < ObjHealthTest
+  def initialize(oh, taskdef, name)
+    super(oh, taskdef, name)
+  end
+
+  def run_test(ohobj)
+    status = :PASS
+    ohobj.analysis.get_object.fetch(:mime_ext_status, []).each do |v|
+      stat = v.fetch(:status, :PASS)
+      status = ObjectHealth.compare_state(status, stat)
+    end
+    status
+  end
+end
+
 class MimeNotFoundTest < ObjHealthTest
   def initialize(oh, taskdef, name)
     super(oh, taskdef, name)

@@ -584,246 +584,324 @@ default:
     mime:
       class: MimeTask
       PASS: &sustainable_mimes_pass
-        text/plain: ["txt"]
-        application/xml: ["xml"]
-        image/jpeg: ["jpg", "jpeg"]
-        image/tiff: ["tif", "tiff"]
-        application/xhtml+xml: ["xhtml"]
-        application/pdf: ["pdf"]
-        application/atom+xml: ["xml"]
-        image/gif: ["gif"]
-        text/csv: ["csv"]
-        application/x-gzip: ["gzip", "gz"]
-        text/html: ["html", "htm"]
-        image/png: ["png"]
-        application/vnd.openxmlformats-officedocument.wordprocessingml.document: ["docx"]
-        application/zip: ["zip"]
-        application/msword: ["doc"]
-        audio/x-wav: ["wav"]
-        audio/mpeg: ["mpeg", "mp3"]
-        application/vnd.openxmlformats-officedocument.spreadsheetml.sheet: ["xlsx"]
-        application/json: ["json"]
-        application/mxf: ["mxf"]
-        application/gzip: ["gzip", "gz"]
-        application/vnd.ms-excel: ["xls"]
-        video/mp4: ["mp4", "m4a"]
-        video/quicktime: ["mov"]
-        audio/vnd.wave: ["wav"]
-        application/vnd.openxmlformats-officedocument.presentationml.presentation: ["pptx"]
-        application/vnd.ms-powerpoint: ["ppt"]
+        text/plain: 
+          txt:
+        application/xml:
+          xml:
+          txt: WARN
+        image/jpeg: 
+          jpg: 
+          jpeg:
+        image/tiff: 
+          tif:
+          tiff: 
+          iiq: WARN
+        application/xhtml+xml: 
+          xhtml:
+        application/pdf: 
+          pdf:
+        application/atom+xml: 
+          atom:
+          xml:
+        image/gif: 
+          gif:
+        text/csv: 
+          csv:
+        application/x-gzip: 
+          gzip: 
+          gz: 
+        text/html: 
+          html: 
+          htm:
+        image/png: 
+          png:
+        application/vnd.openxmlformats-officedocument.wordprocessingml.document: 
+          docx:
+        application/zip: 
+          zip:
+        application/msword: 
+          doc:
+        audio/x-wav: 
+          wav:
+        audio/mpeg: 
+          mpeg:
+          mp3:
+        application/vnd.openxmlformats-officedocument.spreadsheetml.sheet: 
+          xslx:
+        application/json: 
+          json:
+        application/mxf: 
+          mxf:
+        application/gzip: 
+          gzip:
+          gz:
+        application/vnd.ms-excel: 
+          xls:
+        video/mp4: 
+          mp4:
+          m4a:
+        video/quicktime: 
+          mov:
+        audio/vnd.wave: 
+          wav:
+        application/vnd.openxmlformats-officedocument.presentationml.presentation: 
+          pptx:
+        application/vnd.ms-powerpoint: 
+          ppt:
       # Leave SKIP blank to help identify unfound mimes
       SKIP:
       FAIL:
       # x-pkcs: Public-Key Cryptography Standards files provide for certificate storage
-        application/x-pkcs12: []
-        application/x-pkcs7-certificates: []
-      # binary.macroenabled.12: Binary Excel spreadsheet with macros enabled
-        application/vnd.ms-excel.sheet.binary.macroenabled.12: []
+        application/x-pkcs12: 
+        application/x-pkcs7-certificates: 
+        # binary.macroenabled.12: Binary Excel and Word documents and templates with macros enabled
+        application/vnd.ms-excel.sheet.binary.macroenabled.12: 
+          xlsb:
+        application/vnd.ms-word.document.macroEnabled.12: 
+          docm:
+        application/vnd.ms-word.template.macroEnabled.12: 
+          dotm:
       # appledouble: Apple dual-forked file typically excluded from containers
-        multipart/appledouble: []
+        multipart/appledouble: 
       WARN: &sustainable_mimes_warn
-        application/octet-stream: []
-        application/vnd.chipnuts.karaoke-mmd: []
-        application/vnd.ms-excel.sheet.macroenabled.12: []
-        application/vnd.ms-powerpoint.presentation.macroenabled.12: []
-        application/vnd.ms-word.document.macroenabled.12: []
-        application/x-stata-dta: []
-        application/x-stata-dta; version=13: []
-        application/x-stata-dta; version=14: []
-        text/x-stsrc: []
+        application/octet-stream: 
+        application/vnd.chipnuts.karaoke-mmd: 
+        application/vnd.ms-excel.sheet.macroenabled.12: 
+        application/vnd.ms-powerpoint.presentation.macroenabled.12: 
+        application/vnd.ms-word.document.macroenabled.12: 
+        application/x-stata-dta: 
+        application/x-stata-dta; version=13: 
+        application/x-stata-dta; version=14: 
+        text/x-stsrc: 
       INFO: &sustainable_mimes_info
-        application/x-hdf: []
-        application/x-matlab-data: []
-        text/x-rsrc: []
-        application/x-gtar: ["gz"]
-        application/rtf: ["rtf"]
-        audio/x-aiff: ["aif"]
-        application/postscript: ["ps"]
-        text/x-actionscript: []
-        image/vnd.adobe.photoshop: ["psd"]
-        application/x-tika-msoffice: ["db"]
-        application/x-rar-compressed: []
-        application/x-netcdf: []
-        video/x-msvideo: []
-        model/vnd.mts: []
-        text/tab-separated-values: ["tsv"]
-        image/x-raw-panasonic: []
-        text/x-matlab: []
-        application/x-dbf: []
-        application/x-7z-compressed: []
-        application/x-shapefile: []
-        text/x-vcard: []
-        video/x-matroska: ["mkv"]
-        application/x-tar: []
-        image/svg+xml: []
-        image/x-raw-canon: []
-        video/mpeg: []
-        application/xv+xml: []
-        video/x-ms-wmv: []
-        audio/x-ms-wma: []
-        application/x-shockwave-flash: []
-        text/x-python: []
-        video/x-m4v: []
-        application/x-sh: []
-        application/x-dosexec: []
-        application/java-vm: []
-        image/x-ms-bmp: []
-        text/x-objcsrc: []
-        application/x-webarchive: []
-        application/x-bzip2: []
-        message/rfc822: []
-        application/vnd.ms-pki.stl: []
-        text/x-ruby: []
-        application/x-tika-ooxml: []
-        text/x-log: []
-        text/x-perl: []
-        application/marc: []
-        text/x-web-markdown: ["md"]
-        application/dicom: []
-        application/vnd.oasis.opendocument.spreadsheet: []
-        application/x-adobe-indesign: []
-        video/x-flv: []
-        audio/mp4: []
-        application/vnd.quark.quarkxpress: []
-        application/vnd.syncml.dm+wbxml: []
-        text/x-php: []
-        application/vnd.ms-excel.sheet.4: []
-        application/x-sqlite3: []
-        application/x-iso9660-image: []
-        image/bmp: []
-        application/javascript: []
-        application/vnd.oasis.opendocument.text: ["odt"]
-        text/x-csrc: []
-        application/vnd.ms-outlook: []
-        text/x-c++src: []
-        application/vnd.google-earth.kmz: []
-        text/css: ["css"]
-        application/x-elc: []
-        application/x-tex: []
-        text/troff: []
-        text/x-java-source: []
-        application/x-font-ttf: []
-        application/java-archive: []
-        application/x-font-otf: []
-        image/x-pict: []
-        application/x-123: []
-        image/vnd.radiance: []
-        chemical/x-cif: []
-        application/vnd.ms-works: []
-        application/mathematica: []
-        application/vnd.wordperfect: []
-        application/x-sas: []
-        application/x-bplist: []
-        application/zlib: []
-        application/x-xz: []
-        video/3gpp: []
-        application/illustrator: []
-        text/x-fortran: []
-        audio/vorbis: []
-        application/vnd.wordperfect; version=6.x: []
-        application/vnd.google-earth.kml+xml: []
-        audio/basic: []
-        text/x-chdr: []
-        application/x-msdownload; format=pe32: []
-        application/x-font-bdf: []
-        application/vnd.apple.pages: []
-        application/vnd.oasis.opendocument.base: []
-        video/x-ms-asf: []
-        text/x-sql: []
-        application/x-stuffit: []
-        application/vnd.apple.numbers: []
-        application/vnd.rn-realmedia: []
-        application/x-msaccess: []
-        application/rss+xml: []
-        text/sgml: []
-        application/x-erdas-hfa: []
-        text/x-coldfusion: []
-        application/vnd.adobe.xfl: []
-        image/x-portable-bitmap: []
-        application/x-sas-audit: []
-        text/x-pascal: []
-        application/x-bzip: []
-        application/vnd.iccprofile: []
-        application/x-bat: []
-        text/x-rst: []
-        image/vnd.dxf; format=ascii: []
-        application/x-sas-data: []
-        application/epub+zip: []
-        image/vnd.zbrush.pcx: []
-        text/x-d: []
-        image/x-portable-graymap: []
-        application/vnd.mcd: []
-        image/x-xcf: []
-        audio/midi: []
-        application/x-mspublisher: []
-        image/vnd.microsoft.icon: []
-        application/x-bibtex-text-file: []
-        application/x-compress: []
-        application/x-mobipocket-ebook: []
-        application/vnd.visio: []
-        application/vnd.ms-xpsdocument: []
-        application/smil+xml: []
-        text/x-prolog: []
-        application/vnd.ms-spreadsheetml: []
-        message/news: []
-        application/vnd.apple.keynote: []
-        application/vnd.adobe.air-application-installer-package+zip: []
-        text/x-ml: []
-        application/vnd.adobe.indesign-idml-package: []
-        application/x-sharedlib: []
-        application/fits: []
-        text/vnd.graphviz: []
-        text/x-asciidoc: []
-        application/sereal; version=3: []
-        text/x-assembly: []
-        text/x-basic: []
-        text/x-yaml: []
-        application/msword2: ["doc"]
-        application/vnd.ms-tnef: []
-        image/x-portable-pixmap: []
-        application/vnd.ms-word2006ml: []
-        text/x-vbasic: []
-        application/x-ms-owner: []
-        text/x-ini: []
-        application/vnd.yamaha.smaf-phrase: []
-        application/vnd.ms-excel.sheet.3: []
-        image/x-icon: []
-        text/x-diff: []
-        application/vnd.lotus-freelance: []
-        application/x-dtbresource+xml: []
-        application/x-msdownload: []
-        application/x-msdownload; format=pe64: []
-        text/x-tcl: []
-        message/x-emlx: []
-        application/msword5: []
-        text/x-common-lisp: []
-        text/x-aspectj: []
-        application/vnd.oasis.opendocument.chart: []
-        application/x-executable: []
-        application/vnd.oasis.opendocument.presentation: []
-        text/x-modula: []
-        image/wmf: []
-        text/calendar: []
-        application/vnd.openxmlformats-officedocument.presentationml.template: []
-        application/x-xfig: []
-        chemical/x-cdx: []
-        application/vnd.openxmlformats-officedocument.spreadsheetml.template: []
-        text/prs.lines.tag: []
-        application/pgp-signature: []
-        text/x-groovy: []
-        application/vnd.tcpdump.pcap: []
-        text/x-haml: []
-        application/vnd.mif: []
-        application/x-emf: []
-        application/vnd.ms-cab-compressed: []
-        image/vnd.dwg: []
-        application/vnd.adobe.fxp: []
-        application/x-font-linux-psf: []
-        application/mbox: []
-        text/x-c++hdr: []
+        application/x-hdf: 
+          h5:
+          hdf:
+        application/x-matlab-data: 
+          mat:
+        text/x-rsrc: 
+          r:
+        application/x-gtar: 
+          gz:
+        application/rtf: 
+          rtf:
+        audio/x-aiff: 
+          aif:
+        application/postscript: 
+          ps:
+        text/x-actionscript: 
+          as:
+        image/vnd.adobe.photoshop: 
+          psd:
+        application/x-tika-msoffice: 
+          db: WARN
+        application/x-rar-compressed: 
+          r00:
+        application/x-netcdf: 
+        video/x-msvideo: 
+          avi:
+        model/vnd.mts: 
+          mts:
+        text/tab-separated-values: 
+          tsv:
+        # x-raw-panasonic: apparently .raw, but could also correspond to other camera raw formats
+        image/x-raw-panasonic: 
+        text/x-matlab: 
+        application/x-dbf: 
+        application/x-7z-compressed: 
+          7z:
+        application/x-shapefile: 
+        text/x-vcard: 
+          vcf:
+        video/x-matroska: 
+          mkv:
+        application/x-tar: 
+          tar:
+        image/svg+xml: 
+          svgz:
+          svg:
+        image/x-raw-canon:
+          crw: 
+          cr2: 
+        video/mpeg: 
+          mpeg: 
+          mpg:
+        application/xv+xml: 
+        video/x-ms-wmv: 
+          wmv:
+        audio/x-ms-wma: 
+          wma:
+        application/x-shockwave-flash: 
+        text/x-python: 
+        video/x-m4v: 
+        application/x-sh: 
+        application/x-dosexec: 
+        application/java-vm: 
+        image/x-ms-bmp: 
+        text/x-objcsrc: 
+        application/x-webarchive: 
+        application/x-bzip2: 
+        message/rfc822: 
+        application/vnd.ms-pki.stl: 
+        text/x-ruby: 
+        application/x-tika-ooxml: 
+        text/x-log: 
+        text/x-perl: 
+        application/marc: 
+        text/x-web-markdown: 
+          md:
+        application/dicom: 
+        application/vnd.oasis.opendocument.spreadsheet: 
+        application/x-adobe-indesign: 
+        video/x-flv: 
+        audio/mp4: 
+        application/vnd.quark.quarkxpress: 
+        application/vnd.syncml.dm+wbxml: 
+        text/x-php: 
+        application/vnd.ms-excel.sheet.4: 
+        application/x-sqlite3: 
+        application/x-iso9660-image: 
+        image/bmp: 
+        application/javascript: 
+        application/vnd.oasis.opendocument.text: 
+          odt:
+        text/x-csrc: 
+        application/vnd.ms-outlook: 
+        text/x-c++src: 
+        application/vnd.google-earth.kmz: 
+        text/css: 
+          css:
+        application/x-elc: 
+        application/x-tex: 
+        text/troff: 
+        text/x-java-source: 
+        application/x-font-ttf: 
+        application/java-archive: 
+        application/x-font-otf: 
+        image/x-pict: 
+        application/x-123: 
+        image/vnd.radiance: 
+        chemical/x-cif: 
+        application/vnd.ms-works: 
+        application/mathematica: 
+        application/vnd.wordperfect: 
+        application/x-sas: 
+        application/x-bplist: 
+        application/zlib: 
+        application/x-xz: 
+        video/3gpp: 
+        application/illustrator: 
+          ai:
+        text/x-fortran: 
+        audio/vorbis: 
+        application/vnd.wordperfect; version=6.x: 
+        application/vnd.google-earth.kml+xml: 
+        audio/basic: 
+        text/x-chdr: 
+        application/x-msdownload; format=pe32: 
+        application/x-font-bdf: 
+        application/vnd.apple.pages: 
+        application/vnd.oasis.opendocument.base: 
+        video/x-ms-asf: 
+        text/x-sql: 
+        application/x-stuffit: 
+        application/vnd.apple.numbers: 
+        application/vnd.rn-realmedia: 
+        application/x-msaccess: 
+        application/rss+xml: 
+        text/sgml: 
+        application/x-erdas-hfa: 
+        text/x-coldfusion: 
+        application/vnd.adobe.xfl: 
+        image/x-portable-bitmap: 
+        application/x-sas-audit: 
+        text/x-pascal: 
+        application/x-bzip: 
+        application/vnd.iccprofile: 
+        application/x-bat: 
+        text/x-rst: 
+        image/vnd.dxf; format=ascii: 
+        application/x-sas-data: 
+        application/epub+zip: 
+        image/vnd.zbrush.pcx: 
+        text/x-d: 
+        image/x-portable-graymap: 
+        application/vnd.mcd: 
+        image/x-xcf: 
+        audio/midi: 
+        application/x-mspublisher: 
+        image/vnd.microsoft.icon: 
+        application/x-bibtex-text-file: 
+        application/x-compress: 
+        application/x-mobipocket-ebook: 
+        application/vnd.visio: 
+        application/vnd.ms-xpsdocument: 
+        application/smil+xml: 
+        text/x-prolog: 
+        application/vnd.ms-spreadsheetml: 
+        message/news: 
+        application/vnd.apple.keynote: 
+        application/vnd.adobe.air-application-installer-package+zip: 
+        text/x-ml: 
+        application/vnd.adobe.indesign-idml-package: 
+        application/x-sharedlib: 
+        application/fits: 
+        text/vnd.graphviz: 
+        text/x-asciidoc: 
+        application/sereal; version=3: 
+        text/x-assembly: 
+        text/x-basic: 
+        text/x-yaml: 
+        application/msword2: 
+          doc:
+        application/vnd.ms-tnef: 
+        image/x-portable-pixmap: 
+        application/vnd.ms-word2006ml: 
+        text/x-vbasic: 
+        application/x-ms-owner: 
+        text/x-ini: 
+        application/vnd.yamaha.smaf-phrase: 
+        application/vnd.ms-excel.sheet.3: 
+        image/x-icon: 
+        text/x-diff: 
+        application/vnd.lotus-freelance: 
+        application/x-dtbresource+xml: 
+        application/x-msdownload: 
+        application/x-msdownload; format=pe64: 
+        text/x-tcl: 
+        message/x-emlx: 
+        application/msword5: 
+        text/x-common-lisp: 
+        text/x-aspectj: 
+        application/vnd.oasis.opendocument.chart: 
+        application/x-executable: 
+        application/vnd.oasis.opendocument.presentation: 
+          odp:
+        text/x-modula: 
+        image/wmf: 
+        text/calendar: 
+        application/vnd.openxmlformats-officedocument.presentationml.template: 
+        application/x-xfig: 
+        chemical/x-cdx: 
+        application/vnd.openxmlformats-officedocument.spreadsheetml.template: 
+          xltx:
+        text/prs.lines.tag: 
+        application/pgp-signature: 
+        text/x-groovy: 
+        application/vnd.tcpdump.pcap: 
+        text/x-haml: 
+        application/vnd.mif: 
+        application/x-emf: 
+        application/vnd.ms-cab-compressed: 
+        image/vnd.dwg: 
+        application/vnd.adobe.fxp: 
+        application/x-font-linux-psf: 
+        application/mbox: 
+        text/x-c++hdr: 
         # note - moved these from SKIP to INFO
-        plain/turtle: ["ttl"]
-        application/rdf+xml: []
+        plain/turtle: 
+          ttl: 
+        application/rdf+xml: 
 
     # -------------------
     # Classify Object Producer Files based on an ordered set of rules
@@ -952,6 +1030,8 @@ default:
       class: MimeExtTest
       report_status: 
         FAIL:
+    unexpected-mime-extension:
+      class: UnexpectedMimeExtTest
     mime-not-found:
       class: MimeNotFoundTest
       report_status: 
