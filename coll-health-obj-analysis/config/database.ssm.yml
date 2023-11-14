@@ -536,6 +536,7 @@ default:
       patterns:
       - ^.*Thumbs.*\.db$
       - ^.*\.DS_store$
+      - ^.*\/\.git\/.*$
 
   # -------------------
   # Statistical Analysis Queries

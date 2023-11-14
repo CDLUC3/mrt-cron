@@ -148,7 +148,10 @@ class ObjectHealthObjectBuild < ObjectHealthObjectComponent
   end
 
   def process_object_files(ofiles, version)
-    set_key(:file_counts, get_object.fetch(:file_counts, {deleted: 0, empty: 0}))
+    set_key(:file_counts, {deleted: 0, empty: 0})
+    set_key(:producer, [])
+    set_key(:system, [])
+    set_key(:na, [])
     set_key(:version, version)
     ofiles.each do |k,v|
       source = v.fetch(:source, :na).to_sym
@@ -176,7 +179,7 @@ class ObjectHealthObjectBuild < ObjectHealthObjectComponent
       end
 
       # record up to 1000 files for the object
-      if get_object[:file_counts][source] <= 1000
+      if get_object.fetch(source, []).length <= 1000
         append_key(source, v)
       end
     end

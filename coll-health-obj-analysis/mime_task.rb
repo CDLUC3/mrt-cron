@@ -46,6 +46,7 @@ class MimeTask < ObjHealthTask
     ohobj.analysis.set_key(:mimes_by_status, objmap)
 
     ohobj.build.get_object.fetch(:producer, []).each do |f|
+      next if f.fetch(:ignore_file, false)
       ext = f.fetch(:ext, "").to_sym
 
       mime = f.fetch(:mime_type, '').to_sym
