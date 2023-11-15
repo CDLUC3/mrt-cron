@@ -631,7 +631,7 @@ default:
           mpeg:
           mp3:
         application/vnd.openxmlformats-officedocument.spreadsheetml.sheet: 
-          xslx:
+          xlsx:
         application/json: 
           json:
         application/mxf: 
@@ -1041,7 +1041,7 @@ default:
   # -------------------
   tests:
     # Evaluate the sustainability of fhe mime types for producer files within the object
-    sustainable-mime:
+    unsustainable-mime-type:
       class: MimeTest
       name: Mime type sustainability
       description: Compare file extention (or known mime type) to a list of sustainable mime types.
