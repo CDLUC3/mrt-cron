@@ -6,12 +6,14 @@ require_relative 'oh_object'
 
 class ObjectHealthDb
   DEFQ='select 1 where 1=1'
-  def initialize(config, mode, cliparams, iterative_params)
+  def initialize(oh, config, mode)
+    @oh = oh
     nullquery = 'and 0 = 1'
     @config = config
     @dbconf = @config.fetch(:dbconf, {})
     gather = @config.fetch(:gather_ids, {})
-    @cliparams = cliparams
+    @cliparams = oh.options.fetch(:query_params, {})
+    iterative_params = oh.options.fetch(:iterative_params, {})
     select = gather.fetch(:select, DEFQ)
 
     if @cliparams.fetch(:QUERY, '') == "id"
@@ -22,7 +24,7 @@ class ObjectHealthDb
       exclusion = gather.fetch(:analysis_exclusion, 'limit {{LIMIT}}') if mode == :analysis
       exclusion = gather.fetch(:tests_exclusion, 'limit {{LIMIT}}') if mode == :tests
     end
-    defq = cliparams.fetch(:QUERY, 'collection').to_sym
+    defq = @cliparams.fetch(:QUERY, 'collection').to_sym
     @queries = []
     q = gather.fetch(:queries, {}).fetch(defq, nullquery)
     iterative_params.each do |itp|
@@ -30,7 +32,7 @@ class ObjectHealthDb
       @queries.append(sql)
     end
 
-    clearq = cliparams.fetch(:QUERY, 'default').to_sym
+    clearq = @cliparams.fetch(:QUERY, 'default').to_sym
     q = gather.fetch(:clear_queries, {}).fetch(clearq, '')
     @clearquery = Mustache.render(q, @cliparams)
   end
@@ -55,7 +57,7 @@ class ObjectHealthDb
     list = []
     conn = get_db_cli
     @queries.each do |q|
-      puts q if ObjectHealth.debug
+      puts q if @oh.debug
       stmt = conn.prepare(q)
       stmt.execute(*[]).each do |r|
         list.append(r.values[0])
@@ -243,7 +245,7 @@ class ObjectHealthDb
         object_health_json
       #{@clearquery};
     }
-    puts sql if ObjectHealth.debug
+    puts sql if @oh.debug
     conn = get_db_cli
     stmt = conn.prepare(sql)
     status = {}
@@ -252,7 +254,7 @@ class ObjectHealthDb
         status[k.to_sym] = v.to_i
       end
     end
-    puts status if ObjectHealth.debug
+    puts status if @oh.debug
     conn.close
     status
   end
@@ -281,7 +283,7 @@ class ObjectHealthDb
       }
     end
     unless sql.empty?
-      puts sql if ObjectHealth.debug
+      puts sql if @oh.debug
       conn = get_db_cli
       stmt = conn.prepare(sql)
       stmt.execute(*[])

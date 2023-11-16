@@ -5,6 +5,7 @@ require 'optparse'
 require 'opensearch'
 require 'time'
 require_relative 'object_health_db'
+require_relative 'object_health_cli'
 require_relative 'object_health_tests'
 require_relative 'object_health_opensearch'
 require_relative 'analysis_tasks'
@@ -38,35 +39,38 @@ class ObjectHealth
   end
 
   def initialize(argv)
-    @collhdata = ENV.fetch('COLLHDATA', ENV['PWD'])
-    @config_db = get_ssm_config('config/database.ssm.yml')
-    @config_opensearch = get_ssm_config('config/opensearch.ssm.yml')
+    config_db = get_ssm_config('config/database.ssm.yml')
+    config_opensearch = get_ssm_config('config/opensearch.ssm.yml')
     config = get_config('config/merritt_classifications.yml')
-    @config_rules = config.fetch(:classifications, {})
-    @config_cli = config.fetch(:command_line, {})
+    config_rules = config.fetch(:classifications, {})
+    config_cli = config.fetch(:command_line, {})
+
     # map mnemonics to groups
     @mnemonics = {}
     # map collection taxonomy groups to mnemonics
     @ct_groups = {}
-    load_collection_taxonomy
-    $options = make_options(argv)
-    @debug = {
-      export_count: 0, 
-      export_max: @config_cli.fetch(:debug, {}).fetch(:export_max, 5), 
-      print_count: 0, 
-      print_max: @config_cli.fetch(:debug, {}).fetch(:print_max, 1)
-    }
-    $options[:query_params][:SKIPS] = @ct_groups[:tag_skip].map{|s| "'#{s}'"}.join(",")
-    @obj_health_db = ObjectHealthDb.new(@config_db, mode, $options[:query_params], $options[:iterative_params])
-    @analysis_tasks = AnalysisTasks.new(self, @config_rules)
-    @obj_health_tests = ObjectHealthTests.new(self, @config_rules)
-    @build_config = @config_rules.fetch(:build_config, {})
-    @opensrch = ObjectHealthOpenSearch.new(self, @config_opensearch)
+    load_collection_taxonomy(config_rules)
+    @build_config = config_rules.fetch(:build_config, {})
+
+    @obj_health_cli = ObjectHealthCli.new(config_cli, @ct_groups, argv)
+    @obj_health_db = ObjectHealthDb.new(self, config_db, mode)
+    @analysis_tasks = AnalysisTasks.new(self, config_rules)
+    @obj_health_tests = ObjectHealthTests.new(self, config_rules)
+    @opensrch = ObjectHealthOpenSearch.new(self, config_opensearch)
+
     now = Time.now.strftime("%Y-%m-%d %H:%M:%S")
   end
 
-  def load_collection_taxonomy
-    @config_rules.fetch(:collection_taxonomy, []).each do |ctdef|
+  def debug
+    @obj_health_cli.debug
+  end
+
+  def options
+    @obj_health_cli.options
+  end
+
+  def load_collection_taxonomy(config_rules)
+    config_rules.fetch(:collection_taxonomy, []).each do |ctdef|
       next if ctdef.nil?
       ctdef.fetch(:groups, {}).keys.each do |g|
         ctdef.fetch(:mnemonics, {}).each do |m, mdef|
@@ -83,14 +87,6 @@ class ObjectHealth
         end
       end
     end
-  end
-
-  def self.options
-    $options.nil? ? {} : $options
-  end
-
-  def self.debug
-    self.options.fetch(:debug, false)
   end
 
   def self.status_values
@@ -112,70 +108,12 @@ class ObjectHealth
     @mnemonics.fetch(mnemonic, [])
   end
 
-  def make_options(argv)
-    options = {query_params: @config_cli.fetch(:default_params, {}), iterative_params: []}
-    OptionParser.new do |opts|
-      opts.banner = "Usage: ruby object_health.rb [--help] [--build] [--test]"
-      opts.on('-h', '--help', 'Show help and exit') do
-        puts opts
-        exit(0)
-      end
-      opts.on('-b', '--build', 'Build Objects') do
-        options[:build_objects] = true
-      end
-      opts.on('-a', '--analyze', 'Analyze Objects') do
-        options[:analyze_objects] = true
-      end
-      opts.on('-t', '--test', 'Test Objects') do
-        options[:test_objects] = true
-      end
-      opts.on('-d', '--debug', 'Debug') do
-        options[:debug] = true
-      end
-      opts.on('--clear-build', 'Clear Build Records') do
-        options[:clear_build] = true
-      end
-      opts.on('--force-rebuild', 'Force restart of rebuild') do
-        options[:force_rebuild] = true
-      end
-      opts.on('--clear-analysis', 'Clear Analysis Records') do
-        options[:clear_analysis] = true
-      end
-      opts.on('--clear-tests', 'Clear Tests Records') do
-        options[:clear_tests] = true
-      end
-      # The following values may be edited into yaml queries... perform some sanitization on the values
-      opts.on('--query=QUERY', 'Object Selection Query to Use') do |n|
-        options[:query_params][:QUERY] = n.gsub(%r[[^A-Za-z0-9_\-]], "")
-      end
-      opts.on('--mnemonic=MNEMONIC', 'Set Query Param Mnemonic') do |n|
-        options[:query_params][:MNEMONIC] = n.gsub(%r[[^a-z0-9_\-]], "")
-        options[:query_params][:QUERY] = "collection"
-      end
-      opts.on('--tag=TAG', 'Set Collection TAG to process') do |n|
-        @ct_groups.fetch(n.to_sym, []).each do |m|
-          options[:iterative_params].append({MNEMONIC: m})
-          options[:query_params][:QUERY] = "collection"
-        end
-      end
-      opts.on('--id=ID', 'Set Query Param Id') do |n|
-        options[:query_params][:ID] = n.to_i
-        options[:query_params][:QUERY] = "id"
-      end
-      opts.on('--limit=LIMIT', 'Set Query Limit') do |n|
-        options[:query_params][:LIMIT] = n.to_i
-      end
-    end.parse(ARGV)
-    options[:iterative_params].append({}) if options[:iterative_params].empty?
-    options    
-  end
-
   def preliminary_tasks
-    puts $options if ObjectHealth.debug
+    puts @obj_health_cli.options if debug
     status = @obj_health_db.object_health_status
-    if $options[:clear_build]
+    if options[:clear_build]
       awaiting = status.fetch(:awaiting_rebuild, 0)
-      if awaiting == 0 || $options[:force_rebuild]
+      if awaiting == 0 || options[:force_rebuild]
         puts "\n *** This will trigger a rebuild of #{status.fetch(:built, 0)} records.  Type 'yes' to continue or 'exit' to cancel.\n"
         while input = STDIN.gets.chomp 
           break if input == "yes"
@@ -187,8 +125,8 @@ class ObjectHealth
         exit
       end
     end
-    @obj_health_db.clear_object_health(:analysis) if $options[:clear_analysis]
-    @obj_health_db.clear_object_health(:tests) if $options[:clear_tests]
+    @obj_health_db.clear_object_health(:analysis) if options[:clear_analysis]
+    @obj_health_db.clear_object_health(:tests) if options[:clear_tests]
   end
 
   def process_objects
@@ -201,67 +139,56 @@ class ObjectHealth
   end
 
   def export_object(ohobj)
-    if ObjectHealth.debug
-      if @debug[:export_count] < @debug[:export_max]
-        File.open("#{@collhdata}/debug/objects_details.#{ohobj.id}.json", 'w') do |f|
-          f.write(ohobj.build.pretty_json)
-        end
-        @debug[:export_count] += 1
-        puts @debug
+    if @obj_health_cli.export_object
+      File.open("debug/objects_details.#{ohobj.id}.json", 'w') do |f|
+        f.write(ohobj.build.pretty_json)
       end
     end
     @opensrch.export(ohobj)
   end
 
-
-
   def process_object(id)
-    puts id if ObjectHealth.debug
+    puts id if debug
     ohobj = ObjectHealthObject.new(@build_config, id)
     ohobj.init_components
-    if $options[:build_objects]
-      puts "build #{id}" if ObjectHealth.debug
+    if options[:build_objects]
+      puts "build #{id}" if debug
       @obj_health_db.build_object(ohobj)
-      puts "save #{id}" if ObjectHealth.debug
+      puts "save #{id}" if debug
       @obj_health_db.update_object_build(ohobj)
     else
-      puts "get #{id}" if ObjectHealth.debug
+      puts "get #{id}" if debug
       @obj_health_db.load_object_json(ohobj)
     end
 
-    if $options[:analyze_objects] && ohobj.build.loaded?
-      puts "  analyze #{id}" if ObjectHealth.debug
+    if options[:analyze_objects] && ohobj.build.loaded?
+      puts "  analyze #{id}" if debug
       @analysis_tasks.run_tasks(ohobj)
       @obj_health_db.update_object_analysis(ohobj)
     end
 
-    if $options[:test_objects] && ohobj.build.loaded?
-      puts "  test #{id}" if ObjectHealth.debug
+    if options[:test_objects] && ohobj.build.loaded?
+      puts "  test #{id}" if debug
       @obj_health_tests.run_tests(ohobj)
       @obj_health_db.update_object_tests(ohobj)
     end
 
-    if ohobj.build.loaded? && ($options[:build_objects] || $options[:test_objects] || $options[:analyze_objects])
-      puts "  export #{id}" if ObjectHealth.debug
+    if ohobj.build.loaded? && (options[:build_objects] || options[:test_objects] || options[:analyze_objects])
+      puts "  export #{id}" if debug
       begin
         export_object(ohobj)
       rescue => e 
         puts "Export failed #{e}"
       end
     end
-
-    if ObjectHealth.debug
-      if @debug[:print_count] < @debug[:print_max]
-        puts ohobj.build.pretty_json
-        @debug[:print_count] += 1
-      end
-    end
+ 
+    puts ohobj.build.pretty_json if @obj_health_cli.check_print
   end
 
   def mode
-    return :build if $options[:build_objects]
-    return :analysis if $options[:analyze_objects]
-    return :tests if $options[:test_objects]
+    return :build if options[:build_objects]
+    return :analysis if options[:analyze_objects]
+    return :tests if options[:test_objects]
     return :na
   end
 
