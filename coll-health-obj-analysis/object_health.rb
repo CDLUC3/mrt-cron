@@ -100,16 +100,8 @@ class ObjectHealth
     @mnemonics.fetch(mnemonic, [])
   end
 
-  def make_query_param
-    qp = {}
-    @config.fetch(:default_params, {}).each do |k,v|
-      qp[k.to_sym] = v
-    end
-    qp
-  end
-
   def make_options(argv)
-    options = {query_params: {}, iterative_params: []}
+    options = {query_params: @config.fetch(:default_params, {}), iterative_params: []}
     OptionParser.new do |opts|
       opts.banner = "Usage: ruby object_health.rb [--help] [--build] [--test]"
       opts.on('-h', '--help', 'Show help and exit') do
@@ -130,6 +122,9 @@ class ObjectHealth
       end
       opts.on('--clear-build', 'Clear Build Records') do
         options[:clear_build] = true
+      end
+      opts.on('--force-rebuild', 'Force restart of rebuild') do
+        options[:force_rebuild] = true
       end
       opts.on('--clear-analysis', 'Clear Analysis Records') do
         options[:clear_analysis] = true
@@ -165,7 +160,21 @@ class ObjectHealth
 
   def preliminary_tasks
     puts $options if ObjectHealth.debug
-    @obj_health_db.clear_object_health(:build) if $options[:clear_build]
+    status = @obj_health_db.object_health_status
+    if $options[:clear_build]
+      awaiting = status.fetch(:awaiting_rebuild, 0)
+      if awaiting == 0 || $options[:force_rebuild]
+        puts "\n *** This will trigger a rebuild of #{status.fetch(:built, 0)} records.  Type 'yes' to continue or 'exit' to cancel.\n"
+        while input = STDIN.gets.chomp 
+          break if input == "yes"
+          exit if input == "exit" 
+        end
+        @obj_health_db.clear_object_health(:build)
+      else
+        puts "\n *** Cannot clear build because #{awaiting} objects are awaiting rebuild.  Add --force-rebuild to continue anyway.\n"
+        exit
+      end
+    end
     @obj_health_db.clear_object_health(:analysis) if $options[:clear_analysis]
     @obj_health_db.clear_object_health(:tests) if $options[:clear_tests]
   end

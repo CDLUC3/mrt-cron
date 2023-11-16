@@ -29,6 +29,10 @@ class ObjectHealthDb
       sql = add_user_params_to_sql("#{select} #{q} #{exclusion}", itp)
       @queries.append(sql)
     end
+
+    clearq = cliparams.fetch(:QUERY, 'default').to_sym
+    q = gather.fetch(:clear_queries, {}).fetch(clearq, '')
+    @clearquery = Mustache.render(q, @cliparams)
   end
 
   def add_user_params_to_sql(q, iterative_param)
@@ -226,24 +230,54 @@ class ObjectHealthDb
     conn.close
   end
 
+  def object_health_status
+    sql = %{
+      select 
+        sum(case when build is not null then 1 else 0 end) as built,
+        sum(case when analysis is not null then 1 else 0 end) as analyzed,
+        sum(case when tests is not null then 1 else 0 end) as tested,
+        sum(case when build is null then 1 else 0 end) as awaiting_rebuild,
+        sum(case when analysis is null or build_updated > analysis_updated then 1 else 0 end) as awaiting_analysis,
+        sum(case when tests is null or analysis_updated > tests_updated then 1 else 0 end) as awaiting_tests
+      from
+        object_health_json
+      #{@clearquery};
+    }
+    puts sql if ObjectHealth.debug
+    conn = get_db_cli
+    stmt = conn.prepare(sql)
+    status = {}
+    stmt.execute(*[]).each do |r|
+      r.each do |k,v|
+        status[k.to_sym] = v.to_i
+      end
+    end
+    puts status if ObjectHealth.debug
+    conn.close
+    status
+  end
+
   def clear_object_health(mode)
     sql = ""
     if mode == :build
       sql = %{
         update object_health_json
         set build=null, build_updated=null, analysis=null, analysis_updated=null, tests=null, tests_updated=null
+        #{@clearquery}
       }
     end
     if mode == :analysis
       sql = %{
         update object_health_json
         set analysis=null, analysis_updated=null, tests=null, tests_updated=null
+        #{@clearquery}
       }
     end
     if mode == :tests
       sql = %{
         update object_health_json
         set tests=null, tests_updated=null
+        #{@clearquery}
       }
     end
     unless sql.empty?

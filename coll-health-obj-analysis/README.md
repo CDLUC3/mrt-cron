@@ -292,20 +292,24 @@ bundle exec ruby object_health.rb -bat --limit 500 --tag=tag_test_set
 
 Build - Small Set
 ```
-bundle exec ruby object_health.rb -bat --limit 20 --tag=tag_test_set --clear-build
+bundle exec ruby object_health.rb -bat --limit 20 --tag=tag_test_set
 ```
 
 Re-build
 ```
-bundle exec ruby object_health.rb -bat --clear-build --limit 10000 --query=has-build
+bundle exec ruby object_health.rb -bat --limit 10000 --query=has-build --clear-build 
+```
+
+```
+bundle exec ruby object_health.rb -bat --limit 10000 --query=has-build
 ```
 
 Re-analyze
 ```
-bundle exec ruby object_health.rb -at --clear-analysis --limit 10000 --query=has-build
+bundle exec ruby object_health.rb -at --limit 10000 --query=has-build --clear-analysis
 ```
 
 Re-test
 ```
-bundle exec ruby object_health.rb -t --clear-tests --limit 10000 --query=has-build
+bundle exec ruby object_health.rb -t --limit 10000 --query=has-build --clear-tests
 ```

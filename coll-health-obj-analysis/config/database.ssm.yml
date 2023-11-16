@@ -106,6 +106,20 @@ default:
         and exists (select 1 from object_health_json h where h.inv_object_id = o.id)
       id: |
         and o.id = '{{ID}}'
+    clear_queries:
+      default: |
+        where 1=1
+      collection: |
+        where exists (
+          select 1
+          from inv.inv_collections c
+          inner join inv.inv_collections_inv_objects icio 
+            on c.id = icio.inv_collection_id
+          where
+            c.mnemonic = '{{MNEMONIC}}'
+          and 
+            object_health_json.inv_object_id = icio.inv_object_id
+        )
 
   # -------------------
   # Collection Taxonomy
