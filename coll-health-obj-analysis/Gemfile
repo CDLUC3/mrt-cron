@@ -9,6 +9,9 @@ gem 'mysql2'
 gem 'opensearch-ruby'
 gem 'mustache'
 
+gem 'rspec'
+gem 'colorize'
+
 # apt-get install libyaml-dev is required ... only on dev box currently
 #gem 'irb'
 #gem 'debug'
