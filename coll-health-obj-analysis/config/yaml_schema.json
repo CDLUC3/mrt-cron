@@ -1,0 +1,94 @@
+{
+  "$id": "https://merritt.cdlib.org/yaml_schema.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+      "command_line" : {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "default_params": {
+              "type": "object"
+            },
+            "debug": {
+              "properties": {
+                "export_max": {
+                  "type": "number"
+                },
+                "print_max": {
+                  "type": "number"
+                } 
+              }
+            }   
+          }
+        },
+      "classifications" : {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "collection_taxonomy": {
+            "type": "array",
+            "items": {
+              "additionalProperties": false,
+              "type": "object",
+              "properties": {
+                "name": {"type": "string"},
+                "groups": {
+                  "patternProperties": {
+                    ".*": {
+                      "type": "null"
+                    }
+                  }
+                },
+                "mnemonics": {
+                  "patternProperties": {
+                    ".*": {
+                      "additionalProperties": false,
+                      "properties": {
+                        "tags": {
+                          "patternProperties": {
+                            ".*": {
+                              "type": "null"
+                            }
+                          }
+                        }
+                      }                      
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "build_config": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "ignore_files": {
+                "additionalProperties": false,
+                "properties": {
+                  "patterns": {
+                    "type": "array",
+                    "items": {"type": "string"}
+                  }     
+                }
+              }
+            }
+          },
+          "analysis_json": {
+            "type": "object",
+            "patternProperties": {
+              ".*": {
+                "properties": {
+                  "class": {"type": "string"},
+                  "collection_scope": {"type": "object"}
+                }                      
+              }
+            }
+    },
+          "tests": {"type": "object"}
+        }
+    }
+  },
+  "required": ["command_line","classifications"]
+}
