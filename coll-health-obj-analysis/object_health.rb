@@ -8,6 +8,7 @@ require_relative 'object_health_db'
 require_relative 'object_health_cli'
 require_relative 'object_health_tests'
 require_relative 'object_health_opensearch'
+require_relative 'object_health_match'
 require_relative 'analysis_tasks'
 require_relative 'oh_object'
 require_relative 'oh_object_component'
@@ -38,10 +39,10 @@ class ObjectHealth
     JSON.parse(config.to_json, symbolize_names: true)
   end
 
-  def initialize(argv)
-    config_db = get_ssm_config('config/database.ssm.yml')
-    config_opensearch = get_ssm_config('config/opensearch.ssm.yml')
-    config = get_config('config/merritt_classifications.yml')
+  def initialize(argv, cfdb: 'config/database.ssm.yml', cfos: 'config/opensearch.ssm.yml', cfmc: 'config/merritt_classifications.yml')
+    config_db = get_ssm_config(cfdb)
+    config_opensearch = get_ssm_config(cfos)
+    config = get_config(cfmc)
     config_rules = config.fetch(:classifications, {})
     config_cli = config.fetch(:command_line, {})
 
@@ -129,8 +130,12 @@ class ObjectHealth
     @obj_health_db.clear_object_health(:tests) if options[:clear_tests]
   end
 
+  def get_object_list
+    @obj_health_db.get_object_list
+  end
+
   def process_objects
-    @obj_health_db.get_object_list.each do |id|
+    get_object_list.each do |id|
       process_object(id)
     end
   end
@@ -196,62 +201,6 @@ class ObjectHealth
     self.to_s
   end
 
-  def self.match_first(ordered_list, list_set)
-    ordered_list.each do |v|
-      return v if list_set.include?(v)
-    end
-    return nil
-  end
-
-  def self.match_list(list, str)
-    return false if list.nil?
-    list.include?(str)
-  end
-
-  def self.match_map(map, str)
-    return false if map.nil?
-    self.match_list(map.keys, str)
-  end
-
-  def self.match_template_list(list, str, ohobj)
-    return false if list.nil?
-
-    tlist = []
-    list.each do |v|
-      tlist.append(Mustache.render(v, ohobj.nil? ? {} : ohobj.template_map))
-    end
-    self.match_list(tlist, str)
-  end
-
-  def self.match_pattern(list, str)
-    return false if list.nil?
-
-    list.each do |v|
-      return true if str =~ Regexp.new(v)
-    end
-    false
-  end
-
-  def self.match_criteria(criteria:, key:, ohobj:, criteria_list: nil, criteria_keys: nil, criteria_templates: nil, criteria_patterns: nil)
-    return false if criteria.nil?
-    b = false
-    b = b || self.match_list(criteria.fetch(criteria_list, []), key) if criteria_list
-    b = b || self.match_map(criteria.fetch(criteria_keys, []), key) if criteria_keys
-    b = b || self.match_pattern(criteria.fetch(criteria_patterns, []), key) if criteria_patterns
-    b = b || self.match_template_list(criteria.fetch(criteria_templates, []), key, ohobj) if criteria_templates
-    b
-  end
-
-  def self.make_status_key_map(criteria, key) 
-    mapping = {}
-    criteria.fetch(key, {}).each do |k,list|
-      next if list.nil?
-      list.keys.each do |v|
-        mapping[v.to_sym] = k
-      end
-    end
-    mapping
-  end
 end
 
 oh = ObjectHealth.new(ARGV)

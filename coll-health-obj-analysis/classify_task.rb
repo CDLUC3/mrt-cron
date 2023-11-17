@@ -24,19 +24,19 @@ class ClassifyTask < ObjHealthTask
   def test_category(cat, mime, basename, ohobj)
     name = cat.fetch(:name, 'na').to_sym
 
-    if ObjectHealth.match_criteria(criteria: cat, key: basename, ohobj: ohobj, criteria_list: :paths, criteria_templates: :templates, criteria_patterns: :patterns)
+    if ObjectHealthMatch.match_criteria(criteria: cat, key: basename, ohobj: ohobj, criteria_list: :paths, criteria_templates: :templates, criteria_patterns: :patterns)
       set_metadata_paths(name, basename, ohobj)
       return name
     end
 
-    if ObjectHealth.match_criteria(criteria: cat, key: mime, ohobj: ohobj, criteria_list: :mimes)
+    if ObjectHealthMatch.match_criteria(criteria: cat, key: mime, ohobj: ohobj, criteria_list: :mimes)
       set_metadata_paths(name, basename, ohobj)
       return name
     end
 
     if mime.to_s =~ %r[;]
       tmime = mime.to_s.split(";")[0]
-      if ObjectHealth.match_criteria(criteria: cat, key: tmime, ohobj: ohobj, criteria_list: :mimes)
+      if ObjectHealthMatch.match_criteria(criteria: cat, key: tmime, ohobj: ohobj, criteria_list: :mimes)
         set_metadata_paths(name, basename, ohobj)
         return name
       end
@@ -175,7 +175,7 @@ class ClassifyTask < ObjHealthTask
       return arr[0] if arr.length == 1
       return "Multiple Options: #{arr.length}" if mt == :metadata
       cat = @catmap[mt]
-      return ObjectHealth.match_first(cat.fetch(:paths, []), arr) if cat.fetch(:ordered_paths, false)
+      return ObjectHealthMatch.match_first(cat.fetch(:paths, []), arr) if cat.fetch(:ordered_paths, false)
       return arr[0]
     end
     :NA

@@ -71,7 +71,7 @@ class ObjectHealthCli
       opts.on('--limit=LIMIT', 'Set Query Limit') do |n|
         options[:query_params][:LIMIT] = n.to_i
       end
-    end.parse(ARGV)
+    end.parse(argv)
     options[:iterative_params].append({}) if options[:iterative_params].empty?
     options    
   end

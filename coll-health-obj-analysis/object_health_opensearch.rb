@@ -16,7 +16,7 @@ class ObjectHealthOpenSearch
     begin
       @osclient.indices.create(index: @INDEX)
     rescue OpenSearch::Transport::Transport::Errors::BadRequest => e 
-      puts e.class
+      #index already exists
     end
   end
 

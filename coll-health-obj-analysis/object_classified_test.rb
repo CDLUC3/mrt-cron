@@ -5,7 +5,7 @@ require_relative 'oh_tasktest'
 class ClassificationTest < ObjHealthTest
   def initialize(oh, taskdef, name)
     super(oh, taskdef, name)
-    @mapping = ObjectHealth.make_status_key_map(taskdef, :status_keys)
+    @mapping = ObjectHealthMatch.make_status_key_map(taskdef, :status_keys)
   end
 
   def get_key

@@ -1,0 +1,78 @@
+dbconf:
+  adapter: mysql2
+  encoding: utf8mb4
+  collation: utf8mb4_unicode_ci
+  host: "bad-host-{!SSM: billing/db-host}"
+  database: "{!SSM: billing/db-name}"
+  port: 3306
+  username: "{!SSM: billing/readwrite/db-user}"
+  password: "{!SSM: billing/readwrite/db-password}"
+
+# -------------------
+# Object Selection Queries
+# -------------------
+# Select objects to process
+# Note that this code presumes that OpenContext, ETD Reports, Dryad and Merritt admin collections will always be excluded
+gather_ids:
+  select: |
+    select o.id
+    from inv.inv_objects o
+    inner join inv.inv_collections_inv_objects icio on icio.inv_object_id = o.id
+    inner join inv.inv_collections c on c.id = icio.inv_collection_id
+    where 1=1
+    and c.mnemonic not in ({{{SKIPS}}}) 
+  # Default exclude sql fragment
+  default_exclusion: |
+    and 0 = 1
+    limit {{LIMIT}}
+  # Sql fragment to only pull objects that need to be re-built
+  build_exclusion: |
+    and not exists (
+      select 1 from object_health_json h where h.inv_object_id = o.id and h.build_updated > o.modified
+    )
+    order by o.modified desc
+    limit {{LIMIT}}
+  # Sql fragment to only pull objects that need to be re-analyzed
+  analysis_exclusion: |
+    and exists(
+      select 1 from object_health_json h where h.inv_object_id = o.id and h.build is not null
+    )
+    and not exists (
+      select 1 from object_health_json h where h.inv_object_id = o.id and h.analysis_updated >= h.build_updated
+    )
+    order by o.modified desc
+    limit {{LIMIT}}
+  # Sql fragment to only pull objects that need to be re-tested
+  tests_exclusion: |
+    and exists(
+      select 1 from object_health_json h where h.inv_object_id = o.id and h.analysis is not null
+    )
+    and not exists (
+      select 1 from object_health_json h where h.inv_object_id = o.id and h.tests_updated >= h.analysis_updated
+    )
+    order by o.modified desc
+    limit {{LIMIT}}
+  # prioritized set of queries to use to find work to be performed.  If one query returns no results, the next one will be run
+  queries:
+    # query by collection mnemonic
+    collection: |
+      and c.mnemonic = '{{MNEMONIC}}'
+    # query for objects with an existing build representation
+    has-build: |
+      and exists (select 1 from object_health_json h where h.inv_object_id = o.id)
+    id: |
+      and o.id = '{{ID}}'
+  clear_queries:
+    default: |
+      where 1=1
+    collection: |
+      where exists (
+        select 1
+        from inv.inv_collections c
+        inner join inv.inv_collections_inv_objects icio 
+          on c.id = icio.inv_collection_id
+        where
+          c.mnemonic = '{{MNEMONIC}}'
+        and 
+          object_health_json.inv_object_id = icio.inv_object_id
+      )

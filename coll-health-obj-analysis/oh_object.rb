@@ -115,7 +115,7 @@ class ObjectHealthObject
   end 
 
   def check_ignore_file(pathname)
-    ObjectHealth.match_criteria(criteria: @build_config.fetch(:ignore_files, {}), key: pathname, ohobj: self, criteria_list: :paths, criteria_patterns: :patterns)
+    ObjectHealthMatch.match_criteria(criteria: @build_config.fetch(:ignore_files, {}), key: pathname, ohobj: self, criteria_list: :paths, criteria_patterns: :patterns)
   end
 
 end

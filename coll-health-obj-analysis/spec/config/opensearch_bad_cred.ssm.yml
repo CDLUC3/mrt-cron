@@ -1,0 +1,7 @@
+opensearch:
+  host: "{!SSM: objhealth/opensearch_host}"
+  user: "foo"
+  password: "bar"
+  transport_options:
+    ssl: 
+      verify: "{!SSM: objhealth/opensearch_ssl}"
