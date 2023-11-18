@@ -242,7 +242,66 @@
               }
               }
           },
-          "tests": {"type": "object"}
+          "tests": {
+            "type": "object",
+            "additionalProperties": false,
+            "patternProperties": {
+              ".*": {
+                "additionalProperties": false,
+                "patternProperties": {
+                  "class|name|description": {
+                    "type": "string"
+                  },
+                  "collection_scope": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "patternProperties": {
+                      "skip|apply": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  },
+                  "report_status": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "patternProperties": {
+                      "SKIP|PASS|INFO|WARN|FAIL": {
+                        "oneOf": [
+                          {"type": "null"},
+                          {"type": "string"}
+                        ]
+                      }
+                    }
+                  },
+                  "status_keys": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "patternProperties": {
+                      "SKIP|PASS|INFO|WARN|FAIL": {
+                        "patternProperties": {
+                          ".*": {"type": "null"}
+                        }
+                      }
+                    }
+                  },
+                  "status_matcher": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "patternProperties": {
+                      "SKIP|PASS|INFO|WARN|FAIL": {
+                        "patternProperties": {
+                          "patterns|values": {"type": "array", "items": {"type": "string"}}
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
         }
     }
   },
