@@ -77,15 +77,171 @@
           },
           "analysis_json": {
             "type": "object",
+            "additionalProperties": false,
             "patternProperties": {
-              ".*": {
+              "mime": {
+                "additionalProperties": false,
+                "patternProperties": {
+                  "class": {
+                    "type": "string"
+                  },
+                  "collection_scope": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "patternProperties": {
+                      "skip|apply": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  },
+                  "SKIP|PASS|INFO|WARN|FAIL": {
+                    "oneOf": [
+                      {
+                        "type": "object",
+                        "patternProperties": {
+                          "^(text|image|audio|video|application)\/": {
+                            "oneOf": [
+                              {
+                                "type": "null"
+                              },
+                              {
+                                "type": "object",
+                                "patternProperties": {
+                                  ".*": {
+                                    "oneOf": [
+                                      {
+                                        "type": "null"
+                                      },
+                                      {
+                                        "enum": [
+                                          "SKIP",
+                                          "PASS",
+                                          "INFO",
+                                          "WARN",
+                                          "FAIL"
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  }
+                }
+              },
+              "classify": {
+                "additionalProperties": false,
+                "patternProperties": {
+                  "class": {
+                    "type": "string"
+                  },
+                  "collection_scope": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "patternProperties": {
+                      "skip|apply": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  },
+                  "metadata_types": {
+                    "type": "object",
+                    "patternProperties": {
+                      ".*_metadata": {
+                        "type": "null"
+                      }
+                    }
+                  },
+                  "categorize": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "properties": {
+                        "name": {
+                          "type": "string"
+                        },
+                        "ordered_paths": {
+                          "type": "boolean"
+                        },
+                        "paths": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        },
+                        "templates": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        },
+                        "patterns": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        },
+                        "mimes": {
+                          "type": "object",
+                          "patternProperties": {
+                            "^(text|image|audio|video|application)\/": {
+                              "oneOf": [
+                                {"type": "null"},
+                                {
+                                  "type": "object",
+                                  "patternProperties": {
+                                    ".*": {
+                                      "oneOf": [
+                                        {"type": "null"},
+                                        {"enum": ["SKIP", "PASS", "INFO", "WARN", "FAIL"]}
+                                      ]
+                                    }
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "test-data|collection-tags": {
                 "properties": {
-                  "class": {"type": "string"},
-                  "collection_scope": {"type": "object"}
-                }                      
+                  "class": {
+                    "type": "string"
+                  },
+                  "collection_scope": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "patternProperties": {
+                      "skip|apply": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  }
+                }
               }
-            }
-    },
+              }
+          },
           "tests": {"type": "object"}
         }
     }
