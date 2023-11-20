@@ -3,102 +3,202 @@
   "type": "object",
   "additionalProperties": false,
   "properties": {
-      "command_line" : {
+    "command_line": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "default_params": {
+          "type": "object"
+        },
+        "debug": {
+          "properties": {
+            "export_max": {
+              "type": "number"
+            },
+            "print_max": {
+              "type": "number"
+            }
+          }
+        }
+      }
+    },
+    "classifications": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "collection_taxonomy": {
+          "type": "array",
+          "items": {
+            "additionalProperties": false,
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "groups": {
+                "patternProperties": {
+                  ".*": {
+                    "type": "null"
+                  }
+                }
+              },
+              "mnemonics": {
+                "patternProperties": {
+                  ".*": {
+                    "additionalProperties": false,
+                    "properties": {
+                      "tags": {
+                        "patternProperties": {
+                          ".*": {
+                            "type": "null"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "build_config": {
           "type": "object",
           "additionalProperties": false,
           "properties": {
-            "default_params": {
-              "type": "object"
-            },
-            "debug": {
+            "ignore_files": {
+              "additionalProperties": false,
               "properties": {
-                "export_max": {
-                  "type": "number"
-                },
-                "print_max": {
-                  "type": "number"
-                } 
+                "patterns": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
               }
-            }   
+            }
           }
         },
-      "classifications" : {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "collection_taxonomy": {
-            "type": "array",
-            "items": {
+        "analysis_json": {
+          "type": "object",
+          "additionalProperties": false,
+          "patternProperties": {
+            "mime": {
               "additionalProperties": false,
-              "type": "object",
-              "properties": {
-                "name": {"type": "string"},
-                "groups": {
+              "patternProperties": {
+                "class": {
+                  "type": "string"
+                },
+                "collection_scope": {
+                  "type": "object",
+                  "additionalProperties": false,
                   "patternProperties": {
-                    ".*": {
+                    "skip|apply": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                },
+                "SKIP|PASS|INFO|WARN|FAIL": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "patternProperties": {
+                        "^(text|image|audio|video|application)\/": {
+                          "oneOf": [
+                            {
+                              "type": "null"
+                            },
+                            {
+                              "type": "object",
+                              "patternProperties": {
+                                ".*": {
+                                  "oneOf": [
+                                    {
+                                      "type": "null"
+                                    },
+                                    {
+                                      "enum": [
+                                        "SKIP",
+                                        "PASS",
+                                        "INFO",
+                                        "WARN",
+                                        "FAIL"
+                                      ]
+                                    }
+                                  ]
+                                }
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                }
+              }
+            },
+            "classify": {
+              "additionalProperties": false,
+              "patternProperties": {
+                "class": {
+                  "type": "string"
+                },
+                "collection_scope": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "patternProperties": {
+                    "skip|apply": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                },
+                "metadata_types": {
+                  "type": "object",
+                  "patternProperties": {
+                    ".*_metadata": {
                       "type": "null"
                     }
                   }
                 },
-                "mnemonics": {
-                  "patternProperties": {
-                    ".*": {
-                      "additionalProperties": false,
-                      "properties": {
-                        "tags": {
-                          "patternProperties": {
-                            ".*": {
-                              "type": "null"
-                            }
-                          }
-                        }
-                      }                      
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "build_config": {
-            "type": "object",
-            "additionalProperties": false,
-            "properties": {
-              "ignore_files": {
-                "additionalProperties": false,
-                "properties": {
-                  "patterns": {
-                    "type": "array",
-                    "items": {"type": "string"}
-                  }     
-                }
-              }
-            }
-          },
-          "analysis_json": {
-            "type": "object",
-            "additionalProperties": false,
-            "patternProperties": {
-              "mime": {
-                "additionalProperties": false,
-                "patternProperties": {
-                  "class": {
-                    "type": "string"
-                  },
-                  "collection_scope": {
+                "categorize": {
+                  "type": "array",
+                  "items": {
                     "type": "object",
                     "additionalProperties": false,
-                    "patternProperties": {
-                      "skip|apply": {
+                    "properties": {
+                      "name": {
+                        "type": "string"
+                      },
+                      "ordered_paths": {
+                        "type": "boolean"
+                      },
+                      "paths": {
                         "type": "array",
                         "items": {
                           "type": "string"
                         }
-                      }
-                    }
-                  },
-                  "SKIP|PASS|INFO|WARN|FAIL": {
-                    "oneOf": [
-                      {
+                      },
+                      "templates": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      },
+                      "patterns": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      },
+                      "mimes": {
                         "type": "object",
                         "patternProperties": {
                           "^(text|image|audio|video|application)\/": {
@@ -130,169 +230,95 @@
                             ]
                           }
                         }
-                      },
-                      {
-                        "type": "null"
-                      }
-                    ]
-                  }
-                }
-              },
-              "classify": {
-                "additionalProperties": false,
-                "patternProperties": {
-                  "class": {
-                    "type": "string"
-                  },
-                  "collection_scope": {
-                    "type": "object",
-                    "additionalProperties": false,
-                    "patternProperties": {
-                      "skip|apply": {
-                        "type": "array",
-                        "items": {
-                          "type": "string"
-                        }
-                      }
-                    }
-                  },
-                  "metadata_types": {
-                    "type": "object",
-                    "patternProperties": {
-                      ".*_metadata": {
-                        "type": "null"
-                      }
-                    }
-                  },
-                  "categorize": {
-                    "type": "array",
-                    "items": {
-                      "type": "object",
-                      "additionalProperties": false,
-                      "properties": {
-                        "name": {
-                          "type": "string"
-                        },
-                        "ordered_paths": {
-                          "type": "boolean"
-                        },
-                        "paths": {
-                          "type": "array",
-                          "items": {
-                            "type": "string"
-                          }
-                        },
-                        "templates": {
-                          "type": "array",
-                          "items": {
-                            "type": "string"
-                          }
-                        },
-                        "patterns": {
-                          "type": "array",
-                          "items": {
-                            "type": "string"
-                          }
-                        },
-                        "mimes": {
-                          "type": "object",
-                          "patternProperties": {
-                            "^(text|image|audio|video|application)\/": {
-                              "oneOf": [
-                                {"type": "null"},
-                                {
-                                  "type": "object",
-                                  "patternProperties": {
-                                    ".*": {
-                                      "oneOf": [
-                                        {"type": "null"},
-                                        {"enum": ["SKIP", "PASS", "INFO", "WARN", "FAIL"]}
-                                      ]
-                                    }
-                                  }
-                                }
-                              ]
-                            }
-                          }
-                        }
-                      }
-                    }
-                  }
-                }
-              },
-              "test-data|collection-tags": {
-                "properties": {
-                  "class": {
-                    "type": "string"
-                  },
-                  "collection_scope": {
-                    "type": "object",
-                    "additionalProperties": false,
-                    "patternProperties": {
-                      "skip|apply": {
-                        "type": "array",
-                        "items": {
-                          "type": "string"
-                        }
                       }
                     }
                   }
                 }
               }
+            },
+            "test-data|collection-tags": {
+              "properties": {
+                "class": {
+                  "type": "string"
+                },
+                "collection_scope": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "patternProperties": {
+                    "skip|apply": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
               }
-          },
-          "tests": {
-            "type": "object",
-            "additionalProperties": false,
-            "patternProperties": {
-              ".*": {
-                "additionalProperties": false,
-                "patternProperties": {
-                  "class|name|description": {
-                    "type": "string"
-                  },
-                  "collection_scope": {
-                    "type": "object",
-                    "additionalProperties": false,
-                    "patternProperties": {
-                      "skip|apply": {
-                        "type": "array",
-                        "items": {
+            }
+          }
+        },
+        "tests": {
+          "type": "object",
+          "additionalProperties": false,
+          "patternProperties": {
+            ".*": {
+              "additionalProperties": false,
+              "patternProperties": {
+                "class|name|description": {
+                  "type": "string"
+                },
+                "collection_scope": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "patternProperties": {
+                    "skip|apply": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                },
+                "report_status": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "patternProperties": {
+                    "SKIP|PASS|INFO|WARN|FAIL": {
+                      "oneOf": [
+                        {
+                          "type": "null"
+                        },
+                        {
                           "type": "string"
                         }
-                      }
+                      ]
                     }
-                  },
-                  "report_status": {
-                    "type": "object",
-                    "additionalProperties": false,
-                    "patternProperties": {
-                      "SKIP|PASS|INFO|WARN|FAIL": {
-                        "oneOf": [
-                          {"type": "null"},
-                          {"type": "string"}
-                        ]
-                      }
-                    }
-                  },
-                  "status_keys": {
-                    "type": "object",
-                    "additionalProperties": false,
-                    "patternProperties": {
-                      "SKIP|PASS|INFO|WARN|FAIL": {
-                        "patternProperties": {
-                          ".*": {"type": "null"}
+                  }
+                },
+                "status_keys": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "patternProperties": {
+                    "SKIP|PASS|INFO|WARN|FAIL": {
+                      "patternProperties": {
+                        ".*": {
+                          "type": "null"
                         }
                       }
                     }
-                  },
-                  "status_matcher": {
-                    "type": "object",
-                    "additionalProperties": false,
-                    "patternProperties": {
-                      "SKIP|PASS|INFO|WARN|FAIL": {
-                        "patternProperties": {
-                          "patterns|values": {"type": "array", "items": {"type": "string"}}
+                  }
+                },
+                "status_matcher": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "patternProperties": {
+                    "SKIP|PASS|INFO|WARN|FAIL": {
+                      "patternProperties": {
+                        "patterns|values": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
                         }
                       }
                     }
@@ -302,7 +328,11 @@
             }
           }
         }
+      }
     }
   },
-  "required": ["command_line","classifications"]
+  "required": [
+    "command_line",
+    "classifications"
+  ]
 }
