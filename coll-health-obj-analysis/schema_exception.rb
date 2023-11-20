@@ -1,0 +1,2 @@
+class MySchemaException < StandardError
+end

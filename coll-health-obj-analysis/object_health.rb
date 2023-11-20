@@ -1,4 +1,6 @@
 require 'json'
+require 'json-schema'
+
 require 'yaml'
 require 'uc3-ssm'
 require 'optparse'
@@ -12,6 +14,7 @@ require_relative 'object_health_match'
 require_relative 'analysis_tasks'
 require_relative 'oh_object'
 require_relative 'oh_object_component'
+require_relative 'schema_exception'
 # only on dev box for now
 #require 'debug'
 
@@ -39,10 +42,25 @@ class ObjectHealth
     JSON.parse(config.to_json, symbolize_names: true)
   end
 
+  def get_schema(file)
+    config = YAML.load(File.read(file))
+    JSON.parse(config.to_json)
+  end
+
+  def validate(schema, obj)
+    val = JSON::Validator.fully_validate(get_schema(schema), obj)
+    unless val.empty?
+      puts "** Schema is not valid"
+      puts val
+      raise MySchemaException.new "Yaml invalid for schema"
+    end 
+  end
+
   def initialize(argv, cfdb: 'config/database.ssm.yml', cfos: 'config/opensearch.ssm.yml', cfmc: 'config/merritt_classifications.yml')
     config_db = get_ssm_config(cfdb)
     config_opensearch = get_ssm_config(cfos)
     config = get_config(cfmc)
+    validate('config/yaml_schema.yml', config)
     config_rules = config.fetch(:classifications, {})
     config_cli = config.fetch(:command_line, {})
 

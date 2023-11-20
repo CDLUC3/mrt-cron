@@ -55,4 +55,12 @@ RSpec.describe 'object health tests' do
       oh.get_object_list
     }.to raise_error(Mysql2::Error::ConnectionError)
   end
+
+  it "Test schema validation failure" do
+    expect {
+      oh = ObjectHealth.new([], cfmc: 'spec/config/empty.yml')
+      oh.get_object_list
+    }.to raise_error(MySchemaException)
+  end
+  
 end
