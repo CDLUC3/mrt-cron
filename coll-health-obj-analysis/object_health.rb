@@ -42,12 +42,22 @@ class ObjectHealth
     JSON.parse(config.to_json, symbolize_names: true)
   end
 
-  def get_schema(file)
+  def self.get_schema(file)
     config = YAML.load(File.read(file))
-    JSON.parse(config.to_json)
+    schema = JSON.parse(config.to_json)
+    spec = JSON::Validator.validator_for_name("draft6").metaschema
+    val = JSON::Validator.fully_validate(spec, schema)
+    unless val.empty?
+      puts "\n** Invalid Schema File #{file}"
+      val.each do |s|
+        puts " - #{s}"
+      end
+      raise MySchemaException.new "Invalid schema file: #{file}"
+    end
+    schema
   end
 
-  def validate(schema, obj)
+  def self.validate(schema, obj)
     val = JSON::Validator.fully_validate(schema, obj)
     unless val.empty?
       puts "\n** Schema Validation Failure for #{obj.fetch(:id, '')}"
@@ -60,12 +70,13 @@ class ObjectHealth
   end
 
   def initialize(argv, cfdb: 'config/database.ssm.yml', cfos: 'config/opensearch.ssm.yml', cfmc: 'config/merritt_classifications.yml')
-    @schema_yaml = get_schema('config/yaml_schema.yml')
-    @schema_obj = get_schema('config/obj_schema.yml')
+    @schema_yaml = ObjectHealth.get_schema('config/yaml_schema.yml')
+    @schema_obj = ObjectHealth.get_schema('config/obj_schema.yml')
+    exit
     config_db = get_ssm_config(cfdb)
     config_opensearch = get_ssm_config(cfos)
     config = get_config(cfmc)
-    validate(@schema_yaml, config)
+    ObjectHealth.validate(@schema_yaml, config)
     config_rules = config.fetch(:classifications, {})
     config_cli = config.fetch(:command_line, {})
 
@@ -205,7 +216,7 @@ class ObjectHealth
       begin
         puts "  export #{id}" if debug
         export_object(ohobj)
-        validate(@schema_obj, ohobj.get_osobj)
+        ObjectHealth.validate(@schema_obj, ohobj.get_osobj)
       rescue => e 
         puts "Export failed #{e}"
       end
