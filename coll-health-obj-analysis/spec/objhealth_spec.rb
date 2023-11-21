@@ -1,8 +1,20 @@
 require 'spec_helper'
+require 'logger'
 require_relative '../object_health_util'
 require_relative '../object_health'
 
 RSpec.describe 'object health tests' do
+  def ssm_override(map)
+    allow_any_instance_of(Logger).to receive(:debug).with(anything)
+    allow_any_instance_of(Uc3Ssm::ConfigResolver).to receive(:lookup_ssm).and_wrap_original do |method, arg|
+      if map.key?(arg.to_sym)
+        method.call('__na__', map[arg.to_sym])
+      else
+        method.call(arg)
+      end
+    end
+  end
+
   it "Validate the Merritt Classification Schema" do
     ObjectHealthUtil.validate_schema_file(ObjectHealthUtil.yaml_schema)
   end
@@ -46,7 +58,8 @@ RSpec.describe 'object health tests' do
 
   it "Test Object Health Usage in spite of bad credentials" do
     expect {
-      oh = ObjectHealth.new(['--help'], cfos: 'spec/config/opensearch_bad_cred.ssm.yml')
+      ssm_override({'billing/readwrite/db-user': 'foo'})
+      oh = ObjectHealth.new(['--help'])
       oh.get_object_list  
     }.to raise_error(SystemExit)
   end
@@ -56,30 +69,34 @@ RSpec.describe 'object health tests' do
     oh.get_object_list
   end
 
+  it "Test Object Health Construction with bad db hostname" do
+    expect {
+      ssm_override({'billing/db-host': 'bad-host.cdlib.org'})
+      oh = ObjectHealth.new([])
+      oh.get_object_list
+    }.to raise_error(Mysql2::Error::ConnectionError)
+  end
+
+  it "Test Object Health Construction with bad db credential" do
+    expect {
+      ssm_override({'billing/readwrite/db-user': 'foo'})
+      oh = ObjectHealth.new([])
+      oh.get_object_list
+    }.to raise_error(Mysql2::Error::ConnectionError)
+  end
+
   it "Test Object Health Construction - invalid opensearch credentials" do
     expect {
-      oh = ObjectHealth.new([], cfos: 'spec/config/opensearch_bad_cred.ssm.yml')
+      ssm_override({'objhealth/opensearch_user': 'foo'})
+      oh = ObjectHealth.new([])
     }.to raise_error(OpenSearch::Transport::Transport::Errors::Unauthorized)
   end
 
   it "Test Object Health Construction - invalid opensearch host" do
     expect {
-      oh = ObjectHealth.new([], cfos: 'spec/config/opensearch_bad_host.ssm.yml')
+      ssm_override({'objhealth/opensearch_host': 'bad-host.cdlib.org'})
+      oh = ObjectHealth.new([])
     }.to raise_error(Faraday::ConnectionFailed)
-  end
-
-  it "Test Object Health Construction - invalid db credentials" do
-    expect {
-      oh = ObjectHealth.new([], cfdb: 'spec/config/database_bad_cred.ssm.yml')
-      oh.get_object_list
-    }.to raise_error(Mysql2::Error::ConnectionError)
-  end
-
-  it "Test Object Health Construction - invalid db host" do
-    expect {
-      oh = ObjectHealth.new([], cfdb: 'spec/config/database_bad_host.ssm.yml')
-      oh.get_object_list
-    }.to raise_error(Mysql2::Error::ConnectionError)
   end
 
   it "Test schema validation failure" do

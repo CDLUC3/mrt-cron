@@ -76,6 +76,7 @@ DEPENDENCIES
   colorize
   json
   json-schema
+  logger
   mustache
   mysql2
   nokogiri

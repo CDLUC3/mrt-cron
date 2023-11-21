@@ -12,6 +12,7 @@ gem 'mustache'
 
 gem 'rspec'
 gem 'colorize'
+gem 'logger'
 
 # apt-get install libyaml-dev is required ... only on dev box currently
 #gem 'irb'
