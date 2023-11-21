@@ -1,17 +1,446 @@
 {
-  "$id": "https://merritt.cdlib.org/obj_schema.json",
-  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://merritt.cdlib.org/obj_schema.yml",
+  "title": "Merritt Object Health Object Schema",
   "type": "object",
   "additionalProperties": false,
+  "required": [
+    "id",
+    "@timestamp",
+    "build"
+  ],
   "properties": {
-      "name" : {
-          "type": "string",
-          "description": "The name of the entry"
+    "id": {
+      "type": "number"
+    },
+    "@timestamp": {
+      "type": "string"
+    },
+    "build": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "number"
+        },
+        "version": {
+          "type": "number"
+        },
+        "metadata": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "erc_who": {
+              "type": "string"
+            },
+            "erc_what": {
+              "type": "string"
+            },
+            "erc_when": {
+              "type": "string"
+            },
+            "erc_where": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "erc_who",
+            "erc_what",
+            "erc_when",
+            "erc_where"
+          ]
+        },
+        "modified": {
+          "type": "string"
+        },
+        "containers": {
+          "type": "object"
+        },
+        "file_counts": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "empty": {
+              "type": "number"
+            },
+            "system": {
+              "type": "number"
+            },
+            "deleted": {
+              "type": "number"
+            },
+            "producer": {
+              "type": "number"
+            }
+          },
+          "required": [
+            "empty",
+            "system",
+            "deleted",
+            "producer"
+          ]
+        },
+        "identifiers": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "ark": {
+              "type": "string"
+            },
+            "localids": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          "required": [
+            "ark",
+            "localids"
+          ]
+        },
+        "embargo_end_date": {
+          "type": "string"
+        },
+        "mimes_for_object": {
+          "type": "array",
+          "items": {
+            "additionalProperties": false,
+            "type": "object",
+            "properties": {
+              "mime": {
+                "type": "string"
+              },
+              "count": {
+                "type": "number"
+              }
+            },
+            "required": [
+              "mime",
+              "count"
+            ]
+          }
+        },
+        "sidecar": {
+          "properties": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          }
+        },
+        "ignore_files": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
       },
-      "foo" : {
-        "type": "string",
-        "description": "The name of the entry"
+      "patternProperties": {
+        "^(na|system|producer)$": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "ext": {
+                "type": "string"
+              },
+              "source": {
+                "enum": [
+                  "producer",
+                  "system",
+                  "na"
+                ]
+              },
+              "created": {
+                "type": "string"
+              },
+              "version": {
+                "type": "number"
+              },
+              "pathname": {
+                "type": "string"
+              },
+              "pathtype": {
+                "enum": [
+                  "file",
+                  "url",
+                  "na"
+                ]
+              },
+              "mime_type": {
+                "type": "string"
+              },
+              "digest_type": {
+                "enum": [
+                  "sha-256"
+                ]
+              },
+              "digest_value": {
+                "type": "string"
+              },
+              "billable_size": {
+                "type": "number"
+              },
+              "last_version_present": {
+                "type": "number"
+              },
+              "empty": {
+                "type": "boolean"
+              },
+              "deleted": {
+                "type": "boolean"
+              },
+              "ignore_file": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "source",
+              "created",
+              "version",
+              "pathname",
+              "pathtype",
+              "mime_type",
+              "digest_type",
+              "digest_value",
+              "billable_size",
+              "last_version_present"
+            ]
+          }
+        }
+      }
+    },
+    "analysis": {
+      "additionalProperties": false,
+      "type": "object",
+      "properties": {
+        "classification": {
+          "additionalProperties": false,
+          "patternProperties": {
+            "^(complex|content|derivatives|na)$": {
+              "type": "number"
+            },
+            "^(bag_metadata|common_metadata|etd_metadata|metadata|nuxeo_style_metadata|secondary)$": {
+              "type": "number"
+            }
+          }
+        },
+        "mime_ext_mismatch": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "mime": {
+                "type": "string"
+              },
+              "ext": {
+                "type": "string"
+              },
+              "key": {
+                "type": "string"
+              },
+              "count": {
+                "type": "number"
+              },
+              "files": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "merritt_test_data": {
+          "type": "boolean"
+        },
+        "mime_file_classification": {
+          "type": "object",
+          "additionalProperties": false,
+          "patternProperties": {
+            "^(complex|content|derivatives|na)$": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "^(bag_metadata|common_metadata|etd_metadata|metadata|nuxeo_style_metadata|secondary)$": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "metadata_paths": {
+          "type": "object",
+          "additionalProperties": false,
+          "patternProperties": {
+            "^(bag_metadata|common_metadata|etd_metadata|metadata|nuxeo_style_metadata)$": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "object_classification": {
+          "enum": [
+            "has_multi_digital_files",
+            "has_multi_digital_files_with_derivatives",
+            "has_digital_file_with_derivatives",
+            "has_single_digital_file",
+            "complex_object",
+            "has_derivatives_only",
+            "has_no_content"
+          ]
+        },
+        "metadata_classification": {
+          "enum": [
+            "has_bag_metadata_file",
+            "has_common_metadata_file",
+            "has_etd_metadata_file",
+            "has_metadata_with_secondary",
+            "has_nuxeo_style_metadata_file",
+            "has_single_metadata_file",
+            "has_no_sidecar_metadata",
+            "has_secondary_metadata_only",
+            "has_multi_metadata"
+          ]
+        },
+        "primary_metadata_file": {
+          "type": "string"
+        },
+        "containers": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "url": {
+              "type": "string"
+            },
+            "collection_set": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "mimes_by_status": {
+          "type": "object",
+          "additionalProperties": false,
+          "patternProperties": {
+            "^(SKIP|PASS|INFO|WARN|FAIL)$": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "mime_ext_status": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "mime": {
+                "type": "string"
+              },
+              "ext": {
+                "type": "string"
+              },
+              "status": {
+                "enum": [
+                  "SKIP",
+                  "PASS",
+                  "INFO",
+                  "WARN",
+                  "FAIL"
+                ]
+              }
+            }
+          }
+        },
+        "unclassified_mime_files": {
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "path": {
+                "type": "string"
+              },
+              "mime": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    },
+    "tests": {
+      "additionalProperties": false,
+      "type": "object",
+      "properties": {
+        "failures": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "summary": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "counts": {
+          "type": "object",
+          "additionalProperties": false,
+          "patternProperties": {
+            "^(SKIP|PASS|INFO|WARN|FAIL)$": {
+              "type": "number"
+            }
+          }
+        },
+        "by_status": {
+          "type": "object",
+          "additionalProperties": false,
+          "patternProperties": {
+            "^(SKIP|PASS|INFO|WARN|FAIL)$": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "results": {
+          "type": "object",
+          "patternProperties": {
+            ".*": {
+              "enum": [
+                "SKIP",
+                "PASS",
+                "INFO",
+                "WARN",
+                "FAIL"
+              ]
+            }
+          }
+        },
+        "state": {
+          "enum": [
+            "SKIP",
+            "PASS",
+            "INFO",
+            "WARN",
+            "FAIL"
+          ]
+        }
+      }
     }
-},
-  "required": ["name","foo"]
+  }
 }

@@ -48,19 +48,24 @@ class ObjectHealth
   end
 
   def validate(schema, obj)
-    val = JSON::Validator.fully_validate(get_schema(schema), obj)
+    val = JSON::Validator.fully_validate(schema, obj)
     unless val.empty?
-      puts "** Schema is not valid"
-      puts val
+      puts "\n** Schema Validation Failure for #{obj.fetch(:id, '')}"
+      val.each do |s|
+        puts " - #{s}"
+      end
+      #puts JSON.pretty_generate(obj)
       raise MySchemaException.new "Yaml invalid for schema"
     end 
   end
 
   def initialize(argv, cfdb: 'config/database.ssm.yml', cfos: 'config/opensearch.ssm.yml', cfmc: 'config/merritt_classifications.yml')
+    @schema_yaml = get_schema('config/yaml_schema.yml')
+    @schema_obj = get_schema('config/obj_schema.yml')
     config_db = get_ssm_config(cfdb)
     config_opensearch = get_ssm_config(cfos)
     config = get_config(cfmc)
-    validate('config/yaml_schema.yml', config)
+    validate(@schema_yaml, config)
     config_rules = config.fetch(:classifications, {})
     config_cli = config.fetch(:command_line, {})
 
@@ -164,7 +169,7 @@ class ObjectHealth
   def export_object(ohobj)
     if @obj_health_cli.export_object
       File.open("debug/objects_details.#{ohobj.id}.json", 'w') do |f|
-        f.write(ohobj.build.pretty_json)
+        f.write(JSON.pretty_generate(ohobj.get_osobj))
       end
     end
     @opensrch.export(ohobj)
@@ -197,9 +202,10 @@ class ObjectHealth
     end
 
     if ohobj.build.loaded? && (options[:build_objects] || options[:test_objects] || options[:analyze_objects])
-      puts "  export #{id}" if debug
       begin
+        puts "  export #{id}" if debug
         export_object(ohobj)
+        validate(@schema_obj, ohobj.get_osobj)
       rescue => e 
         puts "Export failed #{e}"
       end

@@ -1,5 +1,5 @@
 {
-  "$id": "https://merritt.cdlib.org/yaml_schema.json",
+  "$id": "https://merritt.cdlib.org/yaml_schema.yml",
   "type": "object",
   "additionalProperties": false,
   "properties": {
@@ -105,7 +105,7 @@
                     {
                       "type": "object",
                       "patternProperties": {
-                        "^(text|image|audio|video|application)\/": {
+                        "^(text|image|audio|video|application)/": {
                           "oneOf": [
                             {
                               "type": "null"
@@ -201,7 +201,7 @@
                       "mimes": {
                         "type": "object",
                         "patternProperties": {
-                          "^(text|image|audio|video|application)\/": {
+                          "^(text|image|audio|video|application)/": {
                             "oneOf": [
                               {
                                 "type": "null"

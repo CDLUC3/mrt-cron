@@ -1,18 +1,23 @@
 {
-        "workbench.colorTheme": "Tomorrow Night Blue",
-        "json.schemas": [
-                {
-                    "name": "Merritt Object Health", 
-                    "fileMatch": ["objects_details.*.json"], 
-                    "url": "./coll-health-obj-analysis/config/obj_schema.json"
-                },
-                {
-                    "name": "Merritt Object Health Yaml", 
-                    "fileMatch": ["merritt_classifications.yml"], 
-                    "url": "./coll-health-obj-analysis/config/yaml_schema.json"
-                }
+    "workbench.colorTheme": "Tomorrow Night Blue",
+    "json.schemas": [
+        {
+            "fileMatch": [
+                "objects_details.*.json"
             ],
-            "yaml.schemas": {
-                "./coll-health-obj-analysis/config/yaml_schema.json": ["merritt_classifications.yml"]
-            }
+            "url": "./coll-health-obj-analysis/config/obj_schema.json"
+        },
+        {
+            "fileMatch": [
+                "merritt_classifications.yml"
+            ],
+            "url": "./coll-health-obj-analysis/config/yaml_schema.json"
+        }
+    ],
+    "yaml.schemas": {
+        "./coll-health-obj-analysis/config/yaml_schema.json": [
+            "merritt_classifications.yml"
+        ]
+    },
+    "json.maxItemsComputed": 500000
 }
