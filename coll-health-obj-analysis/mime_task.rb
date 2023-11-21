@@ -7,7 +7,7 @@ class MimeTask < ObjHealthTask
     super(oh, taskdef, name)
     @statmap = {}
     @mimeext = {}
-    ObjectHealth.status_values.each do |stat|
+    ObjectHealthUtil.status_values.each do |stat|
       next if taskdef.fetch(stat, {}).nil?
       taskdef.fetch(stat, {}).each do |mime, exts|
         @statmap[mime] = stat
@@ -23,7 +23,7 @@ class MimeTask < ObjHealthTask
     objmap = {}
     objmap_ext_mismatch = {}
     objmap_ext_status = {}
-    ObjectHealth.status_values.each do |stat|
+    ObjectHealthUtil.status_values.each do |stat|
       objmap[stat] = []
     end
     ohobj.build.get_object.fetch(:mimes_for_object, []).each do |rec|

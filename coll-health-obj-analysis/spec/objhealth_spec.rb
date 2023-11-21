@@ -1,7 +1,33 @@
-require 'spec_helper.rb'
-require_relative '../object_health.rb'
+require 'spec_helper'
+require_relative '../object_health_util'
+require_relative '../object_health'
 
 RSpec.describe 'object health tests' do
+  it "Validate the Merritt Classification Schema" do
+    ObjectHealthUtil.validate_schema_file(ObjectHealthUtil.yaml_schema)
+  end
+
+  it "Identify Issue in Merritt Classification Schema" do
+    expect {
+      schema = ObjectHealthUtil.get_schema(ObjectHealthUtil.yaml_schema)
+      # corrupt the schema object
+      schema["type"] = "foo"
+      ObjectHealthUtil.validate_schema(schema, ObjectHealthUtil.yaml_schema)  
+    }.to raise_error(MySchemaException)
+  end
+
+  it "Validate the Object Health Schema" do
+    ObjectHealthUtil.validate_schema_file(ObjectHealthUtil.obj_schema)
+  end
+
+  it "Identify Issue in Object Health Object Schema" do
+    expect {
+      schema = ObjectHealthUtil.get_schema(ObjectHealthUtil.obj_schema)
+      # corrupt the schema object
+      schema["required"].append(22)
+      ObjectHealthUtil.validate_schema(schema, ObjectHealthUtil.obj_schema)  
+    }.to raise_error(MySchemaException)
+  end
 
   it "Test Object Health Usage Exit" do
     expect {

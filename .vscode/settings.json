@@ -17,6 +17,9 @@
     "yaml.schemas": {
         "./coll-health-obj-analysis/config/yaml_schema.json": [
             "merritt_classifications.yml"
+        ],
+        "./coll-health-obj-analysis/vendor/bundle/ruby/3.0.0/gems/json-schema-4.1.1/resources/draft-06.json": [
+            "*_schema.yml"
         ]
     },
     "json.maxItemsComputed": 500000

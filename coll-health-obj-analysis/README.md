@@ -122,7 +122,7 @@ bundle install
 
 ## Invocation
 ```
-bundle exec ruby object_health.rb
+bundle exec ruby object_health_main.rb
 ```
 
 
@@ -286,30 +286,30 @@ The results of these analyses should feed into the existing Object Health proces
 
 Builds
 ```
-bundle exec ruby object_health.rb -bat --limit 500 --tag=tag_test_set
+bundle exec ruby object_health_main.rb -bat --limit 500 --tag=tag_test_set
 
 ```
 
 Build - Small Set
 ```
-bundle exec ruby object_health.rb -bat --limit 20 --tag=tag_test_set
+bundle exec ruby object_health_main.rb -bat --limit 20 --tag=tag_test_set
 ```
 
 Re-build
 ```
-bundle exec ruby object_health.rb -bat --limit 10000 --query=has-build --clear-build 
+bundle exec ruby object_health_main.rb -bat --limit 10000 --query=has-build --clear-build 
 ```
 
 ```
-bundle exec ruby object_health.rb -bat --limit 10000 --query=has-build
+bundle exec ruby object_health_main.rb -bat --limit 10000 --query=has-build
 ```
 
 Re-analyze
 ```
-bundle exec ruby object_health.rb -at --limit 10000 --query=has-build --clear-analysis
+bundle exec ruby object_health_main.rb -at --limit 10000 --query=has-build --clear-analysis
 ```
 
 Re-test
 ```
-bundle exec ruby object_health.rb -t --limit 10000 --query=has-build --clear-tests
+bundle exec ruby object_health_main.rb -t --limit 10000 --query=has-build --clear-tests
 ```

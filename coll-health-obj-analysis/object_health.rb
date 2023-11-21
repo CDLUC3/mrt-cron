@@ -6,6 +6,7 @@ require 'uc3-ssm'
 require 'optparse'
 require 'opensearch'
 require 'time'
+require_relative 'object_health_util'
 require_relative 'object_health_db'
 require_relative 'object_health_cli'
 require_relative 'object_health_tests'
@@ -14,7 +15,6 @@ require_relative 'object_health_match'
 require_relative 'analysis_tasks'
 require_relative 'oh_object'
 require_relative 'oh_object_component'
-require_relative 'schema_exception'
 # only on dev box for now
 #require 'debug'
 
@@ -32,51 +32,13 @@ require_relative 'schema_exception'
 # - OpenSearch
 
 class ObjectHealth
-  def get_ssm_config(file)
-    config = Uc3Ssm::ConfigResolver.new.resolve_file_values(file: file)
-    JSON.parse(config.to_json, symbolize_names: true)
-  end
-
-  def get_config(file)
-    config = YAML.load(File.read(file))
-    JSON.parse(config.to_json, symbolize_names: true)
-  end
-
-  def self.get_schema(file)
-    config = YAML.load(File.read(file))
-    schema = JSON.parse(config.to_json)
-    spec = JSON::Validator.validator_for_name("draft6").metaschema
-    val = JSON::Validator.fully_validate(spec, schema)
-    unless val.empty?
-      puts "\n** Invalid Schema File #{file}"
-      val.each do |s|
-        puts " - #{s}"
-      end
-      raise MySchemaException.new "Invalid schema file: #{file}"
-    end
-    schema
-  end
-
-  def self.validate(schema, obj)
-    val = JSON::Validator.fully_validate(schema, obj)
-    unless val.empty?
-      puts "\n** Schema Validation Failure for #{obj.fetch(:id, '')}"
-      val.each do |s|
-        puts " - #{s}"
-      end
-      #puts JSON.pretty_generate(obj)
-      raise MySchemaException.new "Yaml invalid for schema"
-    end 
-  end
-
   def initialize(argv, cfdb: 'config/database.ssm.yml', cfos: 'config/opensearch.ssm.yml', cfmc: 'config/merritt_classifications.yml')
-    @schema_yaml = ObjectHealth.get_schema('config/yaml_schema.yml')
-    @schema_obj = ObjectHealth.get_schema('config/obj_schema.yml')
-    exit
-    config_db = get_ssm_config(cfdb)
-    config_opensearch = get_ssm_config(cfos)
-    config = get_config(cfmc)
-    ObjectHealth.validate(@schema_yaml, config)
+    @schema_yaml = ObjectHealthUtil.get_and_validate_schema_file(ObjectHealthUtil.yaml_schema)
+    @schema_obj = ObjectHealthUtil.get_and_validate_schema_file(ObjectHealthUtil.obj_schema)
+    config_db = ObjectHealthUtil.get_ssm_config(cfdb)
+    config_opensearch = ObjectHealthUtil.get_ssm_config(cfos)
+    config = ObjectHealthUtil.get_config(cfmc)
+    ObjectHealthUtil.validate(@schema_yaml, config, ObjectHealthUtil.yaml_schema)
     config_rules = config.fetch(:classifications, {})
     config_cli = config.fetch(:command_line, {})
 
@@ -122,21 +84,6 @@ class ObjectHealth
         end
       end
     end
-  end
-
-  def self.status_values
-    [:SKIP, :PASS, :INFO, :WARN, :FAIL]
-  end
-
-  def self.status_val(status)
-    self.status_values.each_with_index do |v,i|
-      return i if v == status
-    end
-    0
-  end
-
-  def self.compare_state(ostate, status)
-    ObjectHealth.status_val(ostate) < ObjectHealth.status_val(status) ? status : ostate
   end
 
   def collection_taxonomy(mnemonic)
@@ -216,7 +163,7 @@ class ObjectHealth
       begin
         puts "  export #{id}" if debug
         export_object(ohobj)
-        ObjectHealth.validate(@schema_obj, ohobj.get_osobj)
+        ObjectHealthUtil.validate(@schema_obj, ohobj.get_osobj, ohobj.id)
       rescue => e 
         puts "Export failed #{e}"
       end
@@ -237,7 +184,3 @@ class ObjectHealth
   end
 
 end
-
-oh = ObjectHealth.new(ARGV)
-oh.preliminary_tasks
-oh.process_objects
