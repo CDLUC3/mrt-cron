@@ -18,8 +18,16 @@ class ObjectHealthCli
     @options.fetch(:debug, false)
   end
 
+  def validation
+    return @options[:validation] if @options.key?(:validation)
+    @config.fetch(:validation, false)
+  end
+
   def make_options(argv)
-    options = {query_params: @config.fetch(:default_params, {}), iterative_params: []}
+    options = {
+      query_params: @config.fetch(:default_params, {}), 
+      iterative_params: []
+    }
     OptionParser.new do |opts|
       opts.banner = "Usage: ruby object_health.rb [--help] [--build] [--test]"
       opts.on('-h', '--help', 'Show help and exit') do
@@ -49,6 +57,12 @@ class ObjectHealthCli
       end
       opts.on('--clear-tests', 'Clear Tests Records') do
         options[:clear_tests] = true
+      end
+      opts.on('--validation', 'Validate Objects before export') do
+        options[:validation] = true
+      end
+      opts.on('--no-validation', 'No Object Validation') do
+        options[:validation] = false
       end
       # The following values may be edited into yaml queries... perform some sanitization on the values
       opts.on('--query=QUERY', 'Object Selection Query to Use') do |n|

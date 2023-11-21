@@ -2,11 +2,18 @@
   "$id": "https://merritt.cdlib.org/yaml_schema.yml",
   "type": "object",
   "additionalProperties": false,
+  "required": [
+    "runtime",
+    "classifications"
+  ],
   "properties": {
-    "command_line": {
+    "runtime": {
       "type": "object",
       "additionalProperties": false,
       "properties": {
+        "validation": {
+          "type": "boolean"
+        },
         "default_params": {
           "type": "object"
         },
@@ -330,9 +337,5 @@
         }
       }
     }
-  },
-  "required": [
-    "command_line",
-    "classifications"
-  ]
+  }
 }

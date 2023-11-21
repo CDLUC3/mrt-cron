@@ -13,6 +13,10 @@ class ObjectHealthUtil
     'config/obj_schema.yml'
   end
 
+  def self.merritt_classifications
+    'config/merritt_classifications.yml'
+  end
+
   def self.json_schema_schema
     JSON::Validator.validator_for_name("draft6").metaschema
   end

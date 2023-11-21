@@ -32,15 +32,16 @@ require_relative 'oh_object_component'
 # - OpenSearch
 
 class ObjectHealth
-  def initialize(argv, cfdb: 'config/database.ssm.yml', cfos: 'config/opensearch.ssm.yml', cfmc: 'config/merritt_classifications.yml')
+  def initialize(argv, cfdb: 'config/database.ssm.yml', cfos: 'config/opensearch.ssm.yml', cfmc: ObjectHealthUtil.merritt_classifications)
     @schema_yaml = ObjectHealthUtil.get_and_validate_schema_file(ObjectHealthUtil.yaml_schema)
     @schema_obj = ObjectHealthUtil.get_and_validate_schema_file(ObjectHealthUtil.obj_schema)
     config_db = ObjectHealthUtil.get_ssm_config(cfdb)
     config_opensearch = ObjectHealthUtil.get_ssm_config(cfos)
-    config = ObjectHealthUtil.get_config(cfmc)
+    # for rspec purposes, allow the cfmc to be overridden before construction
+    config = cfmc.is_a?(Hash) ? cfmc : ObjectHealthUtil.get_config(cfmc)
     ObjectHealthUtil.validate(@schema_yaml, config, ObjectHealthUtil.yaml_schema)
     config_rules = config.fetch(:classifications, {})
-    config_cli = config.fetch(:command_line, {})
+    config_cli = config.fetch(:runtime, {})
 
     # map mnemonics to groups
     @mnemonics = {}
@@ -56,6 +57,10 @@ class ObjectHealth
     @opensrch = ObjectHealthOpenSearch.new(self, config_opensearch)
 
     now = Time.now.strftime("%Y-%m-%d %H:%M:%S")
+  end
+
+  def validation
+    @obj_health_cli.validation
   end
 
   def debug
@@ -163,7 +168,10 @@ class ObjectHealth
       begin
         puts "  export #{id}" if debug
         export_object(ohobj)
-        ObjectHealthUtil.validate(@schema_obj, ohobj.get_osobj, ohobj.id)
+        if validation
+          puts "Validate #{ohobj.id}" if debug
+          ObjectHealthUtil.validate(@schema_obj, ohobj.get_osobj, ohobj.id)
+        end
       rescue => e 
         puts "Export failed #{e}"
       end

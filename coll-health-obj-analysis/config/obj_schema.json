@@ -121,11 +121,9 @@
           }
         },
         "sidecar": {
-          "properties": {
-            "type": "array",
-            "items": {
-              "type": "object"
-            }
+          "type": "array",
+          "items": {
+            "type": "object"
           }
         },
         "ignore_files": {

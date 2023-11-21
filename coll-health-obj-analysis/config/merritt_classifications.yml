@@ -13,7 +13,8 @@
 #      apply:
 #      - mnemonic
 # -------------------
-command_line:
+runtime:
+  validation: true
   default_params: 
     QUERY: collection
     MNEMONIC: merritt_demo
@@ -21,8 +22,8 @@ command_line:
     LIMIT: 10
   # debug settings to control debug messages and output
   debug:
-    export_max: 1
-    print_max: 1
+    export_max: 0
+    print_max: 0
   # -------------------
   # Collection Taxonomy
   #   This can be used to include/exclude specific collections from specific Analysis Tasks and Tests

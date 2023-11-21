@@ -217,7 +217,7 @@ class ObjectHealthObjectBuild < ObjectHealthObjectComponent
         mime_type: r.fetch('mime_type', ''),
         digest_type: r.fetch('digest_type', ''),
         digest_value: r.fetch('digest_value', ''),
-        created: r.fetch('created', ''),
+        created: ObjectHealthObject.make_opensearch_date(r.fetch('created', '')),
         pathtype: pathtype
       }
       v[:ext] = ext unless ext.empty?
