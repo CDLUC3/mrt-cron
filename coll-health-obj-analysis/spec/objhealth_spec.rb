@@ -52,21 +52,147 @@ RSpec.describe 'object health tests' do
   end
 
   describe "Test command line options" do
-    it "Test Object Health Usage Exit" do
-      expect {
-        oh = ObjectHealth.new(['--help'])
-      }.to raise_error(SystemExit)
-    end
-  
-    it "Test Object Health Usage" do
-      expect {
-        begin
+
+    describe "Usage test" do
+      it "Test Object Health Usage Exit" do
+        expect {
           oh = ObjectHealth.new(['--help'])
-        rescue SystemExit
-        end
-      }.to output(%r[Usage:]).to_stdout
+        }.to raise_error(SystemExit)
+      end
+    
+      it "Test Object Health Usage" do
+        expect {
+          begin
+            oh = ObjectHealth.new(['--help'])
+          rescue SystemExit
+          end
+        }.to output(%r[Usage:]).to_stdout
+      end
     end
 
+    describe "Build, Analyze, Test Options" do
+      before(:each) do
+        @action_invoked = {}
+        allow_any_instance_of(ObjectHealth).to receive(:export_object).and_wrap_original do |method, arg|
+          @action_invoked[:export_object] = true
+        end
+        allow_any_instance_of(ObjectHealthDb).to receive(:update_object_build).and_wrap_original do |method, arg|
+          @action_invoked[:update_object_build] = true
+        end
+        allow_any_instance_of(ObjectHealthDb).to receive(:update_object_analysis).and_wrap_original do |method, arg|
+          @action_invoked[:update_object_analysis] = true
+        end
+        allow_any_instance_of(ObjectHealthDb).to receive(:update_object_tests).and_wrap_original do |method, arg|
+          @action_invoked[:update_object_tests] = true
+        end
+      end
+
+      def verify_invocations(export_stat, build_stat, analysis_stat, tests_stat) 
+        expect(@action_invoked.fetch(:export_object, false)).to be export_stat
+        expect(@action_invoked.fetch(:update_object_build, false)).to be build_stat
+        expect(@action_invoked.fetch(:update_object_analysis, false)).to be analysis_stat
+        expect(@action_invoked.fetch(:update_object_tests, false)).to be tests_stat
+      end
+
+      it "test no options" do
+        oh = ObjectHealth.new(["--id=184856"])
+        expect(oh.options.fetch(:build_objects, false)).to be false
+        expect(oh.options.fetch(:analyze_objects, false)).to be false
+        expect(oh.options.fetch(:test_objects, false)).to be false
+
+        oh.preliminary_tasks
+        oh.process_objects
+
+        verify_invocations(false, false, false, false)
+      end
+
+      it "test build option" do
+        oh = ObjectHealth.new(["-b", "--id=184856"])
+        expect(oh.options.fetch(:build_objects, false)).to be true
+        expect(oh.options.fetch(:analyze_objects, false)).to be false
+        expect(oh.options.fetch(:test_objects, false)).to be false
+
+        oh.preliminary_tasks
+        oh.process_objects
+
+        verify_invocations(true, true, false, false)
+      end
+
+      it "test build option - long form" do
+        oh = ObjectHealth.new(["--build", "--id=184856"])
+        expect(oh.options.fetch(:build_objects, false)).to be true
+        expect(oh.options.fetch(:analyze_objects, false)).to be false
+        expect(oh.options.fetch(:test_objects, false)).to be false
+
+        oh.preliminary_tasks
+        oh.process_objects
+
+        verify_invocations(true, true, false, false)
+      end
+
+      it "test analyze option" do
+        oh = ObjectHealth.new(["-a", "--id=184856"])
+        expect(oh.options.fetch(:build_objects, false)).to be false
+        expect(oh.options.fetch(:analyze_objects, false)).to be true
+        expect(oh.options.fetch(:test_objects, false)).to be false
+
+        oh.preliminary_tasks
+        oh.process_objects
+
+        verify_invocations(true, false, true, false)
+      end
+
+      it "test analyze option - long form" do
+        oh = ObjectHealth.new(["--analyze", "--id=184856"])
+        expect(oh.options.fetch(:build_objects, false)).to be false
+        expect(oh.options.fetch(:analyze_objects, false)).to be true
+        expect(oh.options.fetch(:test_objects, false)).to be false
+
+        oh.preliminary_tasks
+        oh.process_objects
+
+        verify_invocations(true, false, true, false)
+      end
+
+      it "test run tests option" do
+        oh = ObjectHealth.new(["-t", "--id=184856"])
+        expect(oh.options.fetch(:build_objects, false)).to be false
+        expect(oh.options.fetch(:analyze_objects, false)).to be false
+        expect(oh.options.fetch(:test_objects, false)).to be true
+
+        oh.preliminary_tasks
+        oh.process_objects
+
+        verify_invocations(true, false, false, true)
+      end
+
+      it "test run tests option - long form" do
+        oh = ObjectHealth.new(["--test", "--id=184856"])
+        expect(oh.options.fetch(:build_objects, false)).to be false
+        expect(oh.options.fetch(:analyze_objects, false)).to be false
+        expect(oh.options.fetch(:test_objects, false)).to be true
+
+        oh.preliminary_tasks
+        oh.process_objects
+
+        verify_invocations(true, false, false, true)
+      end
+
+      it "test all stages" do
+        oh = ObjectHealth.new(["-bat", "--id=184856"])
+        expect(oh.options.fetch(:build_objects, false)).to be true
+        expect(oh.options.fetch(:analyze_objects, false)).to be true
+        expect(oh.options.fetch(:test_objects, false)).to be true
+
+        oh.preliminary_tasks
+        oh.process_objects
+
+        verify_invocations(true, true, true, true)
+      end
+
+    end
+
+    
     describe "Configure validation OFF" do
       before(:each) do
         @cfmc = ObjectHealthUtil.get_config(ObjectHealthUtil.merritt_classifications)
