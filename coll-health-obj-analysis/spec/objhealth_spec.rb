@@ -103,6 +103,13 @@ RSpec.describe 'object health tests' do
         expect(@action_invoked.fetch(:update_object_tests, 0) > 0).to be tests_stat
       end
 
+      def verify_invocations_counts(export_count, build_count, analysis_count, tests_count) 
+        expect(@action_invoked.fetch(:export_object, 0)).to be export_count
+        expect(@action_invoked.fetch(:update_object_build)).to be build_count
+        expect(@action_invoked.fetch(:update_object_analysis, 0)).to be analysis_count
+        expect(@action_invoked.fetch(:update_object_tests, 0)).to be tests_count
+      end
+
       it "test no options" do
         oh = ObjectHealth.new(["--id=184856", "--no-validation"])
         expect(oh.options.fetch(:build_objects, false)).to be false
@@ -211,6 +218,18 @@ RSpec.describe 'object health tests' do
         oh.process_objects
 
         verify_invocations(true, true, true, true)
+      end
+
+      it "test all stages with limit" do
+        oh = ObjectHealth.new(["-bat", "--limit=3", "--validation"])
+        expect(oh.options.fetch(:build_objects, false)).to be true
+        expect(oh.options.fetch(:analyze_objects, false)).to be true
+        expect(oh.options.fetch(:test_objects, false)).to be true
+
+        oh.preliminary_tasks
+        oh.process_objects
+
+        verify_invocations_counts(3, 3, 3, 3)
       end
     end
 
