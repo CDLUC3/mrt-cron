@@ -95,7 +95,7 @@ RSpec.describe 'object health tests' do
       end
 
       it "test no options" do
-        oh = ObjectHealth.new(["--id=184856"])
+        oh = ObjectHealth.new(["--id=184856", "--no-validation"])
         expect(oh.options.fetch(:build_objects, false)).to be false
         expect(oh.options.fetch(:analyze_objects, false)).to be false
         expect(oh.options.fetch(:test_objects, false)).to be false
@@ -107,7 +107,7 @@ RSpec.describe 'object health tests' do
       end
 
       it "test build option" do
-        oh = ObjectHealth.new(["-b", "--id=184856"])
+        oh = ObjectHealth.new(["-b", "--id=184856", "--no-validation"])
         expect(oh.options.fetch(:build_objects, false)).to be true
         expect(oh.options.fetch(:analyze_objects, false)).to be false
         expect(oh.options.fetch(:test_objects, false)).to be false
@@ -119,7 +119,7 @@ RSpec.describe 'object health tests' do
       end
 
       it "test build option - long form" do
-        oh = ObjectHealth.new(["--build", "--id=184856"])
+        oh = ObjectHealth.new(["--build", "--id=184856", "--no-validation"])
         expect(oh.options.fetch(:build_objects, false)).to be true
         expect(oh.options.fetch(:analyze_objects, false)).to be false
         expect(oh.options.fetch(:test_objects, false)).to be false
@@ -131,7 +131,7 @@ RSpec.describe 'object health tests' do
       end
 
       it "test analyze option" do
-        oh = ObjectHealth.new(["-a", "--id=184856"])
+        oh = ObjectHealth.new(["-a", "--id=184856", "--no-validation"])
         expect(oh.options.fetch(:build_objects, false)).to be false
         expect(oh.options.fetch(:analyze_objects, false)).to be true
         expect(oh.options.fetch(:test_objects, false)).to be false
@@ -143,7 +143,7 @@ RSpec.describe 'object health tests' do
       end
 
       it "test analyze option - long form" do
-        oh = ObjectHealth.new(["--analyze", "--id=184856"])
+        oh = ObjectHealth.new(["--analyze", "--id=184856", "--no-validation"])
         expect(oh.options.fetch(:build_objects, false)).to be false
         expect(oh.options.fetch(:analyze_objects, false)).to be true
         expect(oh.options.fetch(:test_objects, false)).to be false
@@ -155,7 +155,7 @@ RSpec.describe 'object health tests' do
       end
 
       it "test run tests option" do
-        oh = ObjectHealth.new(["-t", "--id=184856"])
+        oh = ObjectHealth.new(["-t", "--id=184856", "--no-validation"])
         expect(oh.options.fetch(:build_objects, false)).to be false
         expect(oh.options.fetch(:analyze_objects, false)).to be false
         expect(oh.options.fetch(:test_objects, false)).to be true
@@ -167,7 +167,7 @@ RSpec.describe 'object health tests' do
       end
 
       it "test run tests option - long form" do
-        oh = ObjectHealth.new(["--test", "--id=184856"])
+        oh = ObjectHealth.new(["--test", "--id=184856", "--no-validation"])
         expect(oh.options.fetch(:build_objects, false)).to be false
         expect(oh.options.fetch(:analyze_objects, false)).to be false
         expect(oh.options.fetch(:test_objects, false)).to be true
@@ -179,7 +179,7 @@ RSpec.describe 'object health tests' do
       end
 
       it "test all stages" do
-        oh = ObjectHealth.new(["-bat", "--id=184856"])
+        oh = ObjectHealth.new(["-bat", "--id=184856", "--no-validation"])
         expect(oh.options.fetch(:build_objects, false)).to be true
         expect(oh.options.fetch(:analyze_objects, false)).to be true
         expect(oh.options.fetch(:test_objects, false)).to be true
@@ -190,6 +190,19 @@ RSpec.describe 'object health tests' do
         verify_invocations(true, true, true, true)
       end
 
+      it "test all stages and validate json" do
+        oh = ObjectHealth.new(["-bat", "--id=184856", "--validation"])
+        expect(oh.options.fetch(:build_objects, false)).to be true
+        expect(oh.options.fetch(:analyze_objects, false)).to be true
+        expect(oh.options.fetch(:test_objects, false)).to be true
+
+        expect(ObjectHealthUtil).to receive(:validate)
+
+        oh.preliminary_tasks
+        oh.process_objects
+
+        verify_invocations(true, true, true, true)
+      end
     end
 
     
