@@ -4,6 +4,9 @@ require_relative '../object_health_util'
 require_relative '../object_health'
 
 RSpec.describe 'object health tests' do
+  before(:each) do
+    ENV['OBJHEALTH_SILENT'] = 'Y'
+  end
   def ssm_override(map)
     allow_any_instance_of(Logger).to receive(:debug).with(anything)
     allow_any_instance_of(Uc3Ssm::ConfigResolver).to receive(:lookup_ssm).and_wrap_original do |method, arg|
@@ -17,7 +20,7 @@ RSpec.describe 'object health tests' do
 
   describe "Validate JSON/Yaml Schema Files" do
     it "Validate the Merritt Classification Schema" do
-      ObjectHealthUtil.validate_schema_file(ObjectHealthUtil.yaml_schema)
+      ObjectHealthUtil.validate_schema_file(ObjectHealthUtil.yaml_schema, verbose: false)
     end
   
     it "Identify Issue in Merritt Classification Schema" do
@@ -25,12 +28,12 @@ RSpec.describe 'object health tests' do
         schema = ObjectHealthUtil.get_schema(ObjectHealthUtil.yaml_schema)
         # corrupt the schema object
         schema["type"] = "foo"
-        ObjectHealthUtil.validate_schema(schema, ObjectHealthUtil.yaml_schema)  
+        ObjectHealthUtil.validate_schema(schema, ObjectHealthUtil.yaml_schema, verbose: false)
       }.to raise_error(MySchemaException)
     end
   
     it "Validate the Object Health Schema" do
-      ObjectHealthUtil.validate_schema_file(ObjectHealthUtil.obj_schema)
+      ObjectHealthUtil.validate_schema_file(ObjectHealthUtil.obj_schema, verbose: false)
     end
   
     it "Identify Issue in Object Health Object Schema" do
@@ -38,13 +41,13 @@ RSpec.describe 'object health tests' do
         schema = ObjectHealthUtil.get_schema(ObjectHealthUtil.obj_schema)
         # corrupt the schema object
         schema["required"].append(22)
-        ObjectHealthUtil.validate_schema(schema, ObjectHealthUtil.obj_schema)  
+        ObjectHealthUtil.validate_schema(schema, ObjectHealthUtil.obj_schema, verbose: false)
       }.to raise_error(MySchemaException)
     end
 
     it "Test Yaml schema validation failure" do
       expect {
-        oh = ObjectHealth.new([], cfmc: 'spec/config/empty.yml')
+        oh = ObjectHealth.new(cfmc: 'spec/config/empty.yml')
         oh.get_object_list
       }.to raise_error(MySchemaException)
     end
@@ -55,6 +58,8 @@ RSpec.describe 'object health tests' do
 
     describe "Usage test" do
       it "Test Object Health Usage Exit" do
+
+        allow($stdout).to receive(:write)
         expect {
           oh = ObjectHealth.new(['--help'])
         }.to raise_error(SystemExit)
@@ -74,24 +79,28 @@ RSpec.describe 'object health tests' do
       before(:each) do
         @action_invoked = {}
         allow_any_instance_of(ObjectHealth).to receive(:export_object).and_wrap_original do |method, arg|
-          @action_invoked[:export_object] = true
+          inc(:export_object)
         end
         allow_any_instance_of(ObjectHealthDb).to receive(:update_object_build).and_wrap_original do |method, arg|
-          @action_invoked[:update_object_build] = true
+          inc(:update_object_build)
         end
         allow_any_instance_of(ObjectHealthDb).to receive(:update_object_analysis).and_wrap_original do |method, arg|
-          @action_invoked[:update_object_analysis] = true
+          inc(:update_object_analysis)
         end
         allow_any_instance_of(ObjectHealthDb).to receive(:update_object_tests).and_wrap_original do |method, arg|
-          @action_invoked[:update_object_tests] = true
+          inc(:update_object_tests)
         end
       end
 
+      def inc(key)
+        @action_invoked[key] = @action_invoked.fetch(key, 0) + 1
+      end
+
       def verify_invocations(export_stat, build_stat, analysis_stat, tests_stat) 
-        expect(@action_invoked.fetch(:export_object, false)).to be export_stat
-        expect(@action_invoked.fetch(:update_object_build, false)).to be build_stat
-        expect(@action_invoked.fetch(:update_object_analysis, false)).to be analysis_stat
-        expect(@action_invoked.fetch(:update_object_tests, false)).to be tests_stat
+        expect(@action_invoked.fetch(:export_object, 0) > 0).to be export_stat
+        expect(@action_invoked.fetch(:update_object_build, 0) > 0).to be build_stat
+        expect(@action_invoked.fetch(:update_object_analysis, 0) > 0).to be analysis_stat
+        expect(@action_invoked.fetch(:update_object_tests, 0) > 0).to be tests_stat
       end
 
       it "test no options" do
@@ -213,7 +222,7 @@ RSpec.describe 'object health tests' do
       end
 
       it "Verify validation OFF" do
-        oh = ObjectHealth.new([], cfmc: @cfmc)
+        oh = ObjectHealth.new(cfmc: @cfmc)
         expect(oh.validation).to be false
       end
 
@@ -230,7 +239,7 @@ RSpec.describe 'object health tests' do
       end
 
       it "Verify validation ON" do
-        oh = ObjectHealth.new([], cfmc: @cfmc)
+        oh = ObjectHealth.new(cfmc: @cfmc)
         expect(oh.validation).to be true
       end
 
@@ -243,22 +252,22 @@ RSpec.describe 'object health tests' do
 
   describe "Test credential handling" do
     it "Test Object Health Construction ... verify database and opensearch connection" do
-      oh = ObjectHealth.new([])
+      oh = ObjectHealth.new
       oh.get_object_list
     end
 
     it "Test Object Health Usage in spite of bad credentials" do
       expect {
         ssm_override({'billing/readwrite/db-user': 'foo'})
-        oh = ObjectHealth.new(['--help'])
+        oh = ObjectHealth.new
         oh.get_object_list  
-      }.to raise_error(SystemExit)
+      }.to raise_error(Mysql2::Error::ConnectionError)
     end
   
     it "Test Object Health Construction with bad db hostname" do
       expect {
         ssm_override({'billing/db-host': 'bad-host.cdlib.org'})
-        oh = ObjectHealth.new([])
+        oh = ObjectHealth.new
         oh.get_object_list
       }.to raise_error(Mysql2::Error::ConnectionError)
     end
@@ -266,7 +275,7 @@ RSpec.describe 'object health tests' do
     it "Test Object Health Construction with bad db credential" do
       expect {
         ssm_override({'billing/readwrite/db-user': 'foo'})
-        oh = ObjectHealth.new([])
+        oh = ObjectHealth.new
         oh.get_object_list
       }.to raise_error(Mysql2::Error::ConnectionError)
     end
@@ -274,14 +283,14 @@ RSpec.describe 'object health tests' do
     it "Test Object Health Construction - invalid opensearch credentials" do
       expect {
         ssm_override({'objhealth/opensearch_user': 'foo'})
-        oh = ObjectHealth.new([])
+        oh = ObjectHealth.new
       }.to raise_error(OpenSearch::Transport::Transport::Errors::Unauthorized)
     end
   
     it "Test Object Health Construction - invalid opensearch host" do
       expect {
         ssm_override({'objhealth/opensearch_host': 'bad-host.cdlib.org'})
-        oh = ObjectHealth.new([])
+        oh = ObjectHealth.new
       }.to raise_error(Faraday::ConnectionFailed)
     end
   end

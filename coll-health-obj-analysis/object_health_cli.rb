@@ -11,11 +11,15 @@ class ObjectHealthCli
       print_count: 0, 
       print_max: @config.fetch(:debug, {}).fetch(:print_max, 1)
     }
-    @options[:query_params][:SKIPS] = @ct_groups[:tag_skip].map{|s| "'#{s}'"}.join(",")
+    @options[:query_params][:SKIPS] = @ct_groups.key?(:tag_skip) ? @ct_groups[:tag_skip].map{|s| "'#{s}'"}.join(",") : ''
   end
 
   def debug
     @options.fetch(:debug, false)
+  end
+
+  def verbose
+    @options.fetch(:verbose, true)
   end
 
   def validation
@@ -63,6 +67,9 @@ class ObjectHealthCli
       end
       opts.on('--no-validation', 'No Object Validation') do
         options[:validation] = false
+      end
+      opts.on('--silent', 'Silent mode, suppress verbose status') do
+        options[:verbose] = false
       end
       # The following values may be edited into yaml queries... perform some sanitization on the values
       opts.on('--query=QUERY', 'Object Selection Query to Use') do |n|

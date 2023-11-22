@@ -32,14 +32,14 @@ require_relative 'oh_object_component'
 # - OpenSearch
 
 class ObjectHealth
-  def initialize(argv, cfdb: 'config/database.ssm.yml', cfos: 'config/opensearch.ssm.yml', cfmc: ObjectHealthUtil.merritt_classifications)
+  def initialize(argv = [], cfdb: 'config/database.ssm.yml', cfos: 'config/opensearch.ssm.yml', cfmc: ObjectHealthUtil.merritt_classifications)
     @schema_yaml = ObjectHealthUtil.get_and_validate_schema_file(ObjectHealthUtil.yaml_schema)
     @schema_obj = ObjectHealthUtil.get_and_validate_schema_file(ObjectHealthUtil.obj_schema)
     config_db = ObjectHealthUtil.get_ssm_config(cfdb)
     config_opensearch = ObjectHealthUtil.get_ssm_config(cfos)
     # for rspec purposes, allow the cfmc to be overridden before construction
     config = cfmc.is_a?(Hash) ? cfmc : ObjectHealthUtil.get_config(cfmc)
-    ObjectHealthUtil.validate(@schema_yaml, config, ObjectHealthUtil.yaml_schema)
+    ObjectHealthUtil.validate(@schema_yaml, config, ObjectHealthUtil.yaml_schema, verbose: verbose)
     config_rules = config.fetch(:classifications, {})
     config_cli = config.fetch(:runtime, {})
 
@@ -65,6 +65,12 @@ class ObjectHealth
 
   def debug
     @obj_health_cli.debug
+  end
+
+  def verbose
+    return false if ENV.key?("OBJHEALTH_SILENT")
+    return true if @obj_health_cli.nil?
+    @obj_health_cli.verbose
   end
 
   def options
@@ -169,8 +175,8 @@ class ObjectHealth
         puts "  export #{id}" if debug
         export_object(ohobj)
         if validation
-          puts "Validate #{ohobj.id}" if debug
-          ObjectHealthUtil.validate(@schema_obj, ohobj.get_osobj, ohobj.id)
+          puts "  validate #{ohobj.id}" if debug
+          ObjectHealthUtil.validate(@schema_obj, ohobj.get_osobj, ohobj.id, verbose: verbose)
         end
       rescue => e 
         puts "Export failed #{e}"

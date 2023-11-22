@@ -37,26 +37,26 @@ class ObjectHealthUtil
     schema
   end
 
-  def self.validate_schema_file(filename)
-    self.validate_schema(get_schema(filename), filename)
+  def self.validate_schema_file(filename, verbose: true)
+    self.validate_schema(get_schema(filename), filename, verbose: verbose)
   end
 
-  def self.get_and_validate_schema_file(filename)
+  def self.get_and_validate_schema_file(filename, verbose: true)
     file = get_schema(filename)
-    self.validate_schema(file, filename)
+    self.validate_schema(file, filename, verbose: verbose)
     file
   end
 
-  def self.validate_schema(file, label)
-    self.validate(ObjectHealthUtil.json_schema_schema, file, label)
+  def self.validate_schema(file, label, verbose: true)
+    self.validate(ObjectHealthUtil.json_schema_schema, file, label, verbose: verbose)
   end
 
-  def self.validate(schema, obj, label)
+  def self.validate(schema, obj, label, verbose: true)
     val = JSON::Validator.fully_validate(schema, obj)
     unless val.empty?
-      puts "\n** Schema Validation Failure for #{label}"
+      puts "\n** Schema Validation Failure for #{label}" if verbose
       val.each do |s|
-        puts " - #{s}"
+        puts " - #{s}" if verbose
       end
       raise MySchemaException.new "Yaml invalid for schema"
     end 

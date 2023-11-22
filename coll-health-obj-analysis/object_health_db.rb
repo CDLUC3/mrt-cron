@@ -64,7 +64,7 @@ class ObjectHealthDb
       end
     end
     conn.close
-    puts "\n** #{list.length} to process\n"
+    puts "\n** #{list.length} to process\n" if @oh.verbose
     list
   end
 
