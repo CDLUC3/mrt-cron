@@ -157,6 +157,7 @@ RSpec.describe 'object health tests' do
         oh.process_objects
 
         expect(oh.get_queries.first).to match(/and o.id = '184856'/)
+        verify_invocations_counts(1, 1, 0, 0)
       end
 
       it "test build option - default collection" do
@@ -166,6 +167,17 @@ RSpec.describe 'object health tests' do
         oh.process_objects
 
         expect(oh.get_queries.first).to match(/merritt_demo/)
+        verify_invocations_counts(3, 3, 0, 0)
+      end
+
+      it "test build option - default collection - loop 4 times" do
+        oh = ObjectHealth.new(["-b", "--limit=3", "--loop=4", "--no-validation"])
+
+        oh.preliminary_tasks
+        oh.process_objects
+
+        expect(oh.get_queries.first).to match(/merritt_demo/)
+        verify_invocations_counts(12, 12, 0, 0)
       end
 
       it "test build option - custom collection collection" do
@@ -175,6 +187,7 @@ RSpec.describe 'object health tests' do
         oh.process_objects
 
         expect(oh.get_queries.first).to match(/escholarship/)
+        verify_invocations_counts(3, 3, 0, 0)
       end
 
       it "test build option - custom query" do
@@ -184,6 +197,8 @@ RSpec.describe 'object health tests' do
         oh.process_objects
 
         expect(oh.get_queries.first).to match(/where h.inv_object_id = o.id/)
+        #counts will depend on the state of the database
+        #verify_invocations_counts(0, 0, 0, 0)
       end
 
       it "test build option - use tag to pull etd collect for all 10 campuses" do
@@ -230,7 +245,6 @@ RSpec.describe 'object health tests' do
         oh.process_objects
 
         verify_invocations(true, false, true, false)
-        puts oh.get_queries
       end
 
       it "test run tests option" do

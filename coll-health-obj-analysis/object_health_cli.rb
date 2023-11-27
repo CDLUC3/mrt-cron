@@ -92,6 +92,12 @@ class ObjectHealthCli
       opts.on('--limit=LIMIT', 'Set Query Limit') do |n|
         options[:query_params][:LIMIT] = n.to_i
       end
+      opts.on('--loop=COUNT', 'Set Loop Limit') do |n|
+        options[:loop_limit] = n.to_i
+      end
+      opts.on('--sleep=SECS', 'Set sleep time between loops') do |n|
+        options[:loop_sleep] = n.to_i
+      end
     end.parse(argv)
     options[:iterative_params].append({}) if options[:iterative_params].empty?
     options    

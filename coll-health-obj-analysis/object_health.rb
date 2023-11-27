@@ -57,6 +57,7 @@ class ObjectHealth
     @opensrch = ObjectHealthOpenSearch.new(self, config_opensearch)
 
     now = Time.now.strftime("%Y-%m-%d %H:%M:%S")
+    @loop_current = 0
   end
 
   def validation
@@ -75,6 +76,14 @@ class ObjectHealth
 
   def options
     @obj_health_cli.options
+  end
+
+  def loop_limit
+    options.fetch(:loop_limit, 1)
+  end
+
+  def loop_sleep
+    options.fetch(:loop_sleep, 1)
   end
 
   def load_collection_taxonomy(config_rules)
@@ -137,8 +146,17 @@ class ObjectHealth
   end
 
   def process_objects
-    get_object_list.each do |id|
-      process_object(id)
+    while @loop_current < loop_limit do
+      if loop_limit > 0
+        puts "LOOP #{@loop_current+1} (Sleep between #{loop_sleep}s...)" if verbose
+      end
+      if @loop_current > 0
+        sleep(loop_sleep)
+      end
+      get_object_list.each do |id|
+        process_object(id)
+      end
+      @loop_current += 1
     end
     status = @obj_health_db.object_health_status
   end
