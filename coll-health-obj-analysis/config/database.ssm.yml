@@ -63,8 +63,7 @@ gather_ids:
     id: |
       and o.id = '{{ID}}'
   clear_queries:
-    default: |
-      where 1=1
+    default: ''
     collection: |
       where exists (
         select 1

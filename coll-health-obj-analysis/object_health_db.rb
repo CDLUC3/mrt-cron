@@ -41,6 +41,14 @@ class ObjectHealthDb
     Mustache.render(q, @cliparams.merge(iterative_param))
   end
 
+  def clear_query
+    @clearquery
+  end
+
+  def queries
+    @queries
+  end
+
   def get_db_cli
     Mysql2::Client.new(
       :host => @dbconf[:host],
@@ -232,7 +240,7 @@ class ObjectHealthDb
     conn.close
   end
 
-  def object_health_status
+  def status_query(where_clause = '')
     sql = %{
       select 
         sum(case when build is not null then 1 else 0 end) as built,
@@ -243,7 +251,7 @@ class ObjectHealthDb
         sum(case when tests is null or analysis_updated > tests_updated then 1 else 0 end) as awaiting_tests
       from
         object_health_json
-      #{@clearquery};
+      #{where_clause};
     }
     puts sql if @oh.debug
     conn = get_db_cli
@@ -254,8 +262,24 @@ class ObjectHealthDb
         status[k.to_sym] = v.to_i
       end
     end
-    puts status if @oh.debug
     conn.close
+    status
+  end
+
+  def object_health_status
+    total_status = status_query
+    status = status_query(@clearquery)
+
+    if @oh.verbose
+      puts "---------------------------------------------------"
+      puts sprintf("%15s %10s %10s %10s", '', 'Build', 'Analysis', 'Tests')
+      puts sprintf("%15s %10d %10d %10d", 'Total Processed', total_status[:built], total_status[:analyzed], total_status[:tested])
+      puts sprintf("%15s %10d %10d %10d", 'Total Awaiting', total_status[:awaiting_rebuild], total_status[:awaiting_analysis], total_status[:awaiting_tests])
+      puts sprintf("%15s %10d %10d %10d", 'Query Processed', status[:built], status[:analyzed], status[:tested])
+      puts sprintf("%15s %10d %10d %10d", 'Query Awaiting', status[:awaiting_rebuild], status[:awaiting_analysis], status[:awaiting_tests])
+      puts "---------------------------------------------------"
+    end
+
     status
   end
 

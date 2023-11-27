@@ -90,6 +90,16 @@ RSpec.describe 'object health tests' do
         allow_any_instance_of(ObjectHealthDb).to receive(:update_object_tests).and_wrap_original do |method, arg|
           inc(:update_object_tests)
         end
+
+        allow_any_instance_of(ObjectHealthDb).to receive(:clear_object_health).with(:build).and_wrap_original do |method, arg|
+          inc(:clear_object_build)
+        end
+        allow_any_instance_of(ObjectHealthDb).to receive(:clear_object_health).with(:analysis).and_wrap_original do |method, arg|
+          inc(:clear_object_analysis)
+        end
+        allow_any_instance_of(ObjectHealthDb).to receive(:clear_object_health).with(:tests).and_wrap_original do |method, arg|
+          inc(:clear_object_tests)
+        end
       end
 
       def inc(key)
@@ -104,10 +114,16 @@ RSpec.describe 'object health tests' do
       end
 
       def verify_invocations_counts(export_count, build_count, analysis_count, tests_count) 
-        expect(@action_invoked.fetch(:export_object, 0)).to be export_count
-        expect(@action_invoked.fetch(:update_object_build)).to be build_count
-        expect(@action_invoked.fetch(:update_object_analysis, 0)).to be analysis_count
-        expect(@action_invoked.fetch(:update_object_tests, 0)).to be tests_count
+        expect(@action_invoked.fetch(:export_object, 0)).to eq(export_count)
+        expect(@action_invoked.fetch(:update_object_build, 0)).to eq(build_count)
+        expect(@action_invoked.fetch(:update_object_analysis, 0)).to eq(analysis_count)
+        expect(@action_invoked.fetch(:update_object_tests, 0)).to eq(tests_count)
+      end
+
+      def verify_clear_counts(build_count, analysis_count, tests_count) 
+        expect(@action_invoked.fetch(:clear_object_build, 0)).to eq(build_count)
+        expect(@action_invoked.fetch(:clear_object_analysis, 0)).to eq(analysis_count)
+        expect(@action_invoked.fetch(:clear_object_tests, 0)).to eq(tests_count)
       end
 
       it "test no options" do
@@ -132,6 +148,52 @@ RSpec.describe 'object health tests' do
         oh.process_objects
 
         verify_invocations(true, true, false, false)
+      end
+
+      it "test build option - id query" do
+        oh = ObjectHealth.new(["-b", "--id=184856", "--no-validation"])
+
+        oh.preliminary_tasks
+        oh.process_objects
+
+        expect(oh.get_queries.first).to match(/and o.id = '184856'/)
+      end
+
+      it "test build option - default collection" do
+        oh = ObjectHealth.new(["-b", "--limit=3", "--no-validation"])
+
+        oh.preliminary_tasks
+        oh.process_objects
+
+        expect(oh.get_queries.first).to match(/merritt_demo/)
+      end
+
+      it "test build option - custom collection collection" do
+        oh = ObjectHealth.new(["-b", "--limit=3", "--mnemonic=escholarship", "--no-validation"])
+
+        oh.preliminary_tasks
+        oh.process_objects
+
+        expect(oh.get_queries.first).to match(/escholarship/)
+      end
+
+      it "test build option - custom query" do
+        oh = ObjectHealth.new(["-b", "--limit=3", "--query=has-build", "--no-validation"])
+
+        oh.preliminary_tasks
+        oh.process_objects
+
+        expect(oh.get_queries.first).to match(/where h.inv_object_id = o.id/)
+      end
+
+      it "test build option - use tag to pull etd collect for all 10 campuses" do
+        oh = ObjectHealth.new(["-b", "--limit=3", "--tag=tag_etd", "--no-validation"])
+
+        oh.preliminary_tasks
+        oh.process_objects
+
+        expect(oh.get_queries.length).to eq(10)
+        verify_invocations_counts(30, 30, 0, 0)
       end
 
       it "test build option - long form" do
@@ -168,6 +230,7 @@ RSpec.describe 'object health tests' do
         oh.process_objects
 
         verify_invocations(true, false, true, false)
+        puts oh.get_queries
       end
 
       it "test run tests option" do
@@ -230,6 +293,61 @@ RSpec.describe 'object health tests' do
         oh.process_objects
 
         verify_invocations_counts(3, 3, 3, 3)
+      end
+
+      it "test --clear-build using a supplied query, exit due to items awaiting rebuild" do
+        allow_any_instance_of(ObjectHealthDb).to receive(:object_health_status).and_return({
+          awaiting_rebuild: 1
+        })
+        oh = ObjectHealth.new(["-bat", "--limit=3", "--query=has-build", "--clear-build"])
+
+        expect {
+          oh.preliminary_tasks
+          oh.process_objects  
+        }.to raise_error(SystemExit)
+      end
+
+      it "test --clear-build using a supplied query (--force-rebuild specified)" do
+        allow_any_instance_of(ObjectHealthDb).to receive(:object_health_status).and_return({
+          awaiting_rebuild: 1
+        })
+        oh = ObjectHealth.new(["-bat", "--limit=3", "--query=has-build", "--clear-build", "--force-rebuild"])
+
+        oh.preliminary_tasks
+        oh.process_objects
+
+        verify_clear_counts(1, 0, 0)
+        expect(oh.get_clear_query).to eq('')
+      end
+
+      it "test --clear-analysis using a  supplied mnemonic" do
+        oh = ObjectHealth.new(["-bat", "--limit=3", "--mnemonic=escholarship", "--clear-analysis"])
+        expect(oh.options.fetch(:build_objects, false)).to be true
+        expect(oh.options.fetch(:analyze_objects, false)).to be true
+        expect(oh.options.fetch(:test_objects, false)).to be true
+
+        oh.preliminary_tasks
+        oh.process_objects
+
+        verify_clear_counts(0, 1, 0)
+
+        expect(oh.get_clear_query).to match(/where exists/)
+        expect(oh.get_clear_query).to match(/escholarship/)
+      end
+
+      it "test --clear-tests using the default collection" do
+        oh = ObjectHealth.new(["-bat", "--limit=3", "--clear-tests"])
+        expect(oh.options.fetch(:build_objects, false)).to be true
+        expect(oh.options.fetch(:analyze_objects, false)).to be true
+        expect(oh.options.fetch(:test_objects, false)).to be true
+
+        oh.preliminary_tasks
+        oh.process_objects
+
+        verify_clear_counts(0, 0, 1)
+
+        expect(oh.get_clear_query).to match(/where exists/)
+        expect(oh.get_clear_query).to match(/merritt_demo/)
       end
     end
 

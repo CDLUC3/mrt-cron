@@ -107,14 +107,16 @@ class ObjectHealth
     if options[:clear_build]
       awaiting = status.fetch(:awaiting_rebuild, 0)
       if awaiting == 0 || options[:force_rebuild]
-        puts "\n *** This will trigger a rebuild of #{status.fetch(:built, 0)} records.  Type 'yes' to continue or 'exit' to cancel.\n"
-        while input = STDIN.gets.chomp 
-          break if input == "yes"
-          exit if input == "exit" 
+        if verbose
+          puts "\n *** This will trigger a rebuild of #{status.fetch(:built, 0)} records.  Type 'yes' to continue or 'exit' to cancel.\n"
+          while input = STDIN.gets.chomp 
+            break if input == "yes"
+            exit if input == "exit" 
+          end
         end
         @obj_health_db.clear_object_health(:build)
       else
-        puts "\n *** Cannot clear build because #{awaiting} objects are awaiting rebuild.  Add --force-rebuild to continue anyway.\n"
+        puts "\n *** Cannot clear build because #{awaiting} objects are awaiting rebuild.  Add --force-rebuild to continue anyway.\n" if verbose
         exit
       end
     end
@@ -126,10 +128,19 @@ class ObjectHealth
     @obj_health_db.get_object_list
   end
 
+  def get_clear_query
+    @obj_health_db.clear_query
+  end
+
+  def get_queries
+    @obj_health_db.queries
+  end
+
   def process_objects
     get_object_list.each do |id|
       process_object(id)
     end
+    status = @obj_health_db.object_health_status
   end
 
   def process_tag(tag)
