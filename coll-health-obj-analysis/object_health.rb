@@ -92,14 +92,14 @@ class ObjectHealth
       ctdef.fetch(:groups, {}).keys.each do |g|
         ctdef.fetch(:mnemonics, {}).each do |m, mdef|
           @mnemonics[m] = [] unless @mnemonics.key?(m)
-          @mnemonics[m].append(g)
+          @mnemonics[m].append(g) unless @mnemonics[m].include?(g)
           @ct_groups[g] = [] unless @ct_groups.key?(g)
-          @ct_groups[g].append(m)
+          @ct_groups[g].append(m) unless @ct_groups[g].include?(m)
           next if mdef.nil?
           mdef.fetch(:tags, {}).keys.each do |t|
-            @mnemonics[m].append(t)
+            @mnemonics[m].append(t) unless @mnemonics[m].include?(t)
             @ct_groups[t] = [] unless @ct_groups.key?(t)
-            @ct_groups[t].append(m)
+            @ct_groups[t].append(m) unless @ct_groups[t].include?(m)
           end
         end
       end
