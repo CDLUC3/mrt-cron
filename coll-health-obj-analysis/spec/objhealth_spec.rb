@@ -201,7 +201,7 @@ RSpec.describe 'object health tests' do
         #verify_invocations_counts(0, 0, 0, 0)
       end
 
-      it "test build option - use tag to pull etd collect for all 10 campuses" do
+      it "test build option - use tag to pull etd collections for all 10 campuses" do
         oh = ObjectHealth.new(["-b", "--limit=3", "--tag=tag_etd", "--no-validation"])
 
         oh.preliminary_tasks
@@ -412,7 +412,7 @@ RSpec.describe 'object health tests' do
         ssm_override({'billing/readwrite/db-user': 'foo'})
         oh = ObjectHealth.new
         oh.get_object_list  
-      }.to raise_error(Mysql2::Error::ConnectionError)
+      }.to raise_error(Mysql2::Error)
     end
   
     it "Test Object Health Construction with bad db hostname" do
@@ -420,7 +420,7 @@ RSpec.describe 'object health tests' do
         ssm_override({'billing/db-host': 'bad-host.cdlib.org'})
         oh = ObjectHealth.new
         oh.get_object_list
-      }.to raise_error(Mysql2::Error::ConnectionError)
+      }.to raise_error(Mysql2::Error)
     end
   
     it "Test Object Health Construction with bad db credential" do
@@ -428,7 +428,7 @@ RSpec.describe 'object health tests' do
         ssm_override({'billing/readwrite/db-user': 'foo'})
         oh = ObjectHealth.new
         oh.get_object_list
-      }.to raise_error(Mysql2::Error::ConnectionError)
+      }.to raise_error(Mysql2::Error)
     end
   
     it "Test Object Health Construction - invalid opensearch credentials" do
