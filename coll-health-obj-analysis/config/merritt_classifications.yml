@@ -40,6 +40,7 @@ classifications:
         ucr_lib_dash:
     - name: Initial Test Set
       groups:
+        tag_test_set1:
         tag_test_set:
       mnemonics:
         merritt_demo:
@@ -65,6 +66,7 @@ classifications:
     - name: Test Set 2
       groups:
         tag_test_set2:
+        tag_test_set:
       mnemonics:
         lsta_csu_mbl:
         ucb_lib_immanu:
@@ -81,6 +83,7 @@ classifications:
     - name: Test Set 3
       groups:
         tag_test_set3:
+        tag_test_set:
       mnemonics:
         uci_honors_theses:
         uci_lib_bgilmore:
@@ -111,6 +114,7 @@ classifications:
     - name: TBD
       groups:
         tag_test_rem:
+        tag_test_set:
       mnemonics:
         cdl_dsc_census:
         cdl_eartharxiv:
