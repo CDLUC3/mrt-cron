@@ -15,6 +15,7 @@ require_relative 'object_health_match'
 require_relative 'analysis_tasks'
 require_relative 'oh_object'
 require_relative 'oh_object_component'
+require_relative 'oh_stats'
 # only on dev box for now
 #require 'debug'
 
@@ -57,7 +58,6 @@ class ObjectHealth
     @opensrch = ObjectHealthOpenSearch.new(self, config_opensearch)
 
     now = Time.now.strftime("%Y-%m-%d %H:%M:%S")
-    @loop_current = 0
   end
 
   def validation
@@ -146,18 +146,18 @@ class ObjectHealth
   end
 
   def process_objects
-    while @loop_current < loop_limit do
-      if loop_limit > 0
-        puts "LOOP #{@loop_current+1} (Sleep between #{loop_sleep}s...)" if verbose
-      end
-      if @loop_current > 0
-        sleep(loop_sleep)
-      end
+    ohstat = ObjectHealthStats.new(loop_sleep)
+    while ohstat.loop_num < loop_limit do
+      ohstat.log_loop if verbose
+      ohstat.loop_start
       get_object_list.each do |id|
         process_object(id)
+        ohstat.increment
       end
-      @loop_current += 1
     end
+    ohstat.log_loop(last: true) if verbose
+    ohstat.log_loops if verbose
+    
     status = @obj_health_db.object_health_status
   end
 

@@ -273,10 +273,26 @@ class ObjectHealthDb
     if @oh.verbose
       puts "---------------------------------------------------"
       puts sprintf("%15s %10s %10s %10s", '', 'Build', 'Analysis', 'Tests')
-      puts sprintf("%15s %10d %10d %10d", 'Total Processed', total_status[:built], total_status[:analyzed], total_status[:tested])
-      puts sprintf("%15s %10d %10d %10d", 'Total Awaiting', total_status[:awaiting_rebuild], total_status[:awaiting_analysis], total_status[:awaiting_tests])
-      puts sprintf("%15s %10d %10d %10d", 'Query Processed', status[:built], status[:analyzed], status[:tested])
-      puts sprintf("%15s %10d %10d %10d", 'Query Awaiting', status[:awaiting_rebuild], status[:awaiting_analysis], status[:awaiting_tests])
+      puts sprintf("%15s %10s %10s %10s", 'Total Processed', 
+        ObjectHealthUtil.num_format(total_status[:built]), 
+        ObjectHealthUtil.num_format(total_status[:analyzed]), 
+        ObjectHealthUtil.num_format(total_status[:tested])
+      )
+      puts sprintf("%15s %10s %10s %10s", 'Total Awaiting', 
+        ObjectHealthUtil.num_format(total_status[:awaiting_rebuild]), 
+        ObjectHealthUtil.num_format(total_status[:awaiting_analysis]), 
+        ObjectHealthUtil.num_format(total_status[:awaiting_tests])
+      )
+      puts sprintf("%15s %10s %10s %10s", 'Query Processed', 
+        ObjectHealthUtil.num_format(status[:built]), 
+        ObjectHealthUtil.num_format(status[:analyzed]), 
+        ObjectHealthUtil.num_format(status[:tested])
+      )
+      puts sprintf("%15s %10s %10s %10s", 'Query Awaiting', 
+        ObjectHealthUtil.num_format(status[:awaiting_rebuild]), 
+        ObjectHealthUtil.num_format(status[:awaiting_analysis]), 
+        ObjectHealthUtil.num_format(status[:awaiting_tests])
+      )
       puts "---------------------------------------------------"
     end
 

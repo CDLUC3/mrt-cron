@@ -78,4 +78,9 @@ class ObjectHealthUtil
     ObjectHealthUtil.status_val(ostate) < ObjectHealthUtil.status_val(status) ? status : ostate
   end
 
+  def self.num_format(n)
+    return "" if n.nil?
+    n.to_s.chars.to_a.reverse.each_slice(3).map(&:join).join(',').reverse
+  end
+
 end
