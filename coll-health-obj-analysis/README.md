@@ -284,32 +284,63 @@ The results of these analyses should feed into the existing Object Health proces
 
 ## Script Notes
 
-Builds
+### Build Sample Objects Across All Collections
 ```
-bundle exec ruby object_health_main.rb -bat --limit 500 --tag=tag_test_set
-
-```
-
-Build - Small Set
-```
-bundle exec ruby object_health_main.rb -bat --limit 20 --tag=tag_test_set
+bundle exec ruby object_health_main.rb -bat --limit 10 --tag=tag_test_set --loop=5
 ```
 
-Re-build
+### Build Sample Objects in Default Collection (merritt_demo)
 ```
-bundle exec ruby object_health_main.rb -bat --limit 10000 --query=has-build --clear-build 
+bundle exec ruby object_health_main.rb -bat --limit 10 
 ```
 
+### Build Sample Objects in a Specified Collection (merritt_demo)
+```
+bundle exec ruby object_health_main.rb -bat --mnemonic=escholarship --limit 10 
+```
+
+### Rebuild Objects by id
+```
+bundle exec ruby object_health_main.rb -bat --id=10 
+```
+
+### Re-build all objects 
+_WARNING.  This will take a long time_
+
+Clear built objects in a collection and rebuild 50
+```
+bundle exec ruby object_health_main.rb -bat --limit 50 --mnemonic=escholarship --clear-build 
+```
+
+Resume build/rebuild of objects in a collection 
+```
+bundle exec ruby object_health_main.rb -bat --limit 50 --mnemonic=escholarship  
+```
+
+
+Clear built objects and rebuild
+```
+bundle exec ruby object_health_main.rb -bat --limit 500 --query=has-build --clear-build 
+```
+
+Continue rebuild without clearing
 ```
 bundle exec ruby object_health_main.rb -bat --limit 10000 --query=has-build
 ```
 
-Re-analyze
+### Re-analyze all objects
+
+Clear analysis objects and re-analyze
 ```
 bundle exec ruby object_health_main.rb -at --limit 10000 --query=has-build --clear-analysis
 ```
 
-Re-test
+Clear re-analysis without clearing
+```
+bundle exec ruby object_health_main.rb -at --limit 10000 --query=has-build --clear-analysis
+```
+
+## Re-test
 ```
 bundle exec ruby object_health_main.rb -t --limit 10000 --query=has-build --clear-tests
 ```
