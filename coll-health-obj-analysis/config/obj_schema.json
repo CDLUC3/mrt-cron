@@ -134,7 +134,7 @@
         }
       },
       "patternProperties": {
-        "^(na|system|producer)$": {
+        "^(na|system|producer|consumer)$": {
           "type": "array",
           "items": {
             "type": "object",
@@ -147,6 +147,7 @@
                 "enum": [
                   "producer",
                   "system",
+                  "consumer",
                   "na"
                 ]
               },

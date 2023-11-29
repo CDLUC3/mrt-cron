@@ -94,7 +94,7 @@ properties:
         items:
           type: string
     patternProperties:
-      "^(na|system|producer)$":
+      "^(na|system|producer|consumer)$":
         type: array
         items:
           type: object
@@ -103,7 +103,7 @@ properties:
             ext:
               type: string
             source:
-              enum: ["producer", "system", "na"]
+              enum: ["producer", "system", "consumer", "na"]
             created:
               type: string
             version:
