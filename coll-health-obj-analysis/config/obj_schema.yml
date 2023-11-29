@@ -52,6 +52,9 @@ properties:
             type: number
           producer:
             type: number
+          #unexpected value, allowed by schema
+          consumer:
+            type: number
         required:
         - empty
         - system
