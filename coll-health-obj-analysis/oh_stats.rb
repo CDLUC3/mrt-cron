@@ -23,7 +23,7 @@ class ObjectHealthStats
 
   def log_loop(last: false)
     return if @loops.empty?
-    puts sprintf("%10s: %d objects; time %ds", 
+    puts sprintf("%10s: %s objects; time %ss", 
        "Loop #{loop_num}",
        ObjectHealthUtil.num_format(@loops[-1][:count]), 
        ObjectHealthUtil.num_format((Time.now - @loops[-1][:start]).to_i)
@@ -39,7 +39,7 @@ class ObjectHealthStats
     @loops.each do |s|
       sum += s[:count]
     end
-    puts sprintf("\n\n%-10s: %d objects; time %ds", 
+    puts sprintf("\n\n%-10s: %s objects; time %ss", 
       "#{loop_num} Loops",
       ObjectHealthUtil.num_format(sum), 
       ObjectHealthUtil.num_format((Time.now - @loops[0][:start]).to_i)
