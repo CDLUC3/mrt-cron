@@ -60,6 +60,9 @@ gather_ids:
     # query for objects with an existing build representation
     has-build: |
       and exists (select 1 from object_health_json h where h.inv_object_id = o.id)
+    has-sidecar: |
+      and exists (select 1 from object_health_json h where h.inv_object_id = o.id)
+      and exists (select 1 from inv.inv_metadatas m where m.inv_object_id = o.id)
     id: |
       and o.id = '{{ID}}'
   clear_queries:
@@ -75,3 +78,6 @@ gather_ids:
         and 
           object_health_json.inv_object_id = icio.inv_object_id
       )
+    has-sidecar: |
+      where exists (select 1 from inv.inv_metadatas m where m.inv_object_id = object_health_json.inv_object_id)
+

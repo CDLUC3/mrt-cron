@@ -131,6 +131,7 @@ class ObjectHealthDb
   end
 
   def process_object_sidecar(ohobj)
+    ohobj.build.clear_sidecar
     sql = get_object_sidecar_sql
     conn = get_db_cli
     stmt = conn.prepare(sql)

@@ -135,14 +135,19 @@ class ObjectHealthObjectBuild < ObjectHealthObjectComponent
     begin
       xml = Nokogiri::XML(sidecarText).remove_namespaces!
       xml.xpath("//*[not(descendant::*)]").each do |n|
-        sidecar[n.name] = sidecar.fetch(n.name, []).append(n.text)
+        text = n.text.strip.gsub("\\n","").gsub("\n", "").strip
+        sidecar[n.name] = sidecar.fetch(n.name, []).append(text) unless text.empty?
       end
     rescue => exception
       puts exception
     end
     sidecar
   end
-    
+
+  def clear_sidecar
+    set_key(:sidecar, [])
+  end
+
   def set_sidecar(text)
     append_key(:sidecar, ObjectHealthObjectBuild.make_sidecar(text))
   end
