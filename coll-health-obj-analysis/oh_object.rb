@@ -32,7 +32,7 @@ class ObjectHealthObject
   def self.make_opensearch_date(modt)
     return '' if modt.nil?
     return '' if modt.to_s.empty?
-    DateTime.parse("#{modt} -0700").to_s
+    DateTime.parse("#{modt} -0800").to_s
   end
 
   def to_json

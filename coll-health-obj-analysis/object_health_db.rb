@@ -241,6 +241,18 @@ class ObjectHealthDb
     conn.close
   end
 
+  def update_object_exported(ohobj)
+    sql = %{
+      update object_health_json
+      set exported = now()
+      where inv_object_id = ?;
+    }
+    conn = get_db_cli
+    stmt = conn.prepare(sql)
+    stmt.execute(*[ohobj.id])
+    conn.close
+  end
+
   def status_query(where_clause = '')
     sql = %{
       select 

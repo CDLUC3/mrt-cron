@@ -202,11 +202,19 @@ class ObjectHealth
     if ohobj.build.loaded? && (options[:build_objects] || options[:test_objects] || options[:analyze_objects])
       begin
         puts "  export #{id}" if debug
-        export_object(ohobj)
+        ohobj.get_osobj[:exported] = DateTime.now.to_s
+        
         if validation
-          puts "  validate #{ohobj.id}" if debug
-          ObjectHealthUtil.validate(@schema_obj, ohobj.get_osobj, ohobj.id, verbose: verbose)
+          begin
+            puts "  validate #{ohobj.id}" if debug
+            ohobj.get_osobj[:validated] = ObjectHealthUtil.validate(@schema_obj, ohobj.get_osobj, ohobj.id, verbose: verbose)
+          rescue MySchemaException => e
+            ohobj.get_osobj[:validated] = false
+            ohobj.get_osobj[:validation_error] = e.errors
+          end
         end
+        export_object(ohobj)
+        @obj_health_db.update_object_exported(ohobj)
       rescue => e 
         puts "Export failed #{e}"
       end

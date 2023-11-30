@@ -12,6 +12,18 @@
     "id": {
       "type": "number"
     },
+    "exported": {
+      "type": "string"
+    },
+    "validated": {
+      "type": "boolean"
+    },
+    "validation_error": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
     "@timestamp": {
       "type": "string"
     },

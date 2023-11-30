@@ -109,10 +109,12 @@ CREATE TABLE object_health_json (
   analysis_updated datetime,
   tests json,
   tests_updated datetime,
+  exported datetime,
   UNIQUE INDEX object_id(inv_object_id),
   INDEX i_build(build_updated),
   INDEX i_analysis(analysis_updated),
-  INDEX i_tests(tests_updated)
+  INDEX i_tests(tests_updated),
+  INDEX i_exported(exported)
 );
 ```
 ## Install

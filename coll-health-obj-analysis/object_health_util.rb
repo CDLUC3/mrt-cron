@@ -54,11 +54,9 @@ class ObjectHealthUtil
   def self.validate(schema, obj, label, verbose: true)
     val = JSON::Validator.fully_validate(schema, obj)
     unless val.empty?
-      puts "\n** Schema Validation Failure for #{label}" if verbose
-      val.each do |s|
-        puts " - #{s}" if verbose
-      end
-      raise MySchemaException.new "Yaml invalid for schema"
+      ex = MySchemaException.new(val)
+      ex.print(label) if verbose
+      raise ex
     end 
     true
   end
