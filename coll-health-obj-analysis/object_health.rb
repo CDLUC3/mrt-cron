@@ -234,4 +234,8 @@ class ObjectHealth
     self.to_s
   end
 
+  def opensearch
+    @opensrch
+  end
+
 end
