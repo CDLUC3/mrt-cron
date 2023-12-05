@@ -54,6 +54,7 @@ Tasks can be applied to objects based on this taxonomy.  The collections to prio
 
 <details>
 <summary>Sample Yaml Snippet</summary>
+
 _The following snippet is an illustrative example of the data defined in yaml_
 
 ```yaml
@@ -130,7 +131,7 @@ Because some Merritt objects contain tens of thousands of objects, this phase of
 Only the first 1000 files within an object will be detailed in the build structure.
 
 <details>
-<summary><h3>JSON Snippets for the BUILD Property</h3></summary>
+<summary>JSON Snippets for the BUILD Property</summary>
 
 #### Create JSON object
 
@@ -218,9 +219,6 @@ These allow for filtering for similar objects.
         "coll_ark": "ark:/13030/m5rn35s8",
         "coll_name": "Merritt demo",
         "mnemonic": "merritt_demo",
-        "collection_tags": [
-          "tag_test_set"
-        ],
         "campus": "Other"
       },
     },
@@ -584,6 +582,7 @@ Wherever possible, the results of the analysis process are configurable in the y
 
 <details>
 <summary>Sample Yaml Snippet</summary>
+
 _The following snippet is an illustrative example of the data defined in yaml_
 
 ```yaml
@@ -721,7 +720,7 @@ _The following snippet is an illustrative example of the data defined in yaml_
 
 
 <details>
-<summary><h3>JSON Snippets for the ANALYSIS Property</h3></summary>
+<summary>JSON Snippets for the ANALYSIS Property</summary>
 
 #### Producer File Mime Sustainability
 
@@ -1003,7 +1002,7 @@ The path will be set if found.  Otherwise, the value will be set to "NA".
 ```
 
 <details>
-<summary><h3>JSON Snippets for the TESTS Property</h3></summary>
+<summary>JSON Snippets for the TESTS Property</summary>
 
 #### Record the status for each test
 
