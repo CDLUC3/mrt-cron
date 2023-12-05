@@ -31,15 +31,15 @@ class ObjectHealthOpenSearch
 
   # https://opensearch.org/docs/latest/query-dsl/match-all/
   # q = {match: {"tests.summary": "unsustainable-mime-type"}}
-  def query(q)
+  def query(formatter, max)
     size = 10
     ifrom = 0
     total = 0
                         
-    while ifrom < total || ifrom == 0 do 
+    while (ifrom < total || ifrom == 0) && ifrom < max do 
       res = @osclient.search(
         index: @INDEX,
-        body: {query: q},
+        body: {query: formatter.query},
         size: size,
         from: ifrom
       ) 
@@ -49,9 +49,7 @@ class ObjectHealthOpenSearch
       end
       res.fetch("hits", {}).fetch("hits", []).each do |doc|
         sdoc = doc.fetch("_source", {})
-        puts sdoc.fetch("id", "")
-                        
-        #puts sdoc.fetch("tests", {}).fetch("results", {}).fetch("unsustainable-mime-type", "")
+        formatter.make_result(sdoc)
       end
       ifrom += size
     end
