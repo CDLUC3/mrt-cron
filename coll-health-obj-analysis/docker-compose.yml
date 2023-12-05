@@ -1,0 +1,54 @@
+version: '3.9'
+volumes:
+  opensearch:
+services:
+  opensearch:
+    image: opensearchproject/opensearch
+    container_name: opensearch
+    environment:
+    - cluster.name=opensearch-cluster
+    - node.name=opensearch
+    - bootstrap.memory_lock=true # along with the memlock settings below, disables swapping
+    - "OPENSEARCH_JAVA_OPTS=-Xms4096m -Xmx4096m" # minimum and maximum Java heap size, recommend setting both to 50% of system RAM
+    - "discovery.type=single-node" # disables bootstrap checks that are enabled when network.host is set to a non-loopback address
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+      nofile:
+        soft: 65536 # maximum number of open files for the OpenSearch user, set to at least 65536 on modern systems
+        hard: 65536
+    ports:
+    - published: 9200
+      target: 9200
+    volumes:
+    - opensearch:/usr/share/opensearch/data
+
+  opensearch-dashboards:
+    image: opensearchproject/opensearch-dashboards
+    container_name: opensearch-dashboards
+    ports:
+    - published: 8094
+      target: 5601
+    expose:
+      - "8094"
+    environment:
+      - 'OPENSEARCH_HOSTS=["https://opensearch:9200"]'
+    depends_on:
+    - opensearch
+
+  init:
+    image: curlimages/curl:8.1.0
+    container_name: init
+    entrypoint:
+      - /bin/sh
+      - '-c'
+      - |
+       ls /scripts
+       /scripts/init-opensearch.sh          
+    volumes:
+    - "./docker/objhealth.ndjson:/data/saved_objects.ndjson"
+    - "./docker/init-opensearch.sh:/scripts/init-opensearch.sh"
+    depends_on:
+    - opensearch
+    - opensearch-dashboards

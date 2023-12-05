@@ -84,14 +84,10 @@ Provide a means to:
 - [Object Resolution](object_resolution.md)
 
 ## Set environment (DEV)
-```
-export COLLHDATA=$PWD
-```
 
-## Set environment
+The DEV version of this application should run against a docker stack that uses the Merritt DEV database.
 ```
-export COLLHDATA=/dpr2/apps/mrt-cron/coll_health/data
-cd {merrit-cron-install}/coll-health-object-analysis
+docker-compose up -d
 ```
 
 ## New Database Table
