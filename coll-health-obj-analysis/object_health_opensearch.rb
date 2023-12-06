@@ -4,9 +4,8 @@ require 'opensearch'
 # https://opensearch.org/docs/latest/clients/ruby/
 
 class ObjectHealthOpenSearch
-  def initialize(oh, config)
+  def initialize(config)
     @INDEX = 'objhealth'
-    @oh = oh
     @config = config
     osconfig = @config.fetch(:opensearch, {})
     osconfig[:transport_options] = osconfig.fetch(:transport_options, {})
@@ -31,27 +30,24 @@ class ObjectHealthOpenSearch
 
   # https://opensearch.org/docs/latest/query-dsl/match-all/
   # q = {match: {"tests.summary": "unsustainable-mime-type"}}
-  def query(formatter, max)
-    size = 10
-    ifrom = 0
+  def query(formatter, ifrom, limit, page_size)
     total = 0
                         
-    while (ifrom < total || ifrom == 0) && ifrom < max do 
+    while (ifrom < total || total == 0) && ifrom < limit do 
       res = @osclient.search(
         index: @INDEX,
         body: {query: formatter.query},
-        size: size,
+        size: page_size > limit ? limit : page_size,
         from: ifrom
       ) 
       if total == 0
         total = res.fetch("hits", {}).fetch("total", {}).fetch("value", 0)
-        puts total
       end
       res.fetch("hits", {}).fetch("hits", []).each do |doc|
         sdoc = doc.fetch("_source", {})
         formatter.make_result(sdoc)
       end
-      ifrom += size
+      ifrom += page_size
     end
                         
   end

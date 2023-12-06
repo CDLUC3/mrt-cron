@@ -1,0 +1,26 @@
+options:
+  fmt: default
+  page_size: 10
+  start: 0
+  limit: 10
+  max_file_per_object: 1000
+queries:
+  default:
+    class: OSFormatter
+    # https://opensearch.org/docs/latest/query-dsl/term/exists/
+    query:
+      exists: 
+        field: id
+  unsustainable:
+    class: UnsustainableMimeFormatter
+    # https://opensearch.org/docs/latest/query-dsl/full-text/match/
+    # https://opensearch.org/docs/latest/query-dsl/compound/bool/
+    query:
+      bool:
+        should:
+        - match: 
+            tests.results.unsustainable-mime-type: FAIL
+        - match: 
+            tests.results.unsustainable-mime-type: WARN
+        - match: 
+            tests.results.unsustainable-mime-type: INFO

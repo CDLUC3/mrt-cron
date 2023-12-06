@@ -32,8 +32,9 @@ class ObjectHealthCli
       query_params: @config.fetch(:default_params, {}), 
       iterative_params: []
     }
+    # not parse(argv) at the end of the loop
     OptionParser.new do |opts|
-      opts.banner = "Usage: ruby object_health.rb [--help] [--build] [--test]"
+      opts.banner = "Usage: ruby object_health_main.rb"
       opts.on('-h', '--help', 'Show help and exit') do
         puts opts
         exit(0)

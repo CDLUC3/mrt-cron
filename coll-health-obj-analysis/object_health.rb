@@ -55,7 +55,7 @@ class ObjectHealth
     @obj_health_db = ObjectHealthDb.new(self, config_db, mode)
     @analysis_tasks = AnalysisTasks.new(self, config_rules)
     @obj_health_tests = ObjectHealthTests.new(self, config_rules)
-    @opensrch = ObjectHealthOpenSearch.new(self, config_opensearch)
+    @opensrch = ObjectHealthOpenSearch.new(config_opensearch)
 
     now = Time.now.strftime("%Y-%m-%d %H:%M:%S")
   end
