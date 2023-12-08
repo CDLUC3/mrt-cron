@@ -4,6 +4,17 @@ options:
   start: 0
   limit: 10
   max_file_per_object: 1000
+  output: console
+outputs:
+  console: 
+    class: ConsoleOutput
+  arks: 
+    class: ArksOutput
+  files: 
+    class: FilesOutput
+  fits: 
+    class: FitsOutput
+
 queries:
   default:
     class: OSFormatter

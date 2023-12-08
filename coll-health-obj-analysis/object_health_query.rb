@@ -12,8 +12,20 @@ class ObjectHealthQuery
     @opensearch = ObjectHealthOpenSearch.new(config_opensearch)
     @query_config = ObjectHealthUtil.get_config(cfq)
     @options = make_options(argv)
+    @outputter = get_outputter(@options[:output])
   end     
   
+  def outputters
+    @query_config.fetch(:outputs, {})
+  end
+
+  def get_outputter(q)
+    outp = ConsoleOutput.new
+    outclass = outputters.fetch(q, {}).fetch(:class, "")
+    outp = Object.const_get(outclass).new unless outclass.empty?
+    outp
+  end
+
   def get_formatter(q)
     osfconfig = @query_config.fetch(:queries, {}).fetch(q, nil)
     osf = OSFormatter.create(@options, osfconfig)
@@ -33,7 +45,7 @@ class ObjectHealthQuery
       @options.fetch(:page_size, 10)
     )
     fmt.results.each_with_index do |rec, i|
-      fmt.print(rec, i+1)
+      fmt.print(@outputter, rec, i+1)
     end
   end
 
@@ -60,6 +72,9 @@ class ObjectHealthQuery
       end
       opts.on('--max_file_per_object=1000', "Maximum number of files to report per object") do |n|
         options[:max_file_per_object] = n.to_i
+      end
+      opts.on('--output=OUTPUTTER', "Outputter #{outputters.keys}") do |n|
+        options[:output] = n.to_sym
       end
     end.parse(argv)
     options    

@@ -19,6 +19,7 @@ class UnsustainableMimeFormatter < OSFormatter
   end
 
   def file_test(f)
+    return false if f.fetch("ignore_file", false)
     m = f.fetch("mime_type", "")
     b = @mimes_to_report.include?(m)
     if b == false && m =~ %r[;]

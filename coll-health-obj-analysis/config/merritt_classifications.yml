@@ -457,8 +457,10 @@ classifications:
     ignore_files:
       patterns:
       - ^.*Thumbs.*\.db$
-      - ^.*\.DS_store$
+      - .*.DS_store$
       - ^.*\/\.git\/.*$
+      - ^.*\/\.svn\/.*$
+      - ^.*\/__MACOSX\/.*$
 
   # -------------------
   # Statistical Analysis Queries

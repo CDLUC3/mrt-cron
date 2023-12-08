@@ -44,11 +44,8 @@ class OSFormatter
     }
   end
 
-  def print(rec, index)
-    puts "#{index}. #{rec[:ark]} (#{rec[:producer_count]})"
-    rec.fetch(:files, []).each do |f|
-      puts "\t#{f.fetch(:path, '')}"
-    end
+  def print(outputter, rec, index)
+    outputter.output(rec, index)
   end
 
   def query
@@ -78,14 +75,48 @@ class OSFormatter
     @doc.fetch("build", {}).fetch("producer", []).each_with_index do |f, i|
       next if f.fetch("ignore_file", false)
       next unless file_test(f)
-      p = CGI::escape(f.fetch("pathname", ""))
+      p = f.fetch("pathname", "")
+      pesc = CGI::escape(p)
       v = f.fetch("version", "0")
       rfiles.append({
         path: "#{v}/#{p}",
-        url: "#{file_url}/#{v}/#{p}"
+        url: "#{file_url}/#{v}/#{pesc}",
+        mime_type: f.fetch("mime_type", "")
       })
       break if rfiles.length >= @options.fetch(:max_file_per_object, 5)
     end
     rfiles
+  end
+end
+
+class ConsoleOutput
+  def output(rec, index)
+    puts "#{index}. #{rec[:ark]} (#{rec[:producer_count]})"
+    rec.fetch(:files, []).each do |f|
+      puts "\t#{f.fetch(:path, '')} (#{f.fetch(:mime_type, '')})"
+    end
+  end
+end
+
+class ArksOutput
+  def output(rec, index)
+    puts rec[:ark]
+  end
+end
+
+class FilesOutput
+  def output(rec, index)
+    rec.fetch(:files, []).each do |f|
+      puts f.fetch(:url, '') unless f.fetch(:url, '').empty?
+    end
+  end
+end
+
+class FitsOutput
+  def output(rec, index)
+    puts "#{index}. #{rec[:ark]} (#{rec[:producer_count]})"
+    rec.fetch(:files, []).each do |f|
+      puts "\t#{f.fetch(:path, '')}"
+    end
   end
 end
