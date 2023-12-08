@@ -9,6 +9,7 @@ gem 'nokogiri'
 gem 'mysql2'
 gem 'opensearch-ruby'
 gem 'mustache'
+gem 'erb'
 
 gem 'rspec'
 gem 'colorize'

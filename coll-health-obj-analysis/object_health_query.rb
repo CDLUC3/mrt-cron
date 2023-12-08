@@ -3,26 +3,32 @@ require 'uc3-ssm'
 require 'optparse'
 require_relative 'object_health_opensearch'
 require_relative 'object_health_util'
+require_relative 'outputters'
+require_relative 'fits_outputter'
 
 Dir[File.dirname(__FILE__) + '/os_formatter*.rb'].each {|file| require file }
 
 class ObjectHealthQuery
-  def initialize(argv = [], cfos: 'config/opensearch.ssm.yml', cfq: 'config/os_queries.yml')
+  def initialize(argv = [], cfos: 'config/opensearch.ssm.yml', cfq: 'config/os_queries.ssm.yml')
     config_opensearch = ObjectHealthUtil.get_ssm_config(cfos)
     @opensearch = ObjectHealthOpenSearch.new(config_opensearch)
-    @query_config = ObjectHealthUtil.get_config(cfq)
+    @query_config = ObjectHealthUtil.get_ssm_config(cfq)
     @options = make_options(argv)
     @outputter = get_outputter(@options[:output])
   end     
   
+  def merritt_config
+    @query_config.fetch(:merritt, {})
+  end
+
   def outputters
     @query_config.fetch(:outputs, {})
   end
 
   def get_outputter(q)
-    outp = ConsoleOutput.new
+    outp = ConsoleOutput.new(merritt_config)
     outclass = outputters.fetch(q, {}).fetch(:class, "")
-    outp = Object.const_get(outclass).new unless outclass.empty?
+    outp = Object.const_get(outclass).new(merritt_config) unless outclass.empty?
     outp
   end
 

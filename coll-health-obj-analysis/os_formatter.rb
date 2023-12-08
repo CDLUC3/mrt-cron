@@ -1,4 +1,4 @@
-require 'cgi'
+require 'erb'
 
 class OSFormatter
   def self.create(options, osfdef)
@@ -76,47 +76,16 @@ class OSFormatter
       next if f.fetch("ignore_file", false)
       next unless file_test(f)
       p = f.fetch("pathname", "")
-      pesc = CGI::escape(p)
+      pesc = ERB::Util.url_encode(p)
       v = f.fetch("version", "0")
       rfiles.append({
         path: "#{v}/#{p}",
         url: "#{file_url}/#{v}/#{pesc}",
-        mime_type: f.fetch("mime_type", "")
+        mime_type: f.fetch("mime_type", ""),
+        ext: f.fetch("ext", "")
       })
       break if rfiles.length >= @options.fetch(:max_file_per_object, 5)
     end
     rfiles
-  end
-end
-
-class ConsoleOutput
-  def output(rec, index)
-    puts "#{index}. #{rec[:ark]} (#{rec[:producer_count]})"
-    rec.fetch(:files, []).each do |f|
-      puts "\t#{f.fetch(:path, '')} (#{f.fetch(:mime_type, '')})"
-    end
-  end
-end
-
-class ArksOutput
-  def output(rec, index)
-    puts rec[:ark]
-  end
-end
-
-class FilesOutput
-  def output(rec, index)
-    rec.fetch(:files, []).each do |f|
-      puts f.fetch(:url, '') unless f.fetch(:url, '').empty?
-    end
-  end
-end
-
-class FitsOutput
-  def output(rec, index)
-    puts "#{index}. #{rec[:ark]} (#{rec[:producer_count]})"
-    rec.fetch(:files, []).each do |f|
-      puts "\t#{f.fetch(:path, '')}"
-    end
   end
 end

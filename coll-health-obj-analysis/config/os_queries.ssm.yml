@@ -1,3 +1,7 @@
+merritt: 
+  credential: "{!SSM: objhealth/merritt_credential}"
+  fits_command: "/home/tbrady/fits/fits.sh"
+  fits_config: "/home/tbrady/fits/xml/fits_merritt.xml"
 options:
   fmt: default
   page_size: 10
