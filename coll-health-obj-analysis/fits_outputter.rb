@@ -41,6 +41,8 @@ class FitsOutput < OutputConfig
     begin
       xml = Nokogiri::XML(File.read(fits_output)).remove_namespaces!
       puts xml.xpath("/fits/identification")
+      puts xml.xpath("/fits/fileinfo")
+      puts xml.xpath("/fits/filestatus")
     rescue => exception
       puts exception
     end

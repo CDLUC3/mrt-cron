@@ -15,6 +15,28 @@ class OSFormatter
     @osfdef = osfdef
     @results = []
     @doc = {}
+    @filter = {}
+    set_filter
+  end
+
+  def set_filter 
+    if @options[:ark] || @options[:mnemonic]
+      @filter = {bool: {must: []}} if @filter.empty?
+    end
+    if @options[:ark]
+      @filter[:bool][:must].append({
+        match_phrase: {
+          "build.identifiers.ark": @options[:ark]
+        }
+      })
+    end
+    if @options[:mnemonic]
+      @filter[:bool][:must].append({
+        match: {
+          "build.containers.mnemonic": @options[:mnemonic]
+        }
+      })
+    end
   end
 
   def results
@@ -50,7 +72,18 @@ class OSFormatter
 
   def query
     defq = {match: {not_applicable: 'na'}}
-    @osfdef.fetch(:query, defq)
+    q = @osfdef.fetch(:query, defq)
+    unless @filter.empty?
+      q = {
+        bool: {
+          filter: @filter,
+          must: [
+            q
+          ]
+        }
+      }
+    end
+    q
   end
 
   def url
@@ -66,12 +99,19 @@ class OSFormatter
   end
 
   def file_test(f)
-    false
+    file_filters(f)
+  end
+
+  def file_filters(f)
+    b = true
+    b &= f["pathname"] =~ @options[:file_path_regex] if @options[:file_path_regex]
+    b &= f["mime_type"] =~ @options[:file_mime_regex] if @options[:file_mime_regex]
+    b
   end
 
   def files
     rfiles = []
-    return riles unless has_file_test
+    return rfiles unless has_file_test
     @doc.fetch("build", {}).fetch("producer", []).each_with_index do |f, i|
       next if f.fetch("ignore_file", false)
       next unless file_test(f)
@@ -88,4 +128,15 @@ class OSFormatter
     end
     rfiles
   end
+end
+
+class OSFilesFormatter < OSFormatter
+  def initialize(options, osfdef)
+    super(options, osfdef)
+  end
+
+  def has_file_test
+    true
+  end
+
 end

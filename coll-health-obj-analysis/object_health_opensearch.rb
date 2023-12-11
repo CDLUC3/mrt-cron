@@ -32,7 +32,6 @@ class ObjectHealthOpenSearch
   # q = {match: {"tests.summary": "unsustainable-mime-type"}}
   def query(formatter, ifrom, limit, page_size)
     total = 0
-                        
     while (ifrom < total || total == 0) && ifrom < limit do 
       res = @osclient.search(
         index: @INDEX,

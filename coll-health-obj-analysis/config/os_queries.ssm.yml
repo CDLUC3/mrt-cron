@@ -26,6 +26,12 @@ queries:
     query:
       exists: 
         field: id
+  files:
+    class: OSFilesFormatter
+    # https://opensearch.org/docs/latest/query-dsl/term/exists/
+    query:
+      exists: 
+        field: id
   unsustainable:
     class: UnsustainableMimeFormatter
     # https://opensearch.org/docs/latest/query-dsl/full-text/match/

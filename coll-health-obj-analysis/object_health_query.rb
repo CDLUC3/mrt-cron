@@ -82,6 +82,18 @@ class ObjectHealthQuery
       opts.on('--output=OUTPUTTER', "Outputter #{outputters.keys}") do |n|
         options[:output] = n.to_sym
       end
+      opts.on('--ark=ARK', 'Scope query to specified ARK') do |n|
+        options[:ark] = n
+      end
+      opts.on('--mnemonic=MNEMONIC', 'Scope query to specified mnemonic') do |n|
+        options[:mnemonic] = n
+      end
+      opts.on('--file_path_regex=REGEX', 'Regex to filter files to return by pathname') do |n|
+        options[:file_path_regex] = Regexp.new(n)
+      end
+      opts.on('--file_mime_regex=REGEX', 'Regex to filter files to return by mime_type') do |n|
+        options[:file_mime_regex] = Regexp.new(n)
+      end
     end.parse(argv)
     options    
   end
