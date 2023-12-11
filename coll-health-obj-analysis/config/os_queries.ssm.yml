@@ -45,3 +45,13 @@ queries:
             tests.results.unsustainable-mime-type: WARN
         - match: 
             tests.results.unsustainable-mime-type: INFO
+  ext_mismatch:
+    class: ExtensionMismatchFormatter
+    query:
+      match: 
+        tests.results.mime-extension-mismatch: FAIL
+  unclassified_mime:
+    class: UnclassifiedMimeFormatter
+    query:
+      match: 
+        tests.results.mime-not-found: FAIL

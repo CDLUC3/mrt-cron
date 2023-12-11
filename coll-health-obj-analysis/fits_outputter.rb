@@ -51,7 +51,7 @@ class FitsOutput < OutputConfig
   def output(rec, index)
     puts "#{index}. #{rec[:ark]} (#{rec[:producer_count]} files)"
     rec.fetch(:files, []).each do |f|
-      puts "\t#{f.fetch(:path, '')}"
+      puts "\t#{f.fetch(:path, '')} (#{f.fetch(:mime_type, '')})"
       puts 
       fname = "#{fileid_basename}#{f[:ext]}"
       cleanup_last_fileid
