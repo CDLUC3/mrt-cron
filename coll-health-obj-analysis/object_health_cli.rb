@@ -34,7 +34,7 @@ class ObjectHealthCli
     }
     # not parse(argv) at the end of the loop
     OptionParser.new do |opts|
-      opts.banner = "Usage: ruby object_health_main.rb"
+      opts.banner = "Usage: ruby object_health.rb"
       opts.on('-h', '--help', 'Show help and exit') do
         puts opts
         exit(0)

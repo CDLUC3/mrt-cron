@@ -111,6 +111,7 @@ class ObjectHealthQuery
   end
 end
 
-ohq = ObjectHealthQuery.new(ARGV)
-ohq.run_query
-
+if $PROGRAM_NAME == __FILE__
+  ohq = ObjectHealthQuery.new(ARGV)
+  ohq.run_query
+end

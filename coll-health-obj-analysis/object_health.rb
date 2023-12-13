@@ -239,3 +239,9 @@ class ObjectHealth
   end
 
 end
+
+if $PROGRAM_NAME == __FILE__
+  oh = ObjectHealth.new(ARGV)
+  oh.preliminary_tasks
+  oh.process_objects
+end
