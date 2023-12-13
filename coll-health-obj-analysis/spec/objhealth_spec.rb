@@ -334,7 +334,7 @@ RSpec.describe 'object health tests' do
         expect(oh.get_clear_query).to eq('')
       end
 
-      it "test --clear-analysis using a  supplied mnemonic" do
+      it "test --clear-analysis using a supplied mnemonic" do
         oh = ObjectHealth.new(["-bat", "--limit=3", "--mnemonic=escholarship", "--clear-analysis"])
         expect(oh.options.fetch(:build_objects, false)).to be true
         expect(oh.options.fetch(:analyze_objects, false)).to be true

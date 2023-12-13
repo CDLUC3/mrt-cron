@@ -256,12 +256,12 @@ class ObjectHealthDb
   def status_query(where_clause = '')
     sql = %{
       select 
-        sum(case when build is not null then 1 else 0 end) as built,
-        sum(case when analysis is not null then 1 else 0 end) as analyzed,
-        sum(case when tests is not null then 1 else 0 end) as tested,
-        sum(case when build is null then 1 else 0 end) as awaiting_rebuild,
-        sum(case when analysis is null or build_updated > analysis_updated then 1 else 0 end) as awaiting_analysis,
-        sum(case when tests is null or analysis_updated > tests_updated then 1 else 0 end) as awaiting_tests
+        sum(case when build_updated is not null then 1 else 0 end) as built,
+        sum(case when analysis_updated is not null then 1 else 0 end) as analyzed,
+        sum(case when tests_updated is not null then 1 else 0 end) as tested,
+        sum(case when build_updated is null then 1 else 0 end) as awaiting_rebuild,
+        sum(case when analysis_updated is null or build_updated > analysis_updated then 1 else 0 end) as awaiting_analysis,
+        sum(case when tests_updated is null or analysis_updated > tests_updated then 1 else 0 end) as awaiting_tests
       from
         object_health_json
       #{where_clause};
