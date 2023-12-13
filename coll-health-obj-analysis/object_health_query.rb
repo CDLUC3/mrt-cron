@@ -42,7 +42,7 @@ class ObjectHealthQuery
   end
 
   def run_query
-    fmt = get_formatter(@options.fetch(:fmt, 'default').to_sym)
+    fmt = get_formatter(@options.fetch(:fmt, :default))
     return if fmt.nil?
     @opensearch.query(
       fmt, 
@@ -56,7 +56,12 @@ class ObjectHealthQuery
   end
 
   def make_options(argv)
+
     options = @query_config.fetch(:options, {})
+    [:fmt, :output].each do |k|
+      options[k] = options[k].to_sym if options.key?(k)
+    end
+
     # not parse(argv) at the end of the loop
     OptionParser.new do |opts|
       opts.banner = "Usage: ruby object_health_query.rb"
@@ -65,7 +70,7 @@ class ObjectHealthQuery
         exit(0)
       end
       opts.on('--fmt=FORMATTER', "Open Search Query/Formatter: #{queries}") do |n|
-        options[:fmt] = n
+        options[:fmt] = n.to_sym
       end
       opts.on('--start=0', "Open Search results start index") do |n|
         options[:start] = n.to_i
@@ -95,6 +100,9 @@ class ObjectHealthQuery
         options[:file_mime_regex] = Regexp.new(n)
       end
     end.parse(argv)
+
+    # the default extractor does not pull file details... change the formatter if needed
+    options[:fmt] = :files if options[:fmt] == :default && (options[:output] == :files || options[:output] == :fits)
     options    
   end
 
