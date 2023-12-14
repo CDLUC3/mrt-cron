@@ -30,9 +30,9 @@ class OSFormatter
         }
       )
     end
-    
+
     return unless @options[:mnemonic]
-    
+
     @filter[:bool][:must].append(
       {
         match: {
@@ -40,23 +40,19 @@ class OSFormatter
         }
       }
     )
-    end
   end
 
-  def results
-    @results
-  end
+  attr_reader :results
 
-  def init_test
-  end
+  def init_test; end
 
-  def set_doc(doc)
+  def doc_to_inspect(doc)
     @doc = doc
     init_test
   end
 
   def make_result(doc)
-    set_doc(doc)
+    doc_to_inspect(doc)
     res = format
     @results.append(res) unless res.nil?
   end
