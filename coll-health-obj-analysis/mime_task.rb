@@ -16,7 +16,7 @@ class MimeTask < ObjHealthTask
         @statmap[mime] = stat
         @mimeext[mime] = exts
       end
-      cat = taskdef.fetch(:categorize, {})
+      taskdef.fetch(:categorize, {})
     end
   end
 
@@ -74,25 +74,31 @@ class MimeTask < ObjHealthTask
           objmap_ext_mismatch.fetch(mime, {}).fetch(ext, []).append(f.fetch(:pathname, ''))
       end
     end
-    arr = []
+
     objmap_ext_mismatch.each do |mime, _v|
       objmap_ext_mismatch[mime].each do |ext, arr|
-        ohobj.analysis.append_key(:mime_ext_mismatch, {
-                                    mime: mime,
-                                    ext: ext,
-                                    key: "#{mime}: #{ext}",
-                                    count: arr.length,
-                                    files: arr
-                                  })
+        ohobj.analysis.append_key(
+          :mime_ext_mismatch,
+          {
+            mime: mime,
+            ext: ext,
+            key: "#{mime}: #{ext}",
+            count: arr.length,
+            files: arr
+          }
+        )
       end
     end
     objmap_ext_status.each do |mime, _v|
       objmap_ext_status[mime].each do |ext, stat|
-        ohobj.analysis.append_key(:mime_ext_status, {
-                                    mime: mime,
-                                    ext: ext,
-                                    status: stat
-                                  })
+        ohobj.analysis.append_key(
+          :mime_ext_status,
+          {
+            mime: mime,
+            ext: ext,
+            status: stat
+          }
+        )
       end
     end
 

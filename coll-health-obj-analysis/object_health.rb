@@ -28,7 +28,6 @@ require_relative 'oh_stats'
 #   - Duplicate Checksum File
 #   - Median File Size for mime type
 # - TBD: Bitstream Analysis Processes
-#   - Should output go to RDS or to S3? (inv_object_id, inv_file_id, analysis_name, analysis_date, analysis_status, analysis_result)
 #
 # Outputs
 # - Merritt Billing Database (working storage for object json)
@@ -64,7 +63,7 @@ class ObjectHealth
     @obj_health_tests = ObjectHealthTests.new(self, config_rules)
     @opensrch = ObjectHealthOpenSearch.new(config_opensearch)
 
-    now = Time.now.strftime('%Y-%m-%d %H:%M:%S')
+    Time.now.strftime('%Y-%m-%d %H:%M:%S')
   end
 
   def validation
@@ -127,9 +126,12 @@ class ObjectHealth
       awaiting = status.fetch(:awaiting_rebuild, 0)
       if awaiting.zero? || options[:force_rebuild]
         if verbose
-          puts "\n *** This will trigger a rebuild of #{status.fetch(:built,
-                                                                     0)} records.  Type 'yes' to continue or 'exit' to cancel.\n"
-          while input = $stdin.gets.chomp
+          puts <<~HERE
+            *** This will trigger a rebuild of #{status.fetch(:built, 0)} records.
+                Type 'yes' to continue or 'exit' to cancel.
+
+          HERE
+          while (input = $stdin.gets.chomp)
             break if input == 'yes'
 
             exit if input == 'exit'
@@ -138,7 +140,11 @@ class ObjectHealth
         @obj_health_db.clear_object_health(:build)
       else
         if verbose
-          puts "\n *** Cannot clear build because #{awaiting} objects are awaiting rebuild.  Add --force-rebuild to continue anyway.\n"
+          puts <<~HERE
+            *** Cannot clear build because #{awaiting} objects are awaiting rebuild.
+                Add --force-rebuild to continue anyway.
+
+          HERE
         end
         exit
       end
@@ -172,7 +178,7 @@ class ObjectHealth
     ohstat.log_loop(last: true) if verbose
     ohstat.log_loops if verbose
 
-    status = @obj_health_db.object_health_status
+    @obj_health_db.object_health_status
   end
 
   def process_tag(tag); end

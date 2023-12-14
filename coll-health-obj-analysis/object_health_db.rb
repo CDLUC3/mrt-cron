@@ -39,8 +39,8 @@ class ObjectHealthDb
     @clearquery = Mustache.render(q, @cliparams)
   end
 
-  def add_user_params_to_sql(q, iterative_param)
-    Mustache.render(q, @cliparams.merge(iterative_param))
+  def add_user_params_to_sql(query, iterative_param)
+    Mustache.render(query, @cliparams.merge(iterative_param))
   end
 
   def clear_query
@@ -259,7 +259,12 @@ class ObjectHealthDb
         sum(case when analysis_updated is not null then 1 else 0 end) as analyzed,
         sum(case when tests_updated is not null then 1 else 0 end) as tested,
         sum(case when build_updated is null then 1 else 0 end) as awaiting_rebuild,
-        sum(case when analysis_updated is null or build_updated > analysis_updated then 1 else 0 end) as awaiting_analysis,
+        sum(
+          case when analysis_updated is null or build_updated > analysis_updated
+          then 1
+          else 0
+          end
+        ) as awaiting_analysis,
         sum(case when tests_updated is null or analysis_updated > tests_updated then 1 else 0 end) as awaiting_tests
       from
         object_health_json
@@ -284,7 +289,7 @@ class ObjectHealthDb
 
     if @oh.verbose
       puts '---------------------------------------------------'
-      formatstr = '%15<row>s %10<build>s %10<analysed>s %10<tested>s'
+      formatstr = '%15<row>s %10<build>s %10<analyzed>s %10<tested>s'
       puts format(
         formatstr, {
           row: '',
@@ -354,13 +359,14 @@ class ObjectHealthDb
         #{@clearquery}
       )
     end
-    unless sql.empty?
-      puts sql if @oh.debug
-      conn = db_cli
-      stmt = conn.prepare(sql)
-      stmt.execute
-      conn.close
-    end
+
+    return if sql.empty?
+
+    puts sql if @oh.debug
+    conn = db_cli
+    stmt = conn.prepare(sql)
+    stmt.execute
+    conn.close
   end
 
   def load_object_json(ohobj)

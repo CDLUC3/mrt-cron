@@ -5,11 +5,16 @@ Metrics/MethodLength:
 Metrics/BlockLength:
   Enabled: false
 Metrics/AbcSize:
-  Enabled: false  
+  Enabled: false
 Metrics/CyclomaticComplexity:
-  Enabled: false  
+  Enabled: false
 Metrics/PerceivedComplexity:
-  Enabled: false  
+  Enabled: false
+Metrics/BlockNesting:
+  Enabled: false
+Metrics/ParameterLists:
+  Enabled: false
+
 
 # temp ignore
 Style/Documentation:

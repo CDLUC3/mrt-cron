@@ -7,7 +7,7 @@ require 'opensearch'
 
 class ObjectHealthOpenSearch
   def initialize(config)
-    @INDEX = 'objhealth'
+    @os_index = 'objhealth'
     @config = config
     osconfig = @config.fetch(:opensearch, {})
     osconfig[:transport_options] = osconfig.fetch(:transport_options, {})
@@ -15,15 +15,15 @@ class ObjectHealthOpenSearch
     osconfig[:transport_options][:ssl][:verify] = osconfig[:transport_options][:ssl].fetch(:verify, 'false') == 'true'
     @osclient = OpenSearch::Client.new(osconfig)
     begin
-      @osclient.indices.create(index: @INDEX)
-    rescue OpenSearch::Transport::Transport::Errors::BadRequest => e
+      @osclient.indices.create(index: @os_index)
+    rescue OpenSearch::Transport::Transport::Errors::BadRequest
       # index already exists
     end
   end
 
   def export(ohobj)
-    resp = @osclient.index(
-      index: @INDEX,
+    @osclient.index(
+      index: @os_index,
       body: ohobj.opensearch_obj,
       id: ohobj.id,
       refresh: true
@@ -36,7 +36,7 @@ class ObjectHealthOpenSearch
     total = 0
     while (ifrom < total || total.zero?) && ifrom < limit
       res = @osclient.search(
-        index: @INDEX,
+        index: @os_index,
         body: { query: formatter.query },
         size: page_size > limit ? limit : page_size,
         from: ifrom

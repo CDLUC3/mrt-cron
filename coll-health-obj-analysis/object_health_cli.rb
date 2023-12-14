@@ -111,7 +111,8 @@ class ObjectHealthCli
     end.parse(argv)
     options[:iterative_params].append({}) if options[:iterative_params].empty?
 
-    if options[:iterative_params].length > 1 && (options[:force_rebuild] || options[:clear_analysis] || options[:clear_tests])
+    if options[:iterative_params].length > 1 &&
+       (options[:force_rebuild] || options[:clear_analysis] || options[:clear_tests])
       puts '--clear- options are not allowed when a tag set is in use'
       exit(0)
     end

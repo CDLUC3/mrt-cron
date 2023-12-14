@@ -27,10 +27,10 @@ class ObjHealthTask
   attr_reader :name
 
   def self.create(objh, taskdef, name)
-    unless taskdef.nil?
-      taskclass = taskdef.fetch(:class, '')
-      Object.const_get(taskclass).new(objh, taskdef, name) unless taskclass.empty?
-    end
+    return if taskdef.nil?
+
+    taskclass = taskdef.fetch(:class, '')
+    Object.const_get(taskclass).new(objh, taskdef, name) unless taskclass.empty?
   end
 
   def run_task(ohobj)

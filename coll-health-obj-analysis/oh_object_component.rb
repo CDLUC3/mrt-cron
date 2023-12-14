@@ -23,16 +23,16 @@ class ObjectHealthObjectComponent
     @ohobj.opensearch_obj[@compkey]
   end
 
-  def set_object(obj)
+  def ohobj_from_hash(obj)
     @ohobj.opensearch_obj[@compkey] = obj
   end
 
   def init_object
-    set_object(default_object)
+    ohobj_from_hash(default_object)
   end
 
   def set_object_from_json(json, updated)
-    set_object(JSON.parse(json, symbolize_names: true)) unless json.nil?
+    ohobj_from_hash(JSON.parse(json, symbolize_names: true)) unless json.nil?
     @updated = ObjectHealthObject.make_opensearch_date(updated)
   end
 
@@ -244,13 +244,15 @@ class ObjectHealthObjectBuild < ObjectHealthObjectComponent
   def count_mime(mime)
     hash_object[:mimes_for_object] = [] unless hash_object.key?(:mimes_for_object)
     arr = hash_object[:mimes_for_object]
+    found = false
     arr.each_with_index do |r, i|
-      if r.fetch(:mime, '') == mime
-        arr[i][:count] = arr[i].fetch(:count, 0) + 1
-        return
-      end
+      next unless r.fetch(:mime, '') == mime
+
+      arr[i][:count] = arr[i].fetch(:count, 0) + 1
+      found = true
+      break
     end
-    arr.append({ mime: mime, count: 1 })
+    arr.append({ mime: mime, count: 1 }) unless found
   end
 end
 

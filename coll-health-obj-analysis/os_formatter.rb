@@ -4,10 +4,10 @@ require 'erb'
 
 class OSFormatter
   def self.create(options, osfdef)
-    unless osfdef.nil?
-      osfclass = osfdef.fetch(:class, '')
-      Object.const_get(osfclass).new(options, osfdef) unless osfclass.empty?
-    end
+    return if osfdef.nil?
+
+    osfclass = osfdef.fetch(:class, '')
+    Object.const_get(osfclass).new(options, osfdef) unless osfclass.empty?
   end
 
   def initialize(options, osfdef)
@@ -22,24 +22,33 @@ class OSFormatter
   def set_filter
     @filter = { bool: { must: [] } } if (@options[:ark] || @options[:mnemonic]) && @filter.empty?
     if @options[:ark]
-      @filter[:bool][:must].append({
-                                     match_phrase: {
-                                       'build.identifiers.ark': @options[:ark]
-                                     }
-                                   })
+      @filter[:bool][:must].append(
+        {
+          match_phrase: {
+            'build.identifiers.ark': @options[:ark]
+          }
+        }
+      )
     end
-    if @options[:mnemonic]
-      @filter[:bool][:must].append({
-                                     match: {
-                                       'build.containers.mnemonic': @options[:mnemonic]
-                                     }
-                                   })
+    
+    return unless @options[:mnemonic]
+    
+    @filter[:bool][:must].append(
+      {
+        match: {
+          'build.containers.mnemonic': @options[:mnemonic]
+        }
+      }
+    )
     end
   end
 
-  attr_reader :results
+  def results
+    @results
+  end
 
-  def init_test; end
+  def init_test
+  end
 
   def set_doc(doc)
     @doc = doc
@@ -115,12 +124,14 @@ class OSFormatter
       p = f.fetch('pathname', '')
       pesc = ERB::Util.url_encode(p)
       v = f.fetch('version', '0')
-      rfiles.append({
-                      path: "#{v}/#{p}",
-                      url: "#{file_url}/#{v}/#{pesc}",
-                      mime_type: f.fetch('mime_type', ''),
-                      ext: f.fetch('ext', '')
-                    })
+      rfiles.append(
+        {
+          path: "#{v}/#{p}",
+          url: "#{file_url}/#{v}/#{pesc}",
+          mime_type: f.fetch('mime_type', ''),
+          ext: f.fetch('ext', '')
+        }
+      )
       break if rfiles.length >= @options.fetch(:max_file_per_object, 5)
     end
     rfiles
