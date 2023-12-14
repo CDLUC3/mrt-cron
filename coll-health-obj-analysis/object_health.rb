@@ -35,7 +35,12 @@ require_relative 'oh_stats'
 # - OpenSearch
 
 class ObjectHealth
-  def initialize(argv = [], cfdb: 'config/database.ssm.yml', cfos: 'config/opensearch.ssm.yml', cfmc: ObjectHealthUtil.merritt_classifications)
+  def initialize(
+    argv = [],
+    cfdb: 'config/database.ssm.yml',
+    cfos: 'config/opensearch.ssm.yml',
+    cfmc: ObjectHealthUtil.merritt_classifications
+  )
     @schema_yaml = ObjectHealthUtil.read_and_validate_schema_file(ObjectHealthUtil.yaml_schema)
     @schema_obj = ObjectHealthUtil.read_and_validate_schema_file(ObjectHealthUtil.obj_schema)
     config_db = ObjectHealthUtil.ssm_config(cfdb)
@@ -179,35 +184,35 @@ class ObjectHealth
     @opensrch.export(ohobj)
   end
 
-  def process_object(id)
-    puts id if debug
-    ohobj = ObjectHealthObject.new(@build_config, id)
+  def process_object(object_id)
+    puts object_id if debug
+    ohobj = ObjectHealthObject.new(@build_config, object_id)
     ohobj.init_components
     if options[:build_objects]
-      puts "build #{id}" if debug
+      puts "build #{object_id}" if debug
       @obj_health_db.build_object(ohobj)
-      puts "save #{id}" if debug
+      puts "save #{object_id}" if debug
       @obj_health_db.update_object_build(ohobj)
     else
-      puts "get #{id}" if debug
+      puts "get #{object_id}" if debug
       @obj_health_db.load_object_json(ohobj)
     end
 
     if options[:analyze_objects] && ohobj.build.loaded?
-      puts "  analyze #{id}" if debug
+      puts "  analyze #{object_id}" if debug
       @analysis_tasks.run_tasks(ohobj)
       @obj_health_db.update_object_analysis(ohobj)
     end
 
     if options[:test_objects] && ohobj.build.loaded?
-      puts "  test #{id}" if debug
+      puts "  test #{object_id}" if debug
       @obj_health_tests.run_tests(ohobj)
       @obj_health_db.update_object_tests(ohobj)
     end
 
     if ohobj.build.loaded? && (options[:build_objects] || options[:test_objects] || options[:analyze_objects])
       begin
-        puts "  export #{id}" if debug
+        puts "  export #{object_id}" if debug
         ohobj.opensearch_obj[:exported] = DateTime.now.to_s
 
         if validation

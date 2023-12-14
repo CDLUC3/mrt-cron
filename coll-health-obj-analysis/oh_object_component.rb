@@ -84,30 +84,39 @@ class ObjectHealthObjectBuild < ObjectHealthObjectComponent
     }
   end
 
-  def build_object_representation(r)
-    loc = r.fetch('localids', '')
+  def build_object_representation(row)
+    loc = row.fetch('localids', '')
     loc = '' if loc.nil?
-    set_key(:identifiers, {
-              ark: r.fetch('ark', ''),
-              localids: loc.split(',')
-            })
-    m = r.fetch('mnemonic', '')
-    set_key(:containers, {
-              owner_ark: r.fetch('owner_ark', ''),
-              owner_name: r.fetch('owner_name', ''),
-              coll_ark: r.fetch('coll_ark', ''),
-              coll_name: r.fetch('coll_name', ''),
-              mnemonic: m,
-              campus: campus(r.fetch('coll_name', ''))
-            })
-    set_key(:metadata, {
-              erc_who: r.fetch('erc_who', ''),
-              erc_what: r.fetch('erc_what', ''),
-              erc_when: r.fetch('erc_when', ''),
-              erc_where: r.fetch('erc_where', '')
-            })
-    set_key(:modified, ObjectHealthObject.make_opensearch_date(r.fetch('modified', '')))
-    set_key(:embargo_end_date, ObjectHealthObject.make_opensearch_date(r.fetch('embargo_end_date', '')))
+    set_key(
+      :identifiers,
+      {
+        ark: row.fetch('ark', ''),
+        localids: loc.split(',')
+      }
+    )
+    m = row.fetch('mnemonic', '')
+    set_key(
+      :containers,
+      {
+        owner_ark: row.fetch('owner_ark', ''),
+        owner_name: row.fetch('owner_name', ''),
+        coll_ark: row.fetch('coll_ark', ''),
+        coll_name: row.fetch('coll_name', ''),
+        mnemonic: m,
+        campus: campus(row.fetch('coll_name', ''))
+      }
+    )
+    set_key(
+      :metadata,
+      {
+        erc_who: row.fetch('erc_who', ''),
+        erc_what: row.fetch('erc_what', ''),
+        erc_when: row.fetch('erc_when', ''),
+        erc_where: row.fetch('erc_where', '')
+      }
+    )
+    set_key(:modified, ObjectHealthObject.make_opensearch_date(row.fetch('modified', '')))
+    set_key(:embargo_end_date, ObjectHealthObject.make_opensearch_date(row.fetch('embargo_end_date', '')))
     @updated = DateTime.now.to_s
   end
 
@@ -186,13 +195,13 @@ class ObjectHealthObjectBuild < ObjectHealthObjectComponent
     end
   end
 
-  def process_object_file(ofiles, r)
-    pathname = r.fetch('pathname', '')
+  def process_object_file(ofiles, row)
+    pathname = row.fetch('pathname', '')
     version = 0
     unless pathname.empty?
-      full_size = r.fetch('full_size', 0)
-      billable_size = r.fetch('billable_size', 0)
-      version = r.fetch('number', 0)
+      full_size = row.fetch('full_size', 0)
+      billable_size = row.fetch('billable_size', 0)
+      version = row.fetch('number', 0)
       ext = ''
 
       ext = pathname.downcase.split('.')[-1] if pathname =~ /\./
@@ -212,13 +221,13 @@ class ObjectHealthObjectBuild < ObjectHealthObjectComponent
       v = {
         version: version,
         last_version_present: version,
-        source: r.fetch('source', ''),
+        source: row.fetch('source', ''),
         pathname: pathname,
         billable_size: billable_size,
-        mime_type: r.fetch('mime_type', ''),
-        digest_type: r.fetch('digest_type', ''),
-        digest_value: r.fetch('digest_value', ''),
-        created: ObjectHealthObject.make_opensearch_date(r.fetch('created', '')),
+        mime_type: row.fetch('mime_type', ''),
+        digest_type: row.fetch('digest_type', ''),
+        digest_value: row.fetch('digest_value', ''),
+        created: ObjectHealthObject.make_opensearch_date(row.fetch('created', '')),
         pathtype: pathtype
       }
       v[:ext] = ext unless ext.empty?

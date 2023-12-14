@@ -1,10 +1,10 @@
 # frozen_string_literal: true
 
 class ObjectHealthObject
-  def initialize(build_config, id)
-    @id = id
+  def initialize(build_config, object_id)
+    @id = object_id
     @osobj = {
-      id: id,
+      id: object_id,
       '@timestamp': Time.now.strftime('%Y-%m-%dT%H:%M:%S%z')
     }
     @build_config = build_config

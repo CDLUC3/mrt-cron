@@ -24,10 +24,14 @@ class ObjectHealthStats
   def log_loop(last: false)
     return if @loops.empty?
 
-    puts format('%10s: %s objects; time %ss',
-                "Loop #{loop_num}",
-                ObjectHealthUtil.num_format(@loops[-1][:count]),
-                ObjectHealthUtil.num_format((Time.now - @loops[-1][:start]).to_i))
+    puts format(
+      '%10<loopname>s: %<objcount>s objects; time %<duration>ss',
+      {
+        loopname: "Loop #{loop_num}",
+        objcount: ObjectHealthUtil.num_format(@loops[-1][:count]),
+        duration: ObjectHealthUtil.num_format((Time.now - @loops[-1][:start]).to_i)
+      }
+    )
     return if last
 
     puts "\tSleep before next loop: #{@loop_sleep}s"
@@ -41,9 +45,13 @@ class ObjectHealthStats
     @loops.each do |s|
       sum += s[:count]
     end
-    puts format("\n\n%-10s: %s objects; time %ss",
-                "#{loop_num} Loops",
-                ObjectHealthUtil.num_format(sum),
-                ObjectHealthUtil.num_format((Time.now - @loops[0][:start]).to_i))
+    puts format(
+      "\n\n%-10<loopname>s: %<objcount>s objects; time %<duration>ss",
+      {
+        loopname: "#{loop_num} Loops",
+        objcount: ObjectHealthUtil.num_format(sum),
+        duration: ObjectHealthUtil.num_format((Time.now - @loops[0][:start]).to_i)
+      }
+    )
   end
 end

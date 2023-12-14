@@ -284,37 +284,47 @@ class ObjectHealthDb
 
     if @oh.verbose
       puts '---------------------------------------------------'
-      fmtstr = '%15<row>s %10<build>s %10<analysed>s %10<tested>s'
-      puts format(formatstr, {
-        row: '', 
-        build: 'Build', 
-        analyzed: 'Analysis', 
-        tested: 'Tests'
-      })
-      puts format(formatstr, {
-        row: 'Total Processed', 
-        build: ObjectHealthUtil.num_format(total_status[:built]),
-        analyzed: ObjectHealthUtil.num_format(total_status[:analyzed]),
-        tested: ObjectHealthUtil.num_format(total_status[:tested])
-      })
-      puts format(formatstr, {
-        row: 'Total Awaiting', 
-        build: ObjectHealthUtil.num_format(total_status[:awaiting_rebuild]), 
-        analyzed: ObjectHealthUtil.num_format(total_status[:awaiting_analysis]), 
-        tested: ObjectHealthUtil.num_format(total_status[:awaiting_tests])
-      })
-      puts format(formatstr, {
-        row:  'Query Processed', 
-        build: ObjectHealthUtil.num_format(status[:built]), 
-        analyzed: ObjectHealthUtil.num_format(status[:analyzed]), 
-        tested: ObjectHealthUtil.num_format(status[:tested])
-      })
-      puts format(formatstr, {
-        row: 'Query Awaiting', 
-        build: ObjectHealthUtil.num_format(status[:awaiting_rebuild]), 
-        analyzed: ObjectHealthUtil.num_format(status[:awaiting_analysis]), 
-        tested: ObjectHealthUtil.num_format(status[:awaiting_tests])
-      })
+      formatstr = '%15<row>s %10<build>s %10<analysed>s %10<tested>s'
+      puts format(
+        formatstr, {
+          row: '',
+          build: 'Build',
+          analyzed: 'Analysis',
+          tested: 'Tests'
+        }
+      )
+      puts format(
+        formatstr, {
+          row: 'Total Processed',
+          build: ObjectHealthUtil.num_format(total_status[:built]),
+          analyzed: ObjectHealthUtil.num_format(total_status[:analyzed]),
+          tested: ObjectHealthUtil.num_format(total_status[:tested])
+        }
+      )
+      puts format(
+        formatstr, {
+          row: 'Total Awaiting',
+          build: ObjectHealthUtil.num_format(total_status[:awaiting_rebuild]),
+          analyzed: ObjectHealthUtil.num_format(total_status[:awaiting_analysis]),
+          tested: ObjectHealthUtil.num_format(total_status[:awaiting_tests])
+        }
+      )
+      puts format(
+        formatstr, {
+          row: 'Query Processed',
+          build: ObjectHealthUtil.num_format(status[:built]),
+          analyzed: ObjectHealthUtil.num_format(status[:analyzed]),
+          tested: ObjectHealthUtil.num_format(status[:tested])
+        }
+      )
+      puts format(
+        formatstr, {
+          row: 'Query Awaiting',
+          build: ObjectHealthUtil.num_format(status[:awaiting_rebuild]),
+          analyzed: ObjectHealthUtil.num_format(status[:awaiting_analysis]),
+          tested: ObjectHealthUtil.num_format(status[:awaiting_tests])
+        }
+      )
       puts '---------------------------------------------------'
     end
 

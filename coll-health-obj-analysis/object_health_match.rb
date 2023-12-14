@@ -39,7 +39,14 @@ class ObjectHealthMatch
     false
   end
 
-  def self.match_criteria(criteria:, key:, ohobj:, criteria_list: nil, criteria_keys: nil, criteria_templates: nil, criteria_patterns: nil)
+  def self.match_criteria(
+    criteria:, key:,
+    ohobj:,
+    criteria_list: nil,
+    criteria_keys: nil,
+    criteria_templates: nil,
+    criteria_patterns: nil
+  )
     return false if criteria.nil?
 
     b = false

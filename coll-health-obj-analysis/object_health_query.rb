@@ -27,15 +27,15 @@ class ObjectHealthQuery
     @query_config.fetch(:outputs, {})
   end
 
-  def result_outputter(q)
+  def result_outputter(query)
     outp = ConsoleOutput.new(merritt_config)
-    outclass = outputters.fetch(q, {}).fetch(:class, '')
+    outclass = outputters.fetch(query, {}).fetch(:class, '')
     outp = Object.const_get(outclass).new(merritt_config) unless outclass.empty?
     outp
   end
 
-  def os_result_formatter(q)
-    osfconfig = @query_config.fetch(:queries, {}).fetch(q, nil)
+  def os_result_formatter(query)
+    osfconfig = @query_config.fetch(:queries, {}).fetch(query, nil)
     osf = OSFormatter.create(@options, osfconfig)
   end
 
