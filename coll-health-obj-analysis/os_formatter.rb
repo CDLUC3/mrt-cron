@@ -89,24 +89,24 @@ class OSFormatter
     url.gsub(%r{/m/}, '/api/presign-file/')
   end
 
-  def has_file_test
+  def file_test?
     false
   end
 
-  def file_test(f)
-    file_filters(f)
+  def file_test(file)
+    file_filters(file)
   end
 
-  def file_filters(f)
+  def file_filters(file)
     b = true
-    b &= f['pathname'] =~ @options[:file_path_regex] if @options[:file_path_regex]
-    b &= f['mime_type'] =~ @options[:file_mime_regex] if @options[:file_mime_regex]
+    b &= file['pathname'] =~ @options[:file_path_regex] if @options[:file_path_regex]
+    b &= file['mime_type'] =~ @options[:file_mime_regex] if @options[:file_mime_regex]
     b
   end
 
   def files
     rfiles = []
-    return rfiles unless has_file_test
+    return rfiles unless file_test?
 
     @doc.fetch('build', {}).fetch('producer', []).each_with_index do |f, _i|
       next if f.fetch('ignore_file', false)
@@ -128,7 +128,7 @@ class OSFormatter
 end
 
 class OSFilesFormatter < OSFormatter
-  def has_file_test
+  def file_test?
     true
   end
 end

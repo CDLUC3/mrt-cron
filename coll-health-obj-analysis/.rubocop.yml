@@ -6,6 +6,8 @@ Metrics/BlockLength:
   Enabled: false
 Metrics/AbcSize:
   Enabled: false  
+Metrics/CyclomaticComplexity:
+  Enabled: false  
 
 # temp ignore
 Style/Documentation:

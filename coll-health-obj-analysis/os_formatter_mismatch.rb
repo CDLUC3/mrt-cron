@@ -15,13 +15,13 @@ class ExtensionMismatchFormatter < OSFormatter
     end
   end
 
-  def has_file_test
+  def file_test?
     true
   end
 
-  def file_test(f)
-    return false unless file_filters(f)
+  def file_test(file)
+    return false unless file_filters(file)
 
-    @files_to_report.include?(f.fetch('pathname', ''))
+    @files_to_report.include?(file.fetch('pathname', ''))
   end
 end

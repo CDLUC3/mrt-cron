@@ -32,7 +32,7 @@ class ObjectHealthObject
     @osobj.to_json
   end
 
-  def get_osobj
+  def opensearch_obj
     @osobj
   end
 
@@ -97,7 +97,7 @@ class ObjectHealthObject
   end
 
   def template_map
-    identifiers = build.get_object.fetch(:identifiers, {})
+    identifiers = build.hash_object.fetch(:identifiers, {})
     locid = identifiers.fetch(:localids, [])
     ark = identifiers.fetch(:ark, '')
     map = {}

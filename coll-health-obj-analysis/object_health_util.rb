@@ -23,27 +23,27 @@ class ObjectHealthUtil
     JSON::Validator.validator_for_name('draft6').metaschema
   end
 
-  def self.get_ssm_config(file)
+  def self.ssm_config(file)
     config = Uc3Ssm::ConfigResolver.new.resolve_file_values(file: file)
     JSON.parse(config.to_json, symbolize_names: true)
   end
 
-  def self.get_config(file)
+  def self.config_from_yaml(file)
     config = YAML.safe_load(File.read(file), aliases: true)
     JSON.parse(config.to_json, symbolize_names: true)
   end
 
-  def self.get_schema(file)
+  def self.json_schema(file)
     config = YAML.safe_load(File.read(file), aliases: true)
     JSON.parse(config.to_json)
   end
 
   def self.validate_schema_file(filename, verbose: true)
-    validate_schema(get_schema(filename), filename, verbose: verbose)
+    validate_schema(json_schema(filename), filename, verbose: verbose)
   end
 
-  def self.get_and_validate_schema_file(filename, verbose: true)
-    file = get_schema(filename)
+  def self.read_and_validate_schema_file(filename, verbose: true)
+    file = json_schema(filename)
     validate_schema(file, filename, verbose: verbose)
     file
   end

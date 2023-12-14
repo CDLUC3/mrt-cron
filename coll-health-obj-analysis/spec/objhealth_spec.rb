@@ -27,7 +27,7 @@ RSpec.describe 'object health tests' do
 
     it 'Identify Issue in Merritt Classification Schema' do
       expect do
-        schema = ObjectHealthUtil.get_schema(ObjectHealthUtil.yaml_schema)
+        schema = ObjectHealthUtil.json_schema(ObjectHealthUtil.yaml_schema)
         # corrupt the schema object
         schema['type'] = 'foo'
         ObjectHealthUtil.validate_schema(schema, ObjectHealthUtil.yaml_schema, verbose: false)
@@ -40,7 +40,7 @@ RSpec.describe 'object health tests' do
 
     it 'Identify Issue in Object Health Object Schema' do
       expect do
-        schema = ObjectHealthUtil.get_schema(ObjectHealthUtil.obj_schema)
+        schema = ObjectHealthUtil.json_schema(ObjectHealthUtil.obj_schema)
         # corrupt the schema object
         schema['required'].append(22)
         ObjectHealthUtil.validate_schema(schema, ObjectHealthUtil.obj_schema, verbose: false)
@@ -50,7 +50,7 @@ RSpec.describe 'object health tests' do
     it 'Test Yaml schema validation failure' do
       expect do
         objh = ObjectHealth.new(cfmc: 'spec/config/empty.yml')
-        objh.get_object_list
+        objh.hash_object_list
       end.to raise_error(MySchemaException)
     end
   end
@@ -76,29 +76,43 @@ RSpec.describe 'object health tests' do
     describe 'Build, Analyze, Test Options' do
       before(:each) do
         @action_invoked = {}
-        allow_any_instance_of(ObjectHealth).to receive(:export_object).and_wrap_original do |_method, _arg|
+        allow_any_instance_of(ObjectHealth)
+          .to receive(:export_object)
+          .and_wrap_original do |_method, _arg|
           inc(:export_object)
         end
-        allow_any_instance_of(ObjectHealthDb).to receive(:update_object_build).and_wrap_original do |_method, _arg|
+        allow_any_instance_of(ObjectHealthDb)
+          .to receive(:update_object_build)
+          .and_wrap_original do |_method, _arg|
           inc(:update_object_build)
         end
-        allow_any_instance_of(ObjectHealthDb).to receive(:update_object_analysis).and_wrap_original do |_method, _arg|
+        allow_any_instance_of(ObjectHealthDb)
+          .to receive(:update_object_analysis)
+          .and_wrap_original do |_method, _arg|
           inc(:update_object_analysis)
         end
-        allow_any_instance_of(ObjectHealthDb).to receive(:update_object_tests).and_wrap_original do |_method, _arg|
+        allow_any_instance_of(ObjectHealthDb)
+          .to receive(:update_object_tests)
+          .and_wrap_original do |_method, _arg|
           inc(:update_object_tests)
         end
 
-        allow_any_instance_of(ObjectHealthDb).to
-        receive(:clear_object_health).with(:build).and_wrap_original do |_method, _arg|
+        allow_any_instance_of(ObjectHealthDb)
+          .to receive(:clear_object_health)
+          .with(:build)
+          .and_wrap_original do |_method, _arg|
           inc(:clear_object_build)
         end
-        allow_any_instance_of(ObjectHealthDb).to
-        receive(:clear_object_health).with(:analysis).and_wrap_original do |_method, _arg|
+        allow_any_instance_of(ObjectHealthDb)
+          .to receive(:clear_object_health)
+          .with(:analysis)
+          .and_wrap_original do |_method, _arg|
           inc(:clear_object_analysis)
         end
-        allow_any_instance_of(ObjectHealthDb).to
-        receive(:clear_object_health).with(:tests).and_wrap_original do |_method, _arg|
+        allow_any_instance_of(ObjectHealthDb)
+          .to receive(:clear_object_health)
+          .with(:tests)
+          .and_wrap_original do |_method, _arg|
           inc(:clear_object_tests)
         end
       end
@@ -157,7 +171,7 @@ RSpec.describe 'object health tests' do
         objh.preliminary_tasks
         objh.process_objects
 
-        expect(objh.get_queries.first).to match(/and o.id = '184856'/)
+        expect(objh.sql_queries.first).to match(/and o.id = '184856'/)
         verify_invocations_counts(1, 1, 0, 0)
       end
 
@@ -167,7 +181,7 @@ RSpec.describe 'object health tests' do
         objh.preliminary_tasks
         objh.process_objects
 
-        expect(objh.get_queries.first).to match(/merritt_demo/)
+        expect(objh.sql_queries.first).to match(/merritt_demo/)
         verify_invocations_counts(3, 3, 0, 0)
       end
 
@@ -177,7 +191,7 @@ RSpec.describe 'object health tests' do
         objh.preliminary_tasks
         objh.process_objects
 
-        expect(objh.get_queries.first).to match(/merritt_demo/)
+        expect(objh.sql_queries.first).to match(/merritt_demo/)
         verify_invocations_counts(12, 12, 0, 0)
       end
 
@@ -187,7 +201,7 @@ RSpec.describe 'object health tests' do
         objh.preliminary_tasks
         objh.process_objects
 
-        expect(objh.get_queries.first).to match(/escholarship/)
+        expect(objh.sql_queries.first).to match(/escholarship/)
         verify_invocations_counts(3, 3, 0, 0)
       end
 
@@ -197,7 +211,7 @@ RSpec.describe 'object health tests' do
         objh.preliminary_tasks
         objh.process_objects
 
-        expect(objh.get_queries.first).to match(/where h.inv_object_id = o.id/)
+        expect(objh.sql_queries.first).to match(/where h.inv_object_id = o.id/)
         # counts will depend on the state of the database
         # verify_invocations_counts(0, 0, 0, 0)
       end
@@ -208,7 +222,7 @@ RSpec.describe 'object health tests' do
         objh.preliminary_tasks
         objh.process_objects
 
-        expect(objh.get_queries.length).to eq(10)
+        expect(objh.sql_queries.length).to eq(10)
         verify_invocations_counts(30, 30, 0, 0)
       end
 
@@ -332,7 +346,7 @@ RSpec.describe 'object health tests' do
         objh.process_objects
 
         verify_clear_counts(1, 0, 0)
-        expect(objh.get_clear_query).to eq('')
+        expect(objh.sql_clear_query).to eq('')
       end
 
       it 'test --clear-analysis using a supplied mnemonic' do
@@ -346,8 +360,8 @@ RSpec.describe 'object health tests' do
 
         verify_clear_counts(0, 1, 0)
 
-        expect(objh.get_clear_query).to match(/where exists/)
-        expect(objh.get_clear_query).to match(/escholarship/)
+        expect(objh.sql_clear_query).to match(/where exists/)
+        expect(objh.sql_clear_query).to match(/escholarship/)
       end
 
       it 'test --clear-tests using the default collection' do
@@ -361,14 +375,14 @@ RSpec.describe 'object health tests' do
 
         verify_clear_counts(0, 0, 1)
 
-        expect(objh.get_clear_query).to match(/where exists/)
-        expect(objh.get_clear_query).to match(/merritt_demo/)
+        expect(objh.sql_clear_query).to match(/where exists/)
+        expect(objh.sql_clear_query).to match(/merritt_demo/)
       end
     end
 
     describe 'Configure validation OFF' do
       before(:each) do
-        @cfmc = ObjectHealthUtil.get_config(ObjectHealthUtil.merritt_classifications)
+        @cfmc = ObjectHealthUtil.config_from_yaml(ObjectHealthUtil.merritt_classifications)
         @cfmc[:runtime][:validation] = false
       end
 
@@ -385,7 +399,7 @@ RSpec.describe 'object health tests' do
 
     describe 'Configure validation ON' do
       before(:each) do
-        @cfmc = ObjectHealthUtil.get_config(ObjectHealthUtil.merritt_classifications)
+        @cfmc = ObjectHealthUtil.config_from_yaml(ObjectHealthUtil.merritt_classifications)
         @cfmc[:runtime][:validation] = true
       end
 
@@ -404,14 +418,14 @@ RSpec.describe 'object health tests' do
   describe 'Test credential handling' do
     it 'Test Object Health Construction ... verify database and opensearch connection' do
       objh = ObjectHealth.new
-      objh.get_object_list
+      objh.hash_object_list
     end
 
     it 'Test Object Health Usage in spite of bad credentials' do
       expect do
         ssm_override({ 'billing/readwrite/db-user': 'foo' })
         objh = ObjectHealth.new
-        objh.get_object_list
+        objh.hash_object_list
       end.to raise_error(Mysql2::Error)
     end
 
@@ -419,7 +433,7 @@ RSpec.describe 'object health tests' do
       expect do
         ssm_override({ 'billing/db-host': 'bad-host.cdlib.org' })
         objh = ObjectHealth.new
-        objh.get_object_list
+        objh.hash_object_list
       end.to raise_error(Mysql2::Error)
     end
 
@@ -427,7 +441,7 @@ RSpec.describe 'object health tests' do
       expect do
         ssm_override({ 'billing/readwrite/db-user': 'foo' })
         objh = ObjectHealth.new
-        objh.get_object_list
+        objh.hash_object_list
       end.to raise_error(Mysql2::Error)
     end
 

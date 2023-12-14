@@ -36,12 +36,12 @@ require_relative 'oh_stats'
 
 class ObjectHealth
   def initialize(argv = [], cfdb: 'config/database.ssm.yml', cfos: 'config/opensearch.ssm.yml', cfmc: ObjectHealthUtil.merritt_classifications)
-    @schema_yaml = ObjectHealthUtil.get_and_validate_schema_file(ObjectHealthUtil.yaml_schema)
-    @schema_obj = ObjectHealthUtil.get_and_validate_schema_file(ObjectHealthUtil.obj_schema)
-    config_db = ObjectHealthUtil.get_ssm_config(cfdb)
-    config_opensearch = ObjectHealthUtil.get_ssm_config(cfos)
+    @schema_yaml = ObjectHealthUtil.read_and_validate_schema_file(ObjectHealthUtil.yaml_schema)
+    @schema_obj = ObjectHealthUtil.read_and_validate_schema_file(ObjectHealthUtil.obj_schema)
+    config_db = ObjectHealthUtil.ssm_config(cfdb)
+    config_opensearch = ObjectHealthUtil.ssm_config(cfos)
     # for rspec purposes, allow the cfmc to be overridden before construction
-    config = cfmc.is_a?(Hash) ? cfmc : ObjectHealthUtil.get_config(cfmc)
+    config = cfmc.is_a?(Hash) ? cfmc : ObjectHealthUtil.config_from_yaml(cfmc)
     ObjectHealthUtil.validate(@schema_yaml, config, ObjectHealthUtil.yaml_schema, verbose: verbose)
     config_rules = config.fetch(:classifications, {})
     config_cli = config.fetch(:runtime, {})
@@ -142,15 +142,15 @@ class ObjectHealth
     @obj_health_db.clear_object_health(:tests) if options[:clear_tests]
   end
 
-  def get_object_list
-    @obj_health_db.get_object_list
+  def hash_object_list
+    @obj_health_db.hash_object_list
   end
 
-  def get_clear_query
+  def sql_clear_query
     @obj_health_db.clear_query
   end
 
-  def get_queries
+  def sql_queries
     @obj_health_db.queries
   end
 
@@ -159,7 +159,7 @@ class ObjectHealth
     while ohstat.loop_num < loop_limit
       ohstat.log_loop if verbose
       ohstat.loop_start
-      get_object_list.each do |id|
+      hash_object_list.each do |id|
         process_object(id)
         ohstat.increment
       end
@@ -174,7 +174,7 @@ class ObjectHealth
 
   def export_object(ohobj)
     if @obj_health_cli.export_object
-      File.write("debug/objects_details.#{ohobj.id}.json", JSON.pretty_generate(ohobj.get_osobj))
+      File.write("debug/objects_details.#{ohobj.id}.json", JSON.pretty_generate(ohobj.opensearch_obj))
     end
     @opensrch.export(ohobj)
   end
@@ -208,16 +208,16 @@ class ObjectHealth
     if ohobj.build.loaded? && (options[:build_objects] || options[:test_objects] || options[:analyze_objects])
       begin
         puts "  export #{id}" if debug
-        ohobj.get_osobj[:exported] = DateTime.now.to_s
+        ohobj.opensearch_obj[:exported] = DateTime.now.to_s
 
         if validation
           begin
             puts "  validate #{ohobj.id}" if debug
-            ohobj.get_osobj[:validated] =
-              ObjectHealthUtil.validate(@schema_obj, ohobj.get_osobj, ohobj.id, verbose: verbose)
+            ohobj.opensearch_obj[:validated] =
+              ObjectHealthUtil.validate(@schema_obj, ohobj.opensearch_obj, ohobj.id, verbose: verbose)
           rescue MySchemaException => e
-            ohobj.get_osobj[:validated] = false
-            ohobj.get_osobj[:validation_error] = e.errors
+            ohobj.opensearch_obj[:validated] = false
+            ohobj.opensearch_obj[:validation_error] = e.errors
           end
         end
         export_object(ohobj)

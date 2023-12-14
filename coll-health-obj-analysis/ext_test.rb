@@ -5,27 +5,27 @@ require_relative 'oh_tasktest'
 
 # write analysis->mime->[status]->mime->[mime-type]
 class ExtTest < ObjHealthTest
-  def get_filetype
+  def filetype
     :file
   end
 
   def run_test(ohobj)
     status = :PASS
-    ohobj.build.get_object.fetch(:producer, {}).each do |v|
-      status = report_status if v.fetch(:pathtype, '').to_sym == get_filetype
+    ohobj.build.hash_object.fetch(:producer, {}).each do |v|
+      status = report_status if v.fetch(:pathtype, '').to_sym == filetype
     end
     status
   end
 end
 
 class ExtUrlTest < ExtTest
-  def get_filetype
+  def filetype
     :url
   end
 end
 
 class ExtNotPresentTest < ExtTest
-  def get_filetype
+  def filetype
     :na
   end
 end

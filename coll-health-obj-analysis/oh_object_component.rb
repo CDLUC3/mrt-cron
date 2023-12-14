@@ -8,7 +8,7 @@ class ObjectHealthObjectComponent
     @updated = nil
     @ohobj = ohobj
     @compkey = key
-    @ohobj.get_osobj[@compkey] = default_object
+    @ohobj.opensearch_obj[@compkey] = default_object
   end
 
   def default_object
@@ -16,15 +16,15 @@ class ObjectHealthObjectComponent
   end
 
   def to_json(*_args)
-    get_object.to_json
+    hash_object.to_json
   end
 
-  def get_object
-    @ohobj.get_osobj[@compkey]
+  def hash_object
+    @ohobj.opensearch_obj[@compkey]
   end
 
   def set_object(obj)
-    @ohobj.get_osobj[@compkey] = obj
+    @ohobj.opensearch_obj[@compkey] = obj
   end
 
   def init_object
@@ -37,7 +37,7 @@ class ObjectHealthObjectComponent
   end
 
   def pretty_json
-    JSON.pretty_generate(get_object)
+    JSON.pretty_generate(hash_object)
   end
 
   def set_key(key, val)
@@ -127,13 +127,13 @@ class ObjectHealthObjectBuild < ObjectHealthObjectComponent
     'Other'
   end
 
-  def self.make_sidecar(sidecarText)
+  def self.make_sidecar(sidecar_text)
     sidecar = {}
-    return sidecar if sidecarText.nil?
-    return sidecar if sidecarText.empty?
+    return sidecar if sidecar_text.nil?
+    return sidecar if sidecar_text.empty?
 
     begin
-      xml = Nokogiri::XML(sidecarText).remove_namespaces!
+      xml = Nokogiri::XML(sidecar_text).remove_namespaces!
       xml.xpath('//*[not(descendant::*)]').each do |n|
         text = n.text.strip.gsub('\\n', '').gsub("\n", '').strip
         sidecar[n.name] = sidecar.fetch(n.name, []).append(text) unless text.empty?
@@ -148,7 +148,7 @@ class ObjectHealthObjectBuild < ObjectHealthObjectComponent
     set_key(:sidecar, [])
   end
 
-  def set_sidecar(text)
+  def append_sidecar(text)
     append_key(:sidecar, ObjectHealthObjectBuild.make_sidecar(text))
   end
 
@@ -182,7 +182,7 @@ class ObjectHealthObjectBuild < ObjectHealthObjectComponent
       count_mime(mime) if (source == :producer) && !mime.empty?
 
       # record up to 1000 files for the object
-      append_key(source, v) if get_object.fetch(source, []).length <= 1000
+      append_key(source, v) if hash_object.fetch(source, []).length <= 1000
     end
   end
 
@@ -233,8 +233,8 @@ class ObjectHealthObjectBuild < ObjectHealthObjectComponent
   end
 
   def count_mime(mime)
-    get_object[:mimes_for_object] = [] unless get_object.key?(:mimes_for_object)
-    arr = get_object[:mimes_for_object]
+    hash_object[:mimes_for_object] = [] unless hash_object.key?(:mimes_for_object)
+    arr = hash_object[:mimes_for_object]
     arr.each_with_index do |r, i|
       if r.fetch(:mime, '') == mime
         arr[i][:count] = arr[i].fetch(:count, 0) + 1

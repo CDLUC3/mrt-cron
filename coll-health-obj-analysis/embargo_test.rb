@@ -7,7 +7,7 @@ require_relative 'oh_tasktest'
 class EmbargoTest < ObjHealthTest
   def run_test(ohobj)
     status = :PASS
-    status = report_status unless ohobj.build.get_object.fetch(:embargo_end_date, '').empty?
+    status = report_status unless ohobj.build.hash_object.fetch(:embargo_end_date, '').empty?
     status
   end
 end

@@ -17,14 +17,14 @@ class UnsustainableMimeFormatter < OSFormatter
     end
   end
 
-  def has_file_test
+  def file_test?
     true
   end
 
-  def file_test(f)
-    return false unless file_filters(f)
+  def file_test(file)
+    return false unless file_filters(file)
 
-    m = f.fetch('mime_type', '')
+    m = file.fetch('mime_type', '')
     b = @mimes_to_report.include?(m)
     if b == false && m =~ /;/
       m = m.split(';')[0]

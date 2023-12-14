@@ -21,7 +21,7 @@ class MimeTask < ObjHealthTask
   end
 
   def run_task(ohobj)
-    return ohobj if ohobj.analysis.get_object.fetch(:merritt_test_data, false)
+    return ohobj if ohobj.analysis.hash_object.fetch(:merritt_test_data, false)
 
     map = {}
     objmap = {}
@@ -30,7 +30,7 @@ class MimeTask < ObjHealthTask
     ObjectHealthUtil.status_values.each do |stat|
       objmap[stat] = []
     end
-    ohobj.build.get_object.fetch(:mimes_for_object, []).each do |rec|
+    ohobj.build.hash_object.fetch(:mimes_for_object, []).each do |rec|
       mime = rec.fetch(:mime, '').to_sym
       next if mime.empty?
 
@@ -51,7 +51,7 @@ class MimeTask < ObjHealthTask
     end
     ohobj.analysis.set_key(:mimes_by_status, objmap)
 
-    ohobj.build.get_object.fetch(:producer, []).each do |f|
+    ohobj.build.hash_object.fetch(:producer, []).each do |f|
       next if f.fetch(:ignore_file, false)
 
       ext = f.fetch(:ext, '').to_sym

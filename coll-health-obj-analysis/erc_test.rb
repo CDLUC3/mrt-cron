@@ -9,14 +9,14 @@ class ERCTest < ObjHealthTest
     @taskdef.fetch(:status_matcher, {}).fetch(status, {})
   end
 
-  def get_field_sym
+  def field_sym
     :erc_na
   end
 
   def run_test(ohobj)
     status = :PASS
-    metadata = ohobj.build.get_object.fetch(:metadata, {})
-    merc = metadata.fetch(get_field_sym, '').strip
+    metadata = ohobj.build.hash_object.fetch(:metadata, {})
+    merc = metadata.fetch(field_sym, '').strip
     ObjectHealthUtil.status_values.each do |stat|
       next unless ObjectHealthMatch.match_criteria(criteria: status_matcher(stat), key: merc, ohobj: ohobj,
                                                    criteria_list: :values, criteria_patterns: :patterns)
@@ -29,19 +29,19 @@ class ERCTest < ObjHealthTest
 end
 
 class ErcWhatTest < ERCTest
-  def get_field_sym
+  def field_sym
     :erc_what
   end
 end
 
 class ErcWhoTest < ERCTest
-  def get_field_sym
+  def field_sym
     :erc_who
   end
 end
 
 class ErcWhenTest < ERCTest
-  def get_field_sym
+  def field_sym
     :erc_when
   end
 end

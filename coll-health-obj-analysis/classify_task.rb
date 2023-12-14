@@ -54,7 +54,7 @@ class ClassifyTask < ObjHealthTask
       category_init(ohobj, cat)
     end
 
-    ohobj.build.get_object.fetch(:producer, []).each do |f|
+    ohobj.build.hash_object.fetch(:producer, []).each do |f|
       mime = f[:mime_type].to_sym
       path = f[:pathname]
       basename = path.split('/')[-1]
@@ -65,7 +65,7 @@ class ClassifyTask < ObjHealthTask
         break if categorization != :na
       end
       ohobj.analysis.increment_subkey(:classification, categorization)
-      unless ohobj.analysis.get_object.fetch(:mime_file_classification, {}).fetch(categorization, []).include?(mime)
+      unless ohobj.analysis.hash_object.fetch(:mime_file_classification, {}).fetch(categorization, []).include?(mime)
         ohobj.analysis.append_subkey(:mime_file_classification, categorization, mime)
       end
       ohobj.analysis.append_key(:unclassified_mime_files, { path: path, mime: mime }) if categorization == :na
@@ -79,22 +79,22 @@ class ClassifyTask < ObjHealthTask
   end
 
   def count_complex(ohobj)
-    fclass = ohobj.analysis.get_object.fetch(:classification, {})
+    fclass = ohobj.analysis.hash_object.fetch(:classification, {})
     fclass.fetch(:complex, 0)
   end
 
   def count_distinct_mimes(ohobj)
-    omimes = ohobj.analysis.get_object.fetch(:mime_file_classification, {})
+    omimes = ohobj.analysis.hash_object.fetch(:mime_file_classification, {})
     omimes.fetch(:content, []).length
   end
 
   def count_content_files(ohobj)
-    fclass = ohobj.analysis.get_object.fetch(:classification, {})
+    fclass = ohobj.analysis.hash_object.fetch(:classification, {})
     fclass.fetch(:content, 0)
   end
 
   def count_derivative_files(ohobj)
-    fclass = ohobj.analysis.get_object.fetch(:classification, {})
+    fclass = ohobj.analysis.hash_object.fetch(:classification, {})
     fclass.fetch(:derivatives, 0)
   end
 
@@ -118,32 +118,32 @@ class ClassifyTask < ObjHealthTask
   end
 
   def count_metadata_files(ohobj)
-    fclass = ohobj.analysis.get_object.fetch(:classification, {})
+    fclass = ohobj.analysis.hash_object.fetch(:classification, {})
     fclass.fetch(:metadata, 0)
   end
 
   def count_common_metadata_files(ohobj)
-    fclass = ohobj.analysis.get_object.fetch(:classification, {})
+    fclass = ohobj.analysis.hash_object.fetch(:classification, {})
     fclass.fetch(:common_metadata, 0)
   end
 
   def count_bag_metadata_files(ohobj)
-    fclass = ohobj.analysis.get_object.fetch(:classification, {})
+    fclass = ohobj.analysis.hash_object.fetch(:classification, {})
     fclass.fetch(:bag_metadata, 0)
   end
 
   def count_etd_metadata_files(ohobj)
-    fclass = ohobj.analysis.get_object.fetch(:classification, {})
+    fclass = ohobj.analysis.hash_object.fetch(:classification, {})
     fclass.fetch(:etd_metadata, 0)
   end
 
   def count_nuxeo_metadata_files(ohobj)
-    fclass = ohobj.analysis.get_object.fetch(:classification, {})
+    fclass = ohobj.analysis.hash_object.fetch(:classification, {})
     fclass.fetch(:nuxeo_style_metadata, 0)
   end
 
   def count_secondary_metadata_files(ohobj)
-    fclass = ohobj.analysis.get_object.fetch(:classification, {})
+    fclass = ohobj.analysis.hash_object.fetch(:classification, {})
     fclass.fetch(:secondary, 0)
   end
 
@@ -171,7 +171,7 @@ class ClassifyTask < ObjHealthTask
 
   def deterimine_primary_metadata_file(ohobj)
     @metadata_types.each_key do |mt|
-      arr = ohobj.analysis.get_object.fetch(:metadata_paths, {}).fetch(mt, [])
+      arr = ohobj.analysis.hash_object.fetch(:metadata_paths, {}).fetch(mt, [])
       next if arr.empty?
       return arr[0] if arr.length == 1
       return "Multiple Options: #{arr.length}" if mt == :metadata
@@ -186,7 +186,7 @@ class ClassifyTask < ObjHealthTask
 
   def set_metadata_paths(categorization, path, ohobj)
     return if path == :NA
-    return unless ohobj.analysis.get_object.fetch(:metadata_paths, {}).key?(categorization)
+    return unless ohobj.analysis.hash_object.fetch(:metadata_paths, {}).key?(categorization)
 
     ohobj.analysis.append_subkey(:metadata_paths, categorization, path)
   end

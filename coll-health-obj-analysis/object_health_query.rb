@@ -12,11 +12,11 @@ Dir["#{File.dirname(__FILE__)}/os_formatter*.rb"].sort.each { |file| require fil
 
 class ObjectHealthQuery
   def initialize(argv = [], cfos: 'config/opensearch.ssm.yml', cfq: 'config/os_queries.ssm.yml')
-    config_opensearch = ObjectHealthUtil.get_ssm_config(cfos)
+    config_opensearch = ObjectHealthUtil.ssm_config(cfos)
     @opensearch = ObjectHealthOpenSearch.new(config_opensearch)
-    @query_config = ObjectHealthUtil.get_ssm_config(cfq)
+    @query_config = ObjectHealthUtil.ssm_config(cfq)
     @options = make_options(argv)
-    @outputter = get_outputter(@options[:output])
+    @outputter = result_outputter(@options[:output])
   end
 
   def merritt_config
@@ -27,14 +27,14 @@ class ObjectHealthQuery
     @query_config.fetch(:outputs, {})
   end
 
-  def get_outputter(q)
+  def result_outputter(q)
     outp = ConsoleOutput.new(merritt_config)
     outclass = outputters.fetch(q, {}).fetch(:class, '')
     outp = Object.const_get(outclass).new(merritt_config) unless outclass.empty?
     outp
   end
 
-  def get_formatter(q)
+  def os_result_formatter(q)
     osfconfig = @query_config.fetch(:queries, {}).fetch(q, nil)
     osf = OSFormatter.create(@options, osfconfig)
   end
@@ -44,7 +44,7 @@ class ObjectHealthQuery
   end
 
   def run_query
-    fmt = get_formatter(@options.fetch(:fmt, :default))
+    fmt = os_result_formatter(@options.fetch(:fmt, :default))
     return if fmt.nil?
 
     @opensearch.query(
