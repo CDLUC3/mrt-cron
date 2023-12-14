@@ -24,14 +24,14 @@ class OSFormatter
     if @options[:ark]
       @filter[:bool][:must].append({
                                      match_phrase: {
-                                       "build.identifiers.ark": @options[:ark]
+                                       'build.identifiers.ark': @options[:ark]
                                      }
                                    })
     end
     if @options[:mnemonic]
       @filter[:bool][:must].append({
                                      match: {
-                                       "build.containers.mnemonic": @options[:mnemonic]
+                                       'build.containers.mnemonic': @options[:mnemonic]
                                      }
                                    })
     end

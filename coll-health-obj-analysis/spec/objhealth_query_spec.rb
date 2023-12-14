@@ -15,14 +15,15 @@ RSpec.describe 'object health query tests' do
       it 'Test Object Health Usage Exit' do
         allow($stdout).to receive(:write)
         expect do
-          oh = ObjectHealthQuery.new(['--help'])
+          ObjectHealthQuery.new(['--help'])
         end.to raise_error(SystemExit)
       end
 
       it 'Test Object Health Query Usage' do
         expect do
-          oh = ObjectHealthQuery.new(['--help'])
+          ObjectHealthQuery.new(['--help'])
         rescue SystemExit
+          # intentional no action
         end.to output(/Usage:/).to_stdout
       end
     end

@@ -5,8 +5,8 @@ require_relative 'oh_tasktest'
 Dir["#{File.dirname(__FILE__)}/*_test.rb"].sort.each { |file| require file }
 
 class ObjectHealthTests
-  def initialize(oh, config)
-    @oh = oh
+  def initialize(objh, config)
+    @oh = objh
     @config = config
     @tests = []
 

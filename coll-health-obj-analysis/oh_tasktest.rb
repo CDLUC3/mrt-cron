@@ -3,8 +3,8 @@
 require 'json'
 
 class ObjHealthTask
-  def initialize(oh, taskdef, name)
-    @oh = oh
+  def initialize(objh, taskdef, name)
+    @oh = objh
     @taskdef = taskdef
     scope = @taskdef.fetch(:collection_scope, {})
     @skip = scope.fetch(:skip, [])
@@ -26,10 +26,10 @@ class ObjHealthTask
 
   attr_reader :name
 
-  def self.create(oh, taskdef, name)
+  def self.create(objh, taskdef, name)
     unless taskdef.nil?
       taskclass = taskdef.fetch(:class, '')
-      Object.const_get(taskclass).new(oh, taskdef, name) unless taskclass.empty?
+      Object.const_get(taskclass).new(objh, taskdef, name) unless taskclass.empty?
     end
   end
 

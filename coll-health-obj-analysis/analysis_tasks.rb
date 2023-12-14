@@ -2,11 +2,13 @@
 
 require 'json'
 require_relative 'oh_tasktest'
+# All analysis task classes should reside in a file '*_task.rb'.
 Dir["#{File.dirname(__FILE__)}/*_task.rb"].sort.each { |file| require file }
 
+# Load all analysis tasks defined in the merritt_classifications.yml file
 class AnalysisTasks
-  def initialize(oh, config)
-    @oh = oh
+  def initialize(objh, config)
+    @oh = objh
     @config = config
     @tasks = []
 

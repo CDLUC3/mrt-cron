@@ -8,14 +8,14 @@ require_relative 'oh_object'
 
 class ObjectHealthDb
   DEFQ = 'select 1 where 1=1'
-  def initialize(oh, config, mode)
-    @oh = oh
+  def initialize(objh, config, mode)
+    @oh = objh
     nullquery = 'and 0 = 1'
     @config = config
     @dbconf = @config.fetch(:dbconf, {})
     gather = @config.fetch(:gather_ids, {})
-    @cliparams = oh.options.fetch(:query_params, {})
-    iterative_params = oh.options.fetch(:iterative_params, {})
+    @cliparams = objh.options.fetch(:query_params, {})
+    iterative_params = objh.options.fetch(:iterative_params, {})
     select = gather.fetch(:select, DEFQ)
 
     if @cliparams.fetch(:QUERY, '') == 'id'

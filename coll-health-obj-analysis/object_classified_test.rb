@@ -5,8 +5,8 @@ require_relative 'oh_tasktest'
 
 # write analysis->mime->[status]->mime->[mime-type]
 class ClassificationTest < ObjHealthTest
-  def initialize(oh, taskdef, name)
-    super(oh, taskdef, name)
+  def initialize(objh, taskdef, name)
+    super(objh, taskdef, name)
     @mapping = ObjectHealthMatch.make_status_key_map(taskdef, :status_keys)
   end
 

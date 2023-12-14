@@ -3,6 +3,7 @@
 class MySchemaException < StandardError
   def initialize(errors)
     @errors = errors
+    super
   end
 
   attr_reader :errors

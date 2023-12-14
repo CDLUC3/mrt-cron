@@ -174,9 +174,7 @@ class ObjectHealth
 
   def export_object(ohobj)
     if @obj_health_cli.export_object
-      File.open("debug/objects_details.#{ohobj.id}.json", 'w') do |f|
-        f.write(JSON.pretty_generate(ohobj.get_osobj))
-      end
+      File.write("debug/objects_details.#{ohobj.id}.json", JSON.pretty_generate(ohobj.get_osobj))
     end
     @opensrch.export(ohobj)
   end
@@ -250,7 +248,7 @@ class ObjectHealth
 end
 
 if $PROGRAM_NAME == __FILE__
-  oh = ObjectHealth.new(ARGV)
-  oh.preliminary_tasks
-  oh.process_objects
+  objh = ObjectHealth.new(ARGV)
+  objh.preliminary_tasks
+  objh.process_objects
 end
