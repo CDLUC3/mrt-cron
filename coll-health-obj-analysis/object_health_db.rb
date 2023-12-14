@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'json'
 require 'mysql2'
 require 'nokogiri'
@@ -5,7 +7,7 @@ require 'mustache'
 require_relative 'oh_object'
 
 class ObjectHealthDb
-  DEFQ='select 1 where 1=1'
+  DEFQ = 'select 1 where 1=1'
   def initialize(oh, config, mode)
     @oh = oh
     nullquery = 'and 0 = 1'
@@ -16,8 +18,8 @@ class ObjectHealthDb
     iterative_params = oh.options.fetch(:iterative_params, {})
     select = gather.fetch(:select, DEFQ)
 
-    if @cliparams.fetch(:QUERY, '') == "id"
-      exclusion = ""
+    if @cliparams.fetch(:QUERY, '') == 'id'
+      exclusion = ''
     else
       exclusion = gather.fetch(:default_exclusion, nullquery)
       exclusion = gather.fetch(:build_exclusion, 'limit {{LIMIT}}') if mode == :build
@@ -45,29 +47,27 @@ class ObjectHealthDb
     @clearquery
   end
 
-  def queries
-    @queries
-  end
+  attr_reader :queries
 
   def get_db_cli
     Mysql2::Client.new(
-      :host => @dbconf[:host],
-      :username => @dbconf[:username],
-      :database=> @dbconf[:database],
-      :password=> @dbconf[:password],
-      :port => @dbconf[:port],
-      :encoding => @dbconf.fetch(:encoding, 'utf8mb4'),
-      :collation => @dbconf.fetch(:collation, 'utf8mb4_unicode_ci'),
+      host: @dbconf[:host],
+      username: @dbconf[:username],
+      database: @dbconf[:database],
+      password: @dbconf[:password],
+      port: @dbconf[:port],
+      encoding: @dbconf.fetch(:encoding, 'utf8mb4'),
+      collation: @dbconf.fetch(:collation, 'utf8mb4_unicode_ci')
     )
   end
-  
+
   def get_object_list
     list = []
     conn = get_db_cli
     @queries.each do |q|
       puts q if @oh.debug
       stmt = conn.prepare(q)
-      stmt.execute(*[]).each do |r|
+      stmt.execute.each do |r|
         list.append(r.values[0])
       end
     end
@@ -101,29 +101,29 @@ class ObjectHealthDb
         icio.inv_object_id = o.id
       inner join
         inv.inv_collections c
-      on 
+      on
         c.id = icio.inv_collection_id
       inner join
         inv.inv_owners own
-      on 
+      on
         own.id = o.inv_owner_id
-      where 
+      where
         o.id = ?
       ;
     }
   end
 
   def get_object_sidecar_sql
-    %{
+    %(
       select value from inv.inv_metadatas where inv_object_id = ?;
-    }
+    )
   end
 
   def process_object_metadata(ohobj)
     sql = get_object_sql
     conn = get_db_cli
     stmt = conn.prepare(sql)
-    stmt.execute(*[ohobj.id]).each do |r|
+    stmt.execute(ohobj.id).each do |r|
       ohobj.build.build_object_representation(r)
     end
     conn.close
@@ -135,7 +135,7 @@ class ObjectHealthDb
     sql = get_object_sidecar_sql
     conn = get_db_cli
     stmt = conn.prepare(sql)
-    stmt.execute(*[ohobj.id]).each do |r|
+    stmt.execute(ohobj.id).each do |r|
       ohobj.build.set_sidecar(r.fetch('value', ''))
     end
     conn.close
@@ -144,7 +144,7 @@ class ObjectHealthDb
 
   def get_object_files_sql
     # TODO: Identify deletions - file not in the current version
-    %{
+    %(
       select
         v.number,
         f.pathname,
@@ -161,13 +161,13 @@ class ObjectHealthDb
         inv.inv_versions v
       on
         f.inv_version_id = v.id
-      where 
+      where
         f.inv_object_id = ?
       order by
-        v.number, 
+        v.number,
         f.pathname
       ;
-    }
+    )
   end
 
   def process_object_files(ohobj)
@@ -177,7 +177,7 @@ class ObjectHealthDb
     conn = get_db_cli
     stmt = conn.prepare(sql)
     version = 0
-    stmt.execute(*[ohobj.id]).each do |r|
+    stmt.execute(ohobj.id).each do |r|
       version = ohobj.build.process_object_file(ofiles, r)
     end
     conn.close
@@ -187,10 +187,10 @@ class ObjectHealthDb
 
   def update_object_build(ohobj)
     loaded = false
-    sql = %{select 1 from object_health_json where inv_object_id=?}
+    sql = %(select 1 from object_health_json where inv_object_id=?)
     conn = get_db_cli
     stmt = conn.prepare(sql)
-    stmt.execute(*[ohobj.id]).each do |r|
+    stmt.execute(ohobj.id).each do |_r|
       loaded = true
     end
     conn.close
@@ -203,8 +203,7 @@ class ObjectHealthDb
       }
       conn = get_db_cli
       stmt = conn.prepare(sql)
-      stmt.execute(*[ohobj.build.to_json, ohobj.id])
-      conn.close
+      stmt.execute(ohobj.build.to_json, ohobj.id)
     else
       sql = %{
         insert into object_health_json(inv_object_id, build, build_updated)
@@ -212,9 +211,9 @@ class ObjectHealthDb
       }
       conn = get_db_cli
       stmt = conn.prepare(sql)
-      stmt.execute(*[ohobj.id, ohobj.build.to_json])
-      conn.close
+      stmt.execute(ohobj.id, ohobj.build.to_json)
     end
+    conn.close
   end
 
   def update_object_analysis(ohobj)
@@ -225,7 +224,7 @@ class ObjectHealthDb
     }
     conn = get_db_cli
     stmt = conn.prepare(sql)
-    stmt.execute(*[ohobj.analysis.to_json, ohobj.id])
+    stmt.execute(ohobj.analysis.to_json, ohobj.id)
     conn.close
   end
 
@@ -237,7 +236,7 @@ class ObjectHealthDb
     }
     conn = get_db_cli
     stmt = conn.prepare(sql)
-    stmt.execute(*[ohobj.tests.to_json, ohobj.id])
+    stmt.execute(ohobj.tests.to_json, ohobj.id)
     conn.close
   end
 
@@ -249,13 +248,13 @@ class ObjectHealthDb
     }
     conn = get_db_cli
     stmt = conn.prepare(sql)
-    stmt.execute(*[ohobj.id])
+    stmt.execute(ohobj.id)
     conn.close
   end
 
   def status_query(where_clause = '')
     sql = %{
-      select 
+      select
         sum(case when build_updated is not null then 1 else 0 end) as built,
         sum(case when analysis_updated is not null then 1 else 0 end) as analyzed,
         sum(case when tests_updated is not null then 1 else 0 end) as tested,
@@ -270,8 +269,8 @@ class ObjectHealthDb
     conn = get_db_cli
     stmt = conn.prepare(sql)
     status = {}
-    stmt.execute(*[]).each do |r|
-      r.each do |k,v|
+    stmt.execute.each do |r|
+      r.each do |k, v|
         status[k.to_sym] = v.to_i
       end
     end
@@ -284,70 +283,65 @@ class ObjectHealthDb
     status = status_query(@clearquery)
 
     if @oh.verbose
-      puts "---------------------------------------------------"
-      puts sprintf("%15s %10s %10s %10s", '', 'Build', 'Analysis', 'Tests')
-      puts sprintf("%15s %10s %10s %10s", 'Total Processed', 
-        ObjectHealthUtil.num_format(total_status[:built]), 
-        ObjectHealthUtil.num_format(total_status[:analyzed]), 
-        ObjectHealthUtil.num_format(total_status[:tested])
-      )
-      puts sprintf("%15s %10s %10s %10s", 'Total Awaiting', 
-        ObjectHealthUtil.num_format(total_status[:awaiting_rebuild]), 
-        ObjectHealthUtil.num_format(total_status[:awaiting_analysis]), 
-        ObjectHealthUtil.num_format(total_status[:awaiting_tests])
-      )
-      puts sprintf("%15s %10s %10s %10s", 'Query Processed', 
-        ObjectHealthUtil.num_format(status[:built]), 
-        ObjectHealthUtil.num_format(status[:analyzed]), 
-        ObjectHealthUtil.num_format(status[:tested])
-      )
-      puts sprintf("%15s %10s %10s %10s", 'Query Awaiting', 
-        ObjectHealthUtil.num_format(status[:awaiting_rebuild]), 
-        ObjectHealthUtil.num_format(status[:awaiting_analysis]), 
-        ObjectHealthUtil.num_format(status[:awaiting_tests])
-      )
-      puts "---------------------------------------------------"
+      puts '---------------------------------------------------'
+      puts format('%15s %10s %10s %10s', '', 'Build', 'Analysis', 'Tests')
+      puts format('%15s %10s %10s %10s', 'Total Processed',
+                  ObjectHealthUtil.num_format(total_status[:built]),
+                  ObjectHealthUtil.num_format(total_status[:analyzed]),
+                  ObjectHealthUtil.num_format(total_status[:tested]))
+      puts format('%15s %10s %10s %10s', 'Total Awaiting',
+                  ObjectHealthUtil.num_format(total_status[:awaiting_rebuild]),
+                  ObjectHealthUtil.num_format(total_status[:awaiting_analysis]),
+                  ObjectHealthUtil.num_format(total_status[:awaiting_tests]))
+      puts format('%15s %10s %10s %10s', 'Query Processed',
+                  ObjectHealthUtil.num_format(status[:built]),
+                  ObjectHealthUtil.num_format(status[:analyzed]),
+                  ObjectHealthUtil.num_format(status[:tested]))
+      puts format('%15s %10s %10s %10s', 'Query Awaiting',
+                  ObjectHealthUtil.num_format(status[:awaiting_rebuild]),
+                  ObjectHealthUtil.num_format(status[:awaiting_analysis]),
+                  ObjectHealthUtil.num_format(status[:awaiting_tests]))
+      puts '---------------------------------------------------'
     end
 
     status
   end
 
   def clear_object_health(mode)
-    sql = ""
+    sql = ''
     if mode == :build
-      sql = %{
+      sql = %(
         update object_health_json
         set build=null, build_updated=null, analysis=null, analysis_updated=null, tests=null, tests_updated=null
         #{@clearquery}
-      }
+      )
     end
     if mode == :analysis
-      sql = %{
+      sql = %(
         update object_health_json
         set analysis=null, analysis_updated=null, tests=null, tests_updated=null
         #{@clearquery}
-      }
+      )
     end
     if mode == :tests
-      sql = %{
+      sql = %(
         update object_health_json
         set tests=null, tests_updated=null
         #{@clearquery}
-      }
+      )
     end
     unless sql.empty?
       puts sql if @oh.debug
       conn = get_db_cli
       stmt = conn.prepare(sql)
-      stmt.execute(*[])
+      stmt.execute
       conn.close
     end
   end
 
-
   def load_object_json(ohobj)
     sql = %{
-      select 
+      select
         cast(build as binary) build,
         build_updated,
         cast(analysis as binary) analysis,
@@ -358,7 +352,7 @@ class ObjectHealthDb
     }
     conn = get_db_cli
     stmt = conn.prepare(sql)
-    stmt.execute(*[ohobj.id]).each do |r|
+    stmt.execute(ohobj.id).each do |r|
       ohobj.build.set_object_from_json(r.values[0], r.values[1])
       ohobj.analysis.set_object_from_json(r.values[2], r.values[3])
       ohobj.tests.set_object_from_json(r.values[4], r.values[5])
@@ -372,5 +366,4 @@ class ObjectHealthDb
     process_object_sidecar(ohobj)
     process_object_files(ohobj)
   end
-
 end

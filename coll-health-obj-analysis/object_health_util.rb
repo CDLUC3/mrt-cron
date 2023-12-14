@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'json'
 require 'json-schema'
 require 'yaml'
@@ -18,7 +20,7 @@ class ObjectHealthUtil
   end
 
   def self.json_schema_schema
-    JSON::Validator.validator_for_name("draft6").metaschema
+    JSON::Validator.validator_for_name('draft6').metaschema
   end
 
   def self.get_ssm_config(file)
@@ -27,28 +29,27 @@ class ObjectHealthUtil
   end
 
   def self.get_config(file)
-    config = YAML.load(File.read(file))
+    config = YAML.safe_load(File.read(file), aliases: true)
     JSON.parse(config.to_json, symbolize_names: true)
   end
 
   def self.get_schema(file)
-    config = YAML.load(File.read(file))
-    schema = JSON.parse(config.to_json)
-    schema
+    config = YAML.safe_load(File.read(file), aliases: true)
+    JSON.parse(config.to_json)
   end
 
   def self.validate_schema_file(filename, verbose: true)
-    self.validate_schema(get_schema(filename), filename, verbose: verbose)
+    validate_schema(get_schema(filename), filename, verbose: verbose)
   end
 
   def self.get_and_validate_schema_file(filename, verbose: true)
     file = get_schema(filename)
-    self.validate_schema(file, filename, verbose: verbose)
+    validate_schema(file, filename, verbose: verbose)
     file
   end
 
   def self.validate_schema(file, label, verbose: true)
-    self.validate(ObjectHealthUtil.json_schema_schema, file, label, verbose: verbose)
+    validate(ObjectHealthUtil.json_schema_schema, file, label, verbose: verbose)
   end
 
   def self.validate(schema, obj, label, verbose: true)
@@ -57,16 +58,16 @@ class ObjectHealthUtil
       ex = MySchemaException.new(val)
       ex.print(label) if verbose
       raise ex
-    end 
+    end
     true
   end
 
   def self.status_values
-    [:SKIP, :PASS, :INFO, :WARN, :FAIL]
+    %i[SKIP PASS INFO WARN FAIL]
   end
 
   def self.status_val(status)
-    self.status_values.each_with_index do |v,i|
+    status_values.each_with_index do |v, i|
       return i if v == status
     end
     0
@@ -77,8 +78,8 @@ class ObjectHealthUtil
   end
 
   def self.num_format(n)
-    return "" if n.nil?
+    return '' if n.nil?
+
     n.to_s.chars.to_a.reverse.each_slice(3).map(&:join).join(',').reverse
   end
-
 end

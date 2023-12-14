@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'json'
 require 'opensearch'
 
@@ -10,12 +12,12 @@ class ObjectHealthOpenSearch
     osconfig = @config.fetch(:opensearch, {})
     osconfig[:transport_options] = osconfig.fetch(:transport_options, {})
     osconfig[:transport_options][:ssl] = osconfig[:transport_options].fetch(:ssl, {})
-    osconfig[:transport_options][:ssl][:verify] = osconfig[:transport_options][:ssl].fetch(:verify, "false") == "true"
+    osconfig[:transport_options][:ssl][:verify] = osconfig[:transport_options][:ssl].fetch(:verify, 'false') == 'true'
     @osclient = OpenSearch::Client.new(osconfig)
     begin
       @osclient.indices.create(index: @INDEX)
-    rescue OpenSearch::Transport::Transport::Errors::BadRequest => e 
-      #index already exists
+    rescue OpenSearch::Transport::Transport::Errors::BadRequest => e
+      # index already exists
     end
   end
 
@@ -32,23 +34,19 @@ class ObjectHealthOpenSearch
   # q = {match: {"tests.summary": "unsustainable-mime-type"}}
   def query(formatter, ifrom, limit, page_size)
     total = 0
-    while (ifrom < total || total == 0) && ifrom < limit do 
+    while (ifrom < total || total.zero?) && ifrom < limit
       res = @osclient.search(
         index: @INDEX,
-        body: {query: formatter.query},
+        body: { query: formatter.query },
         size: page_size > limit ? limit : page_size,
         from: ifrom
-      ) 
-      if total == 0
-        total = res.fetch("hits", {}).fetch("total", {}).fetch("value", 0)
-      end
-      res.fetch("hits", {}).fetch("hits", []).each do |doc|
-        sdoc = doc.fetch("_source", {})
+      )
+      total = res.fetch('hits', {}).fetch('total', {}).fetch('value', 0) if total.zero?
+      res.fetch('hits', {}).fetch('hits', []).each do |doc|
+        sdoc = doc.fetch('_source', {})
         formatter.make_result(sdoc)
       end
       ifrom += page_size
     end
-                        
   end
-
 end

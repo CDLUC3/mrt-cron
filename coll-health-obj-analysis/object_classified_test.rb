@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'json'
 require_relative 'oh_tasktest'
 
@@ -18,20 +20,12 @@ class ClassificationTest < ObjHealthTest
 end
 
 class ObjectClassificationTest < ClassificationTest
-  def initialize(oh, taskdef, name)
-    super(oh, taskdef, name)
-  end
-
   def get_key
     :object_classification
   end
 end
 
 class MetadataClassificationTest < ClassificationTest
-  def initialize(oh, taskdef, name)
-    super(oh, taskdef, name)
-  end
-
   def get_key
     :metadata_classification
   end

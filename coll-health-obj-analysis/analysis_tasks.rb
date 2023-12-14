@@ -1,6 +1,8 @@
+# frozen_string_literal: true
+
 require 'json'
 require_relative 'oh_tasktest'
-Dir[File.dirname(__FILE__) + '/*_task.rb'].each {|file| require file }
+Dir["#{File.dirname(__FILE__)}/*_task.rb"].sort.each { |file| require file }
 
 class AnalysisTasks
   def initialize(oh, config)
@@ -9,7 +11,7 @@ class AnalysisTasks
     @tasks = []
 
     analysis = @config.fetch(:analysis_json, {})
-    analysis.each do |k,v|
+    analysis.each do |k, v|
       task = ObjHealthTask.create(@oh, v, k)
       @tasks.append(task) unless task.nil?
     end
@@ -22,5 +24,4 @@ class AnalysisTasks
     end
     ohobj
   end
-    
 end

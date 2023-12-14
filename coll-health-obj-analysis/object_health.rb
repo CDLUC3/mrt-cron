@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'json'
 require 'json-schema'
 
@@ -17,13 +19,13 @@ require_relative 'oh_object'
 require_relative 'oh_object_component'
 require_relative 'oh_stats'
 # only on dev box for now
-#require 'debug'
+# require 'debug'
 
 # Inputs
 # - Merritt Inventory Database
 # - Configuration Yaml
-# - TBD: Periodic Queries (rebuilt weekly by cron) 
-#   - Duplicate Checksum File 
+# - TBD: Periodic Queries (rebuilt weekly by cron)
+#   - Duplicate Checksum File
 #   - Median File Size for mime type
 # - TBD: Bitstream Analysis Processes
 #   - Should output go to RDS or to S3? (inv_object_id, inv_file_id, analysis_name, analysis_date, analysis_status, analysis_result)
@@ -57,7 +59,7 @@ class ObjectHealth
     @obj_health_tests = ObjectHealthTests.new(self, config_rules)
     @opensrch = ObjectHealthOpenSearch.new(config_opensearch)
 
-    now = Time.now.strftime("%Y-%m-%d %H:%M:%S")
+    now = Time.now.strftime('%Y-%m-%d %H:%M:%S')
   end
 
   def validation
@@ -69,8 +71,9 @@ class ObjectHealth
   end
 
   def verbose
-    return false if ENV.key?("OBJHEALTH_SILENT")
+    return false if ENV.key?('OBJHEALTH_SILENT')
     return true if @obj_health_cli.nil?
+
     @obj_health_cli.verbose
   end
 
@@ -89,14 +92,16 @@ class ObjectHealth
   def load_collection_taxonomy(config_rules)
     config_rules.fetch(:collection_taxonomy, []).each do |ctdef|
       next if ctdef.nil?
-      ctdef.fetch(:groups, {}).keys.each do |g|
+
+      ctdef.fetch(:groups, {}).each_key do |g|
         ctdef.fetch(:mnemonics, {}).each do |m, mdef|
           @mnemonics[m] = [] unless @mnemonics.key?(m)
           @mnemonics[m].append(g) unless @mnemonics[m].include?(g)
           @ct_groups[g] = [] unless @ct_groups.key?(g)
           @ct_groups[g].append(m) unless @ct_groups[g].include?(m)
           next if mdef.nil?
-          mdef.fetch(:tags, {}).keys.each do |t|
+
+          mdef.fetch(:tags, {}).each_key do |t|
             @mnemonics[m].append(t) unless @mnemonics[m].include?(t)
             @ct_groups[t] = [] unless @ct_groups.key?(t)
             @ct_groups[t].append(m) unless @ct_groups[t].include?(m)
@@ -115,17 +120,21 @@ class ObjectHealth
     status = @obj_health_db.object_health_status
     if options[:clear_build]
       awaiting = status.fetch(:awaiting_rebuild, 0)
-      if awaiting == 0 || options[:force_rebuild]
+      if awaiting.zero? || options[:force_rebuild]
         if verbose
-          puts "\n *** This will trigger a rebuild of #{status.fetch(:built, 0)} records.  Type 'yes' to continue or 'exit' to cancel.\n"
-          while input = STDIN.gets.chomp 
-            break if input == "yes"
-            exit if input == "exit" 
+          puts "\n *** This will trigger a rebuild of #{status.fetch(:built,
+                                                                     0)} records.  Type 'yes' to continue or 'exit' to cancel.\n"
+          while input = $stdin.gets.chomp
+            break if input == 'yes'
+
+            exit if input == 'exit'
           end
         end
         @obj_health_db.clear_object_health(:build)
       else
-        puts "\n *** Cannot clear build because #{awaiting} objects are awaiting rebuild.  Add --force-rebuild to continue anyway.\n" if verbose
+        if verbose
+          puts "\n *** Cannot clear build because #{awaiting} objects are awaiting rebuild.  Add --force-rebuild to continue anyway.\n"
+        end
         exit
       end
     end
@@ -147,7 +156,7 @@ class ObjectHealth
 
   def process_objects
     ohstat = ObjectHealthStats.new(loop_sleep)
-    while ohstat.loop_num < loop_limit do
+    while ohstat.loop_num < loop_limit
       ohstat.log_loop if verbose
       ohstat.loop_start
       get_object_list.each do |id|
@@ -157,12 +166,11 @@ class ObjectHealth
     end
     ohstat.log_loop(last: true) if verbose
     ohstat.log_loops if verbose
-    
+
     status = @obj_health_db.object_health_status
   end
 
-  def process_tag(tag)
-  end
+  def process_tag(tag); end
 
   def export_object(ohobj)
     if @obj_health_cli.export_object
@@ -203,11 +211,12 @@ class ObjectHealth
       begin
         puts "  export #{id}" if debug
         ohobj.get_osobj[:exported] = DateTime.now.to_s
-        
+
         if validation
           begin
             puts "  validate #{ohobj.id}" if debug
-            ohobj.get_osobj[:validated] = ObjectHealthUtil.validate(@schema_obj, ohobj.get_osobj, ohobj.id, verbose: verbose)
+            ohobj.get_osobj[:validated] =
+              ObjectHealthUtil.validate(@schema_obj, ohobj.get_osobj, ohobj.id, verbose: verbose)
           rescue MySchemaException => e
             ohobj.get_osobj[:validated] = false
             ohobj.get_osobj[:validation_error] = e.errors
@@ -215,11 +224,11 @@ class ObjectHealth
         end
         export_object(ohobj)
         @obj_health_db.update_object_exported(ohobj)
-      rescue => e 
+      rescue StandardError => e
         puts "Export failed #{e}"
       end
     end
- 
+
     puts ohobj.build.pretty_json if @obj_health_cli.check_print
   end
 
@@ -227,17 +236,17 @@ class ObjectHealth
     return :build if options[:build_objects]
     return :analysis if options[:analyze_objects]
     return :tests if options[:test_objects]
-    return :na
+
+    :na
   end
 
   def inspect
-    self.to_s
+    to_s
   end
 
   def opensearch
     @opensrch
   end
-
 end
 
 if $PROGRAM_NAME == __FILE__

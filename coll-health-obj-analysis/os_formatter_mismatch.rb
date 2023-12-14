@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class ExtensionMismatchFormatter < OSFormatter
   def initialize(options, osfdef)
     super(options, osfdef)
@@ -6,8 +8,8 @@ class ExtensionMismatchFormatter < OSFormatter
 
   def init_test
     @files_to_report = []
-    @doc.fetch("analysis", {}).fetch("mime_ext_mismatch", {}).each do |v|
-      v.fetch("files", []).each do |f|
+    @doc.fetch('analysis', {}).fetch('mime_ext_mismatch', {}).each do |v|
+      v.fetch('files', []).each do |f|
         @files_to_report.append(f)
       end
     end
@@ -19,6 +21,7 @@ class ExtensionMismatchFormatter < OSFormatter
 
   def file_test(f)
     return false unless file_filters(f)
+
     @files_to_report.include?(f.fetch('pathname', ''))
   end
 end

@@ -1,9 +1,11 @@
+# frozen_string_literal: true
+
 class ObjectHealthObject
   def initialize(build_config, id)
     @id = id
     @osobj = {
       id: id,
-      '@timestamp': Time.now.strftime("%Y-%m-%dT%H:%M:%S%z")
+      '@timestamp': Time.now.strftime('%Y-%m-%dT%H:%M:%S%z')
     }
     @build_config = build_config
   end
@@ -17,25 +19,16 @@ class ObjectHealthObject
     @tests.init_object
   end
 
-  def build
-    @build
-  end
-
-  def analysis
-    @analysis
-  end
-
-  def tests
-    @tests
-  end
+  attr_reader :build, :analysis, :tests
 
   def self.make_opensearch_date(modt)
     return '' if modt.nil?
     return '' if modt.to_s.empty?
+
     DateTime.parse("#{modt} -0800").to_s
   end
 
-  def to_json
+  def to_json(*_args)
     @osobj.to_json
   end
 
@@ -48,11 +41,11 @@ class ObjectHealthObject
   end
 
   def mnemonic
-    @osobj[:build].fetch(:containers, {}).fetch(:mnemonic, "")
+    @osobj[:build].fetch(:containers, {}).fetch(:mnemonic, '')
   end
 
   def ark
-    @osobj[:build].fetch(:identifiers, {}).fetch(:ark, "")
+    @osobj[:build].fetch(:identifiers, {}).fetch(:ark, '')
   end
 
   def localids
@@ -60,16 +53,15 @@ class ObjectHealthObject
   end
 
   def first_localid
-    localids.empty? ? "" : localids[0]
+    localids.empty? ? '' : localids[0]
   end
-
 
   def set_key(compkey, key, val)
     @osobj[compkey][key] = val
   end
-    
+
   def set_subkey(compkey, key, subkey, val)
-    @osobj[compkey][key] =  {} unless @osobj[compkey].key?(key)
+    @osobj[compkey][key] = {} unless @osobj[compkey].key?(key)
     @osobj[compkey][key][subkey] = val
   end
 
@@ -79,7 +71,7 @@ class ObjectHealthObject
   end
 
   def append_subkey(compkey, key, subkey, val)
-    @osobj[compkey][key] =  {} unless @osobj[compkey].key?(key)
+    @osobj[compkey][key] = {} unless @osobj[compkey].key?(key)
     @osobj[compkey][key][subkey] = [] unless @osobj[compkey][key].key?(subkey)
     @osobj[compkey][key][subkey].append(val)
   end
@@ -101,21 +93,21 @@ class ObjectHealthObject
   def concat_key(compkey, key, str)
     s = @osobj[compkey].fetch(key, '')
     ss = s.empty? ? str : "#{s}; #{str}"
-    @osobj[compkey][key] = ss 
+    @osobj[compkey][key] = ss
   end
 
-  def template_map 
+  def template_map
     identifiers = build.get_object.fetch(:identifiers, {})
     locid = identifiers.fetch(:localids, [])
-    ark = identifiers.fetch(:ark, "")
+    ark = identifiers.fetch(:ark, '')
     map = {}
     map[:ARK] = ark unless ark.empty?
     map[:LOCALID] = locid[0] unless locid.empty?
     map
-  end 
-
-  def check_ignore_file(pathname)
-    ObjectHealthMatch.match_criteria(criteria: @build_config.fetch(:ignore_files, {}), key: pathname, ohobj: self, criteria_list: :paths, criteria_patterns: :patterns)
   end
 
+  def check_ignore_file(pathname)
+    ObjectHealthMatch.match_criteria(criteria: @build_config.fetch(:ignore_files, {}), key: pathname, ohobj: self,
+                                     criteria_list: :paths, criteria_patterns: :patterns)
+  end
 end

@@ -1,20 +1,22 @@
+# frozen_string_literal: true
+
 source 'https://rubygems.org'
 
+gem 'aws-sdk-lambda'
+gem 'base64'
+gem 'erb'
 gem 'json'
 gem 'json-schema'
-gem 'aws-sdk-lambda'
-gem 'uc3-ssm', '0.3.10', git: 'https://github.com/CDLUC3/uc3-ssm.git', branch: 'main'
-gem 'base64'
-gem 'nokogiri'
-gem 'mysql2'
-gem 'opensearch-ruby'
 gem 'mustache'
-gem 'erb'
+gem 'mysql2'
+gem 'nokogiri'
+gem 'opensearch-ruby'
+gem 'uc3-ssm', '0.3.10', git: 'https://github.com/CDLUC3/uc3-ssm.git', branch: 'main'
 
-gem 'rspec'
 gem 'colorize'
 gem 'logger'
+gem 'rspec'
 
 # apt-get install libyaml-dev is required ... only on dev box currently
-#gem 'irb'
-#gem 'debug'
+# gem 'irb'
+# gem 'debug'

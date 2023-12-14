@@ -1,52 +1,55 @@
+# frozen_string_literal: true
+
 require 'nokogiri'
 
 class FitsOutput < OutputConfig
-  def initialize(merritt_config)
-    super(merritt_config)
-  end
-
   def merritt_cred
     @merritt_config.fetch(:credential, '')
   end
 
   def fileid_basename
-    "/tmp/object_health_test."
+    '/tmp/object_health_test.'
   end
 
   def fits_output
-    "/tmp/fits.xml"
+    '/tmp/fits.xml'
   end
 
   def fits_err
-    "/tmp/fits.err"
+    '/tmp/fits.err'
   end
 
   def cleanup_last_fileid
     system("rm -f #{fileid_basename}* #{fits_output} #{fits_err}")
-  end 
+  end
 
   def download_file_to_identify(fname, furl)
     return if merritt_cred.empty?
     return if furl.empty?
+
     system("curl -s -L -o #{fname} -u '#{merritt_cred}' '#{furl}'")
   end
 
   def run_fits(fname)
-    return unless File.exists?(fname)
-    fitscmd = @merritt_config.fetch(:fits_command, "") 
+    return unless File.exist?(fname)
+
+    fitscmd = @merritt_config.fetch(:fits_command, '')
     return if fitscmd.empty?
-    fitscfg = @merritt_config.fetch(:fits_config, "")
+
+    fitscfg = @merritt_config.fetch(:fits_config, '')
     return if fitscfg.empty?
-    system("#{fitscmd} -f #{fitscfg} -i '#{fname}' > #{fits_output} 2> #{fits_err}") 
+
+    system("#{fitscmd} -f #{fitscfg} -i '#{fname}' > #{fits_output} 2> #{fits_err}")
   end
 
   def format_fits_output
-    return unless File.exists?(fits_output)
+    return unless File.exist?(fits_output)
+
     begin
       xml = Nokogiri::XML(File.read(fits_output)).remove_namespaces!
       xml.xpath('/fits/identification').each do |doc|
         stat = doc.xpath('@status').text
-        stat  = 'NA' if stat.empty?
+        stat = 'NA' if stat.empty?
         c = doc.xpath('count(identity)')
         count = c > 1 ? "(#{c.to_i} identities)" : ''
         puts "\t\tStatus: #{stat} #{count}"
@@ -64,28 +67,28 @@ class FitsOutput < OutputConfig
       xml.xpath('/fits/filestatus').each do |doc|
         fswf = doc.xpath('well-formed').text
         unless fswf.empty?
-          fswf = fswf == 'true' ? 'Well-formed' : 'NOT Well-formed' 
+          fswf = fswf == 'true' ? 'Well-formed' : 'NOT Well-formed'
         end
         fsv = doc.xpath('valid').text
         unless fsv.empty?
-          fsv = fsv == 'true' ? 'Valid' : 'NOT Valid' 
+          fsv = fsv == 'true' ? 'Valid' : 'NOT Valid'
         end
         msg = doc.xpath('message[1]').text
         msg = "Msg: #{msg}" unless msg.empty?
         puts "\t\t#{fswf}. #{fsv}. #{msg}" unless fswf.empty? && fsv.empty? && msg.empty?
       end
-      #xml.xpath('/fits/fileinfo').each do |doc|
+      # xml.xpath('/fits/fileinfo').each do |doc|
       #  doc.xpath('creatingApplicationName').each do |app|
       #    puts "\t\t- #{app.xpath('@status').text}: #{app.text}"
       #  end
-      #end
+      # end
       err = File.read(fits_err)
       unless err.empty?
-        puts 
-        puts err 
+        puts
+        puts err
       end
-    rescue => exception
-      puts exception
+    rescue StandardError => e
+      puts e
     end
   end
 
@@ -93,7 +96,7 @@ class FitsOutput < OutputConfig
     puts "#{index}. #{rec[:ark]} (#{rec[:producer_count]} files)"
     rec.fetch(:files, []).each do |f|
       puts "\t#{f.fetch(:path, '')} (#{f.fetch(:mime_type, '')})"
-      puts 
+      puts
       fname = "#{fileid_basename}#{f[:ext]}"
       cleanup_last_fileid
       download_file_to_identify(fname, f[:url])

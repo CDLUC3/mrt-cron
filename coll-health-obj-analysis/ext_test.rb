@@ -1,12 +1,10 @@
+# frozen_string_literal: true
+
 require 'json'
 require_relative 'oh_tasktest'
 
 # write analysis->mime->[status]->mime->[mime-type]
 class ExtTest < ObjHealthTest
-  def initialize(oh, taskdef, name)
-    super(oh, taskdef, name)
-  end
-
   def get_filetype
     :file
   end
@@ -21,20 +19,12 @@ class ExtTest < ObjHealthTest
 end
 
 class ExtUrlTest < ExtTest
-  def initialize(oh, taskdef, name)
-    super(oh, taskdef, name)
-  end
-
   def get_filetype
     :url
   end
 end
 
 class ExtNotPresentTest < ExtTest
-  def initialize(oh, taskdef, name)
-    super(oh, taskdef, name)
-  end
-
   def get_filetype
     :na
   end

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'json'
 require 'mustache'
 require_relative 'oh_tasktest'
@@ -16,7 +18,7 @@ class ClassifyTask < ObjHealthTask
     @catmap[name] = cat
     ohobj.analysis.zero_subkey(:classification, name)
     ohobj.analysis.set_subkey(:mime_file_classification, name, [])
-    @metadata_types.keys.each do |mt|
+    @metadata_types.each_key do |mt|
       ohobj.analysis.set_subkey(:metadata_paths, mt, [])
     end
   end
@@ -24,7 +26,8 @@ class ClassifyTask < ObjHealthTask
   def test_category(cat, mime, basename, ohobj)
     name = cat.fetch(:name, 'na').to_sym
 
-    if ObjectHealthMatch.match_criteria(criteria: cat, key: basename, ohobj: ohobj, criteria_list: :paths, criteria_templates: :templates, criteria_patterns: :patterns)
+    if ObjectHealthMatch.match_criteria(criteria: cat, key: basename, ohobj: ohobj, criteria_list: :paths,
+                                        criteria_templates: :templates, criteria_patterns: :patterns)
       set_metadata_paths(name, basename, ohobj)
       return name
     end
@@ -34,13 +37,13 @@ class ClassifyTask < ObjHealthTask
       return name
     end
 
-    if mime.to_s =~ %r[;]
-      tmime = mime.to_s.split(";")[0]
+    if mime.to_s =~ /;/
+      tmime = mime.to_s.split(';')[0]
       if ObjectHealthMatch.match_criteria(criteria: cat, key: tmime, ohobj: ohobj, criteria_list: :mimes)
         set_metadata_paths(name, basename, ohobj)
         return name
       end
-    end  
+    end
     :na
   end
 
@@ -54,7 +57,7 @@ class ClassifyTask < ObjHealthTask
     ohobj.build.get_object.fetch(:producer, []).each do |f|
       mime = f[:mime_type].to_sym
       path = f[:pathname]
-      basename = path.split("/")[-1]
+      basename = path.split('/')[-1]
 
       categorization = :na
       @categories.each do |cat|
@@ -63,11 +66,9 @@ class ClassifyTask < ObjHealthTask
       end
       ohobj.analysis.increment_subkey(:classification, categorization)
       unless ohobj.analysis.get_object.fetch(:mime_file_classification, {}).fetch(categorization, []).include?(mime)
-        ohobj.analysis.append_subkey(:mime_file_classification, categorization, mime) 
+        ohobj.analysis.append_subkey(:mime_file_classification, categorization, mime)
       end
-      if categorization == :na
-        ohobj.analysis.append_key(:unclassified_mime_files, {path: path, mime: mime})
-      end
+      ohobj.analysis.append_key(:unclassified_mime_files, { path: path, mime: mime }) if categorization == :na
     end
 
     deterimine_object_classification(ohobj)
@@ -99,19 +100,19 @@ class ClassifyTask < ObjHealthTask
 
   def deterimine_object_classification(ohobj)
     ohobj.analysis.set_key(:object_classification, :unknown)
-    if count_complex(ohobj) > 0 || count_distinct_mimes(ohobj) > 1
+    if count_complex(ohobj).positive? || count_distinct_mimes(ohobj) > 1
       ohobj.analysis.set_key(:object_classification, :complex_object)
-    elsif count_content_files(ohobj) > 1 && count_derivative_files(ohobj) > 0
+    elsif count_content_files(ohobj) > 1 && count_derivative_files(ohobj).positive?
       ohobj.analysis.set_key(:object_classification, :has_multi_digital_files_with_derivatives)
-    elsif count_content_files(ohobj) > 1 
+    elsif count_content_files(ohobj) > 1
       ohobj.analysis.set_key(:object_classification, :has_multi_digital_files)
-    elsif count_content_files(ohobj) == 1 && count_derivative_files(ohobj) > 0
+    elsif count_content_files(ohobj) == 1 && count_derivative_files(ohobj).positive?
       ohobj.analysis.set_key(:object_classification, :has_digital_file_with_derivatives)
-    elsif count_content_files(ohobj) == 0 && count_derivative_files(ohobj) > 0
+    elsif count_content_files(ohobj).zero? && count_derivative_files(ohobj).positive?
       ohobj.analysis.set_key(:object_classification, :has_derivatives_only)
-    elsif count_content_files(ohobj) == 1 
+    elsif count_content_files(ohobj) == 1
       ohobj.analysis.set_key(:object_classification, :has_single_digital_file)
-    elsif count_content_files(ohobj) == 0 
+    elsif count_content_files(ohobj).zero?
       ohobj.analysis.set_key(:object_classification, :has_no_content)
     end
   end
@@ -147,35 +148,37 @@ class ClassifyTask < ObjHealthTask
   end
 
   def deterimine_metadata_classification(ohobj)
-    if count_common_metadata_files(ohobj) > 0
+    if count_common_metadata_files(ohobj).positive?
       ohobj.analysis.set_key(:metadata_classification, :has_common_metadata_file)
-    elsif count_bag_metadata_files(ohobj) > 0
+    elsif count_bag_metadata_files(ohobj).positive?
       ohobj.analysis.set_key(:metadata_classification, :has_bag_metadata_file)
-    elsif count_etd_metadata_files(ohobj) > 0 
+    elsif count_etd_metadata_files(ohobj).positive?
       ohobj.analysis.set_key(:metadata_classification, :has_etd_metadata_file)
-    elsif count_nuxeo_metadata_files(ohobj) > 0
+    elsif count_nuxeo_metadata_files(ohobj).positive?
       ohobj.analysis.set_key(:metadata_classification, :has_nuxeo_style_metadata_file)
-    elsif count_metadata_files(ohobj) > 1 
+    elsif count_metadata_files(ohobj) > 1
       ohobj.analysis.set_key(:metadata_classification, :has_multi_metadata)
-    elsif count_metadata_files(ohobj) == 1 && count_secondary_metadata_files(ohobj) > 0
+    elsif count_metadata_files(ohobj) == 1 && count_secondary_metadata_files(ohobj).positive?
       ohobj.analysis.set_key(:metadata_classification, :has_metadata_with_secondary)
-    elsif count_metadata_files(ohobj) == 1 && count_secondary_metadata_files(ohobj) == 0
+    elsif count_metadata_files(ohobj) == 1 && count_secondary_metadata_files(ohobj).zero?
       ohobj.analysis.set_key(:metadata_classification, :has_single_metadata_file)
-    elsif count_metadata_files(ohobj) == 0 && count_secondary_metadata_files(ohobj) > 0
+    elsif count_metadata_files(ohobj).zero? && count_secondary_metadata_files(ohobj).positive?
       ohobj.analysis.set_key(:metadata_classification, :has_secondary_metadata_only)
-    elsif count_metadata_files(ohobj) == 0 && count_secondary_metadata_files(ohobj) == 0
+    elsif count_metadata_files(ohobj).zero? && count_secondary_metadata_files(ohobj).zero?
       ohobj.analysis.set_key(:metadata_classification, :has_no_sidecar_metadata)
     end
   end
 
   def deterimine_primary_metadata_file(ohobj)
-    @metadata_types.keys.each do |mt|
+    @metadata_types.each_key do |mt|
       arr = ohobj.analysis.get_object.fetch(:metadata_paths, {}).fetch(mt, [])
       next if arr.empty?
       return arr[0] if arr.length == 1
       return "Multiple Options: #{arr.length}" if mt == :metadata
+
       cat = @catmap[mt]
       return ObjectHealthMatch.match_first(cat.fetch(:paths, []), arr) if cat.fetch(:ordered_paths, false)
+
       return arr[0]
     end
     :NA
@@ -184,6 +187,7 @@ class ClassifyTask < ObjHealthTask
   def set_metadata_paths(categorization, path, ohobj)
     return if path == :NA
     return unless ohobj.analysis.get_object.fetch(:metadata_paths, {}).key?(categorization)
+
     ohobj.analysis.append_subkey(:metadata_paths, categorization, path)
   end
 end
