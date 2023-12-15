@@ -10,40 +10,34 @@ jobs:
     # Checkout the repo
     - uses: actions/checkout@v3
 
-    - name: 'coll-health-obj-analysis'
-      run: cd coll-health-obj-analysis
-
     # Install Ruby and run bundler
     - uses: ruby/setup-ruby@v1
       with:
         ruby-version: '3.0'
         bundler-cache: true
+        working-directory: coll-health-obj-analysis
 
     # Run the Rubocop linter checks
     - name: 'Run Rubocop'
       run: bundle exec rubocop
 
-    - name: 'coll-health'
-      run: 'cd ../coll-health'
-
     # Install Ruby and run bundler
     - uses: ruby/setup-ruby@v1
       with:
         ruby-version: '3.0'
         bundler-cache: true
+        working-directory: coll-health
 
     # Run the Rubocop linter checks
     - name: 'Run Rubocop'
       run: bundle exec rubocop
       
-    - name: 'consistency-driver'
-      run: 'cd ../consistency-driver'
-
     # Install Ruby and run bundler
     - uses: ruby/setup-ruby@v1
       with:
         ruby-version: '3.0'
         bundler-cache: true
+        working-directory: consistency-driver
 
     # Run the Rubocop linter checks
     - name: 'Run Rubocop'
