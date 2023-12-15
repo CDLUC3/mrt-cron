@@ -8,7 +8,7 @@ require_relative 'oh_tasktest'
 class CollectionTagTask < ObjHealthTask
   def run_task(ohobj)
     m = ohobj.mnemonic
-    ark = ohobj.ark.gsub(/:/, '%3A').gsub(%r{/}, '%2F')
+    ark = ohobj.ark.gsub(':', '%3A').gsub(%r{/}, '%2F')
     unless m.empty?
       tags = @oh.collection_taxonomy(m.to_sym)
       ohobj.analysis.set_subkey(:containers, :collection_set, tags)

@@ -38,7 +38,7 @@ class ObjectHealthOpenSearch
       res = @osclient.search(
         index: @os_index,
         body: { query: formatter.query },
-        size: page_size > limit ? limit : page_size,
+        size: [page_size, limit].min,
         from: ifrom
       )
       total = res.fetch('hits', {}).fetch('total', {}).fetch('value', 0) if total.zero?

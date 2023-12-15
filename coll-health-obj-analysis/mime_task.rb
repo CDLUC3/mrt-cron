@@ -75,7 +75,7 @@ class MimeTask < ObjHealthTask
       end
     end
 
-    objmap_ext_mismatch.each do |mime, _v|
+    objmap_ext_mismatch.each_key do |mime|
       objmap_ext_mismatch[mime].each do |ext, arr|
         ohobj.analysis.append_key(
           :mime_ext_mismatch,
@@ -89,7 +89,7 @@ class MimeTask < ObjHealthTask
         )
       end
     end
-    objmap_ext_status.each do |mime, _v|
+    objmap_ext_status.each_key do |mime|
       objmap_ext_status[mime].each do |ext, stat|
         ohobj.analysis.append_key(
           :mime_ext_status,
