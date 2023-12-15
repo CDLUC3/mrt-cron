@@ -69,7 +69,6 @@ class ConsistencyDriver
     return if @status == 'WARN'
 
     @status = 'INFO' if suff == 'INFO'
-    return if @status == 'INFO'
   end
 
   def invoke_lambda(arn, params)

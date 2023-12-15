@@ -21,7 +21,7 @@ jobs:
 
     # Run the Rubocop linter checks
     - name: 'Run Rubocop'
-      run: bin/rubocop
+      run: bundle exec rubocop
 
     - name: 'coll-health'
       run: 'cd ../coll-health'
@@ -34,7 +34,7 @@ jobs:
 
     # Run the Rubocop linter checks
     - name: 'Run Rubocop'
-      run: bin/rubocop
+      run: bundle exec rubocop
       
     - name: 'consistency-driver'
       run: 'cd ../consistency-driver'
@@ -47,5 +47,5 @@ jobs:
 
     # Run the Rubocop linter checks
     - name: 'Run Rubocop'
-      run: bin/rubocop
+      run: bundle exec rubocop
 

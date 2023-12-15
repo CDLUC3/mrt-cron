@@ -16,6 +16,7 @@ gem 'uc3-ssm', '0.3.10', git: 'https://github.com/CDLUC3/uc3-ssm.git', branch: '
 gem 'colorize'
 gem 'logger'
 gem 'rspec'
+gem 'rubocop'
 
 # apt-get install libyaml-dev is required ... only on dev box currently
 # gem 'irb'
