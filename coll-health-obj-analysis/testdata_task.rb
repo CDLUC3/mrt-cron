@@ -7,7 +7,7 @@ require_relative 'oh_tasktest'
 class IdentifyTestDataTask < ObjHealthTask
   def run_task(ohobj)
     ohobj.analysis.set_key(:merritt_test_data, false)
-    ohobj.build.hash_object.fetch(:identiers, {}).fetch(:localids, []).each do |lid|
+    ohobj.build.hash_object.fetch(:identifiers, {}).fetch(:localids, []).each do |lid|
       ohobj.analysis.set_key(:merritt_test_data, true) if lid =~ /^\d\d\d\d_\d\d_(v1file|combo)$/
     end
     ohobj
