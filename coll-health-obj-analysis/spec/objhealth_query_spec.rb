@@ -109,8 +109,14 @@ RSpec.describe 'object health query tests' do
       end
 
       it 'Query for known ark (with 436 files), return 10 file urls' do
-        ohq = ObjectHealthQuery.new(['--ark=ark:/13030/m55v4d75', '--fmt=files', '--output=files',
-                                     '--max_file_per_object=10'])
+        ohq = ObjectHealthQuery.new(
+          [
+            '--ark=ark:/13030/m55v4d75',
+            '--fmt=files',
+            '--output=files',
+            '--max_file_per_object=10'
+          ]
+        )
         ohq.run_query
         expect(@arks.length).to eq(1)
         expect(@urls.length).to eq(10)
@@ -137,8 +143,12 @@ RSpec.describe 'object health query tests' do
       end
 
       it 'Query for known ark (with 436 files), return file matched by path' do
-        ohq = ObjectHealthQuery.new(['--ark=ark:/13030/m55v4d75', '--fmt=files',
-                                     '--file_path_regex=PLANETS_BROCHURE.pdf'])
+        ohq = ObjectHealthQuery.new(
+          [
+            '--ark=ark:/13030/m55v4d75', '--fmt=files',
+            '--file_path_regex=PLANETS_BROCHURE.pdf'
+          ]
+        )
         ohq.run_query
         expect(@arks.length).to eq(1)
         expect(@files.length).to eq(1)
