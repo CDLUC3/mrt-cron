@@ -20,6 +20,7 @@ jobs:
     # Run the Rubocop linter checks
     - name: 'Run Rubocop'
       run: bundle exec rubocop
+      working-directory: coll-health-obj-analysis
 
     # Install Ruby and run bundler
     - uses: ruby/setup-ruby@v1
@@ -31,6 +32,7 @@ jobs:
     # Run the Rubocop linter checks
     - name: 'Run Rubocop'
       run: bundle exec rubocop
+      working-directory: coll-health
       
     # Install Ruby and run bundler
     - uses: ruby/setup-ruby@v1
@@ -42,4 +44,5 @@ jobs:
     # Run the Rubocop linter checks
     - name: 'Run Rubocop'
       run: bundle exec rubocop
+      working-directory: consistency-driver
 
