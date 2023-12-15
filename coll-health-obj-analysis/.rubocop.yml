@@ -16,6 +16,13 @@ Metrics/ParameterLists:
   Enabled: false
 
 
+Layout/MultilineMethodCallIndentation:
+  EnforcedStyle: indented
+Layout/ParameterAlignment:
+  EnforcedStyle: with_fixed_indentation
+Layout/ArgumentAlignment:
+  EnforcedStyle: with_fixed_indentation
+
 # temp ignore
 Style/Documentation:
   Enabled: false

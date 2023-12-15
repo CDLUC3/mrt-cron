@@ -27,7 +27,7 @@ class ClassifyTask < ObjHealthTask
     name = cat.fetch(:name, 'na').to_sym
 
     if ObjectHealthMatch.match_criteria(criteria: cat, key: basename, ohobj: ohobj, criteria_list: :paths,
-                                        criteria_templates: :templates, criteria_patterns: :patterns)
+      criteria_templates: :templates, criteria_patterns: :patterns)
       set_metadata_paths(name, basename, ohobj)
       return name
     end

@@ -19,7 +19,7 @@ class ERCTest < ObjHealthTest
     merc = metadata.fetch(field_sym, '').strip
     ObjectHealthUtil.status_values.each do |stat|
       next unless ObjectHealthMatch.match_criteria(criteria: status_matcher(stat), key: merc, ohobj: ohobj,
-                                                   criteria_list: :values, criteria_patterns: :patterns)
+        criteria_list: :values, criteria_patterns: :patterns)
 
       status = stat
       break

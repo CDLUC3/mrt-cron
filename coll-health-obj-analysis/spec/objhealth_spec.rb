@@ -326,8 +326,8 @@ RSpec.describe 'object health tests' do
 
       it 'test --clear-build using a supplied query, exit due to items awaiting rebuild' do
         allow_any_instance_of(ObjectHealthDb).to receive(:object_health_status).and_return({
-                                                                                             awaiting_rebuild: 1
-                                                                                           })
+          awaiting_rebuild: 1
+        })
         objh = ObjectHealth.new(['-bat', '--limit=3', '--query=has-build', '--clear-build'])
 
         expect do
@@ -338,8 +338,8 @@ RSpec.describe 'object health tests' do
 
       it 'test --clear-build using a supplied query (--force-rebuild specified)' do
         allow_any_instance_of(ObjectHealthDb).to receive(:object_health_status).and_return({
-                                                                                             awaiting_rebuild: 1
-                                                                                           })
+          awaiting_rebuild: 1
+        })
         objh = ObjectHealth.new(['-bat', '--limit=3', '--query=has-build', '--clear-build', '--force-rebuild'])
 
         objh.preliminary_tasks

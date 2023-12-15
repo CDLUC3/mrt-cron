@@ -12,9 +12,9 @@ class ObjectHealthStats
 
   def loop_start
     @loops.append({
-                    start: Time.now,
-                    count: 0
-                  })
+      start: Time.now,
+      count: 0
+    })
   end
 
   def increment
