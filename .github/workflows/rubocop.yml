@@ -1,0 +1,39 @@
+name: Rubocop
+
+on: [push, pull_request]
+
+jobs:
+  rubocop:
+    runs-on: ubuntu-20.04
+
+    steps:
+    # Checkout the repo
+    - uses: actions/checkout@v2
+
+    # Install Ruby and run bundler
+    - uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: '3.0'
+        bundler-cache: true
+
+    - name: 'coll-health-obj-analysis'
+      run: cd coll-health-obj-analysis
+
+    # Run the Rubocop linter checks
+    - name: 'Run Rubocop'
+      run: bin/rubocop
+
+    - name: 'coll-health'
+      run: 'cd ../coll-health'
+
+    # Run the Rubocop linter checks
+    - name: 'Run Rubocop'
+      run: bin/rubocop
+      
+    - name: 'consistency-driver'
+      run: 'cd ../consistency-driver'
+
+    # Run the Rubocop linter checks
+    - name: 'Run Rubocop'
+      run: bin/rubocop
+
