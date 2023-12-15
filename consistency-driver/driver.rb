@@ -75,15 +75,15 @@ class ConsistencyDriver
   def invoke_lambda(arn, params)
     begin
       resp = @lambda.invoke({
-                              function_name: arn,
-                              payload: params.to_json,
-                              client_context: Base64.strict_encode64({
-                                # Only custom, client, and env are passed: https://github.com/aws/aws-sdk-js/issues/1388
-                                custom: {
-                                  context_code: @config.fetch('context', '')
-                                }
-                              }.to_json)
-                            })
+        function_name: arn,
+        payload: params.to_json,
+        client_context: Base64.strict_encode64({
+          # Only custom, client, and env are passed: https://github.com/aws/aws-sdk-js/issues/1388
+          custom: {
+            context_code: @config.fetch('context', '')
+          }
+        }.to_json)
+      })
       # payload is serialized json
       payload = JSON.parse(resp.payload.read)
       # Body of the response is serialized
@@ -113,8 +113,8 @@ class ConsistencyDriver
     end
     d = `date "+%Y-%m-%d"`.chop
     msg = "#{@siteurl}?path=report&report=consistency-reports/#{d}"
-    `echo "#{msg}" | mail -s "#{@status.upcase}: #{@mode} Consistency Report for #{d}" #{@config.fetch('email',
-                                                                                                       'dpr2')}`
+    subj = "#{@status.upcase}: #{@mode} Consistency Report for #{d}"
+    `echo "#{msg}" | mail -s "#{subj}" #{@config.fetch('email', 'dpr2')}`
   end
 end
 

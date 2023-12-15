@@ -59,15 +59,15 @@ class ActionCaller
   def invoke_lambda(arn, params)
     begin
       resp = @lambda.invoke({
-                              function_name: arn,
-                              payload: params.to_json,
-                              client_context: Base64.strict_encode64({
-                                # Only custom, client, and env are passed: https://github.com/aws/aws-sdk-js/issues/1388
-                                custom: {
-                                  context_code: @config.fetch('context', '')
-                                }
-                              }.to_json)
-                            })
+        function_name: arn,
+        payload: params.to_json,
+        client_context: Base64.strict_encode64({
+          # Only custom, client, and env are passed: https://github.com/aws/aws-sdk-js/issues/1388
+          custom: {
+            context_code: @config.fetch('context', '')
+          }
+        }.to_json)
+      })
       # payload is serialized json
       payload = JSON.parse(resp.payload.read)
       # Body of the response is serialized

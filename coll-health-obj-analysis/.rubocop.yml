@@ -23,6 +23,25 @@ Layout/ParameterAlignment:
 Layout/ArgumentAlignment:
   EnforcedStyle: with_fixed_indentation
 
+# Rubocop errors out when the following are added
+#Layout/FirstArrayElementIndentation:
+#  Enabled: true
+#Layout/FirstArrayElementLineBreak:
+#  Enabled: true
+#Layout/ArrayAlignment:
+#  EnforcedStyle: with_fixed_indentation
+#Layout/MultilineArrayBraceLayout:
+#  EnforcedStyle: new_line
+
+Layout/FirstHashElementIndentation:
+  Enabled: true
+  EnforcedStyle: consistent
+Layout/MultilineHashKeyLineBreaks:
+  Enabled: true
+Layout/MultilineHashBraceLayout:
+  EnforcedStyle: new_line
+
+
 # temp ignore
 Style/Documentation:
   Enabled: false

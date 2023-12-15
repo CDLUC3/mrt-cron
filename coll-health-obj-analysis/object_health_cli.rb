@@ -13,13 +13,12 @@ class ObjectHealthCli
       print_count: 0,
       print_max: @config.fetch(:debug, {}).fetch(:print_max, 1)
     }
-    @options[:query_params][:SKIPS] = if @ct_groups.key?(:tag_skip)
-                                        @ct_groups[:tag_skip].map do |s|
-                                          "'#{s}'"
-                                        end.join(',')
-                                      else
-                                        ''
-                                      end
+    @options[:query_params][:SKIPS] = ''
+    return unless @ct_groups.key?(:tag_skip)
+
+    @options[:query_params][:SKIPS] = @ct_groups[:tag_skip].map do |s|
+      "'#{s}'"
+    end.join(',')
   end
 
   def debug

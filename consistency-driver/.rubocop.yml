@@ -5,5 +5,14 @@ Metrics/AbcSize:
 Metrics/CyclomaticComplexity:
   Enabled: false
 
+Layout/FirstHashElementIndentation:
+  Enabled: true
+  EnforcedStyle: consistent
+Layout/MultilineHashKeyLineBreaks:
+  Enabled: true
+Layout/MultilineHashBraceLayout:
+  EnforcedStyle: new_line
+
+
 AllCops:
   NewCops: enable
