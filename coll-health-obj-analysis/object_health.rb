@@ -18,21 +18,18 @@ require_relative 'analysis_tasks'
 require_relative 'oh_object'
 require_relative 'oh_object_component'
 require_relative 'oh_stats'
-# only on dev box for now
-# require 'debug'
-
-# Inputs
-# - Merritt Inventory Database
-# - Configuration Yaml
-# - TBD: Periodic Queries (rebuilt weekly by cron)
-#   - Duplicate Checksum File
-#   - Median File Size for mime type
-# - TBD: Bitstream Analysis Processes
-#
-# Outputs
-# - Merritt Billing Database (working storage for object json)
-# - OpenSearch
-
+# Merritt Object Health driver
+# The business rules for this class are in config/merritt_classifications.yml
+# Configurable TASK and TEST classes are referenced by classname in the yaml file.
+# - the BUILD step extracts data from the Merritt inventory database and writes that information
+#   to an easily traversible JSON structure.
+# - the ANALYSIS step applies a configurable set of Tasks to build JSON creating analysis JSON
+#   that will be used by the next step.
+# - the TEST step applies a configurable set of Tests to the build and analysis JSON recording
+#   results into a Test JSON structure.
+# All tests are configured to return one status from the following values:
+# - SKIP, PASS, INFO, WARN, FAIL
+# The JSON content is written to OpenSearch for end user faceting and querying.
 class ObjectHealth
   def initialize(
     argv = [],

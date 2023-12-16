@@ -5,7 +5,8 @@ require_relative 'oh_tasktest'
 # All analysis task classes should reside in a file '*_task.rb'.
 Dir["#{File.dirname(__FILE__)}/*_task.rb"].sort.each { |file| require file }
 
-# Load all analysis tasks defined in the merritt_classifications.yml file
+# During the ANALYSIS phase, this class applies each of the analysis tasks
+# configured in config/merritt_classifications.yml
 class AnalysisTasks
   def initialize(objh, config)
     @oh = objh

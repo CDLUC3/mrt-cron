@@ -3,7 +3,7 @@
 require 'json'
 require_relative 'oh_tasktest'
 
-# write analysis->mime->[status]->mime->[mime-type]
+# Merritt object test to determine if all file pathnames looks like filenames with file extensions
 class ExtTest < ObjHealthTest
   def filetype
     :file
@@ -18,12 +18,15 @@ class ExtTest < ObjHealthTest
   end
 end
 
+# Merritt object test to determine if any file pathname looks like a url fragment rather than a filename with a
+# file extension
 class ExtUrlTest < ExtTest
   def filetype
     :url
   end
 end
 
+# Merritt object test to determine if any file pathname has no discernable file extension
 class ExtNotPresentTest < ExtTest
   def filetype
     :na

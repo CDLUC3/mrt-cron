@@ -6,6 +6,7 @@ require 'nokogiri'
 require 'mustache'
 require_relative 'oh_object'
 
+# Merritt Object Health interface to the Merritt inventory/billing databases
 class ObjectHealthDb
   DEFQ = 'select 1 where 1=1'
   def initialize(objh, config, mode)

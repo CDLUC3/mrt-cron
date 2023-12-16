@@ -2,6 +2,7 @@
 
 require 'json'
 
+# Base class for a Merritt Object Health ANALYSIS Task and TEST
 class ObjHealthTask
   def initialize(objh, taskdef, name)
     @oh = objh
@@ -42,6 +43,7 @@ class ObjHealthTask
   end
 end
 
+# Base class for a Merritt Object Health TEST
 class ObjHealthTest < ObjHealthTask
   def run_test(_ohobj)
     :SKIP

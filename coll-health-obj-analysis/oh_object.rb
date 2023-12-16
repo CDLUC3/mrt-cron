@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+# Merritt Object Health object.
+# Contains JSON structures created during the Build, Analysis and Test phases
 class ObjectHealthObject
   def initialize(build_config, object_id)
     @id = object_id

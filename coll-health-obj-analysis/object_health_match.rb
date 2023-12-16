@@ -1,5 +1,10 @@
 # frozen_string_literal: true
 
+# Utility class for matching Merritt files against a flexible set of filters
+# - string in a list ([mods.xml, README.md])
+# - string matches key within a map ({mods.xml: 1, license.txt: 2})
+# - string matches a at least one regular expression in a list of patterns ([.*.xml])
+# - string matches a template resolved using Mustache templates ([{{ARK}}.txt])
 class ObjectHealthMatch
   def self.match_first(ordered_list, list_set)
     ordered_list.each do |v|

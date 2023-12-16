@@ -6,6 +6,7 @@ require 'yaml'
 require 'uc3-ssm'
 require_relative 'schema_exception'
 
+# Utility interface to external tools for Yaml parsing, SSM resolution and JSON schema validation
 class ObjectHealthUtil
   def self.yaml_schema
     'config/yaml_schema.yml'

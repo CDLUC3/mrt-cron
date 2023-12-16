@@ -2,6 +2,10 @@
 
 require 'nokogiri'
 
+# Format and object health file path into an invocation of FITS (File Information Tool Set)
+# for file identification.
+# Parse the resulting XML into a readable format.
+# https://projects.iq.harvard.edu/fits/home
 class FitsOutput < OutputConfig
   def merritt_cred
     @merritt_config.fetch(:credential, '')

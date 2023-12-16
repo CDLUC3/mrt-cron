@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+# Present stats for an iteriation of the Object Health generation process
 class ObjectHealthStats
   def initialize(loop_sleep)
     @loops = []

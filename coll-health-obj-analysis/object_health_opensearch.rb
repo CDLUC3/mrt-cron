@@ -3,8 +3,8 @@
 require 'json'
 require 'opensearch'
 
+# Merritt Object Health interface to OpenSearch
 # https://opensearch.org/docs/latest/clients/ruby/
-
 class ObjectHealthOpenSearch
   def initialize(config)
     @os_index = 'objhealth'

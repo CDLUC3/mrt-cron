@@ -3,6 +3,8 @@
 require 'json'
 require 'time'
 
+# Base class to store the results of each phase of the Object Health process
+# Each the JSON creaded in each phase is stored in the hash @ohobj
 class ObjectHealthObjectComponent
   def initialize(ohobj, key)
     @updated = nil
@@ -77,6 +79,7 @@ class ObjectHealthObjectComponent
   end
 end
 
+# Component class representing the BUILD phase
 class ObjectHealthObjectBuild < ObjectHealthObjectComponent
   def default_object
     {
@@ -256,12 +259,14 @@ class ObjectHealthObjectBuild < ObjectHealthObjectComponent
   end
 end
 
+# Component class representing the ANALYSIS phase
 class ObjectHealthObjectAnalysis < ObjectHealthObjectComponent
   def default_object
     {}
   end
 end
 
+# Component class representing the TEST phase
 class ObjectHealthObjectTests < ObjectHealthObjectComponent
   def default_object
     tres = { failures: [], summary: [], results: {}, counts: {} }

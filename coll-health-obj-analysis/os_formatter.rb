@@ -2,6 +2,7 @@
 
 require 'erb'
 
+# Base class for formatting the object results from an Object Health Query
 class OSFormatter
   def self.create(options, osfdef)
     return if osfdef.nil?
@@ -134,6 +135,7 @@ class OSFormatter
   end
 end
 
+# Base class for formatting the object and file results from an Object Health Query
 class OSFilesFormatter < OSFormatter
   def file_test?
     true

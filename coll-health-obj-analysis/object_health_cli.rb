@@ -2,6 +2,8 @@
 
 require 'json'
 require 'optparse'
+
+# Merritt Object Health command line argument processor
 class ObjectHealthCli
   def initialize(config, ct_groups, argv)
     @config = config
