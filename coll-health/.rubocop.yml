@@ -1,0 +1,7 @@
+Metrics/MethodLength:
+  Enabled: false
+Metrics/AbcSize:
+  Enabled: false
+
+AllCops:
+  NewCops: enable

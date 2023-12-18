@@ -15,7 +15,7 @@ viz/billing.tsv
 coll-health/mimefiles.tsv
 coll-health/files_details.prod.ndjson
 coll-health/files_details.ndjson
-coll-health-obj-analysis/vendor/
+vendor/
 coll-health-obj-analysis/debug/*.ndjson
 coll-health-obj-analysis/debug/*.json
 coll-health-obj-analysis/scratch.json

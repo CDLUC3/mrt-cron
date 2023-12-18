@@ -1,14 +1,14 @@
+# frozen_string_literal: true
+
+# base outputter for an Object Health query result
 class OutputConfig
   def initialize(merritt_config)
     @merritt_config = merritt_config
   end
 end
 
+# default consonle outputter for an Object Health query result
 class ConsoleOutput < OutputConfig
-  def initialize(merritt_config)
-    super(merritt_config)
-  end
-
   def output(rec, index)
     puts "#{index}. #{rec[:ark]} (#{rec[:producer_count]} files)"
     rec.fetch(:files, []).each do |f|
@@ -17,22 +17,16 @@ class ConsoleOutput < OutputConfig
   end
 end
 
+# ark outputter for an Object Health query result
 class ArksOutput < OutputConfig
-  def initialize(merritt_config)
-    super(merritt_config)
-  end
-
-  def output(rec, index)
+  def output(rec, _index)
     puts rec[:ark]
   end
 end
 
+# merritt file url outputter for an Object Health query result
 class FilesOutput < OutputConfig
-  def initialize(merritt_config)
-    super(merritt_config)
-  end
-
-  def output(rec, index)
+  def output(rec, _index)
     rec.fetch(:files, []).each do |f|
       puts f.fetch(:url, '') unless f.fetch(:url, '').empty?
     end

@@ -1,24 +1,28 @@
+# frozen_string_literal: true
+
 require 'json'
 require_relative 'oh_tasktest'
 
 # write analysis->mime->[status]->mime->[mime-type]
 class MimeTask < ObjHealthTask
-  def initialize(oh, taskdef, name)
-    super(oh, taskdef, name)
+  def initialize(objh, taskdef, name)
+    super(objh, taskdef, name)
     @statmap = {}
     @mimeext = {}
     ObjectHealthUtil.status_values.each do |stat|
       next if taskdef.fetch(stat, {}).nil?
+
       taskdef.fetch(stat, {}).each do |mime, exts|
         @statmap[mime] = stat
-        @mimeext[mime] = exts 
+        @mimeext[mime] = exts
       end
-      cat = taskdef.fetch(:categorize, {})
+      taskdef.fetch(:categorize, {})
     end
   end
 
   def run_task(ohobj)
-    return ohobj if ohobj.analysis.get_object.fetch(:merritt_test_data, false)
+    return ohobj if ohobj.analysis.hash_object.fetch(:merritt_test_data, false)
+
     map = {}
     objmap = {}
     objmap_ext_mismatch = {}
@@ -26,13 +30,14 @@ class MimeTask < ObjHealthTask
     ObjectHealthUtil.status_values.each do |stat|
       objmap[stat] = []
     end
-    ohobj.build.get_object.fetch(:mimes_for_object, []).each do |rec|
+    ohobj.build.hash_object.fetch(:mimes_for_object, []).each do |rec|
       mime = rec.fetch(:mime, '').to_sym
       next if mime.empty?
+
       status = @statmap.fetch(mime, :SKIP)
       # if mime contains a semicolon, try performing a match on the substring before the semicolon
-      if status == :SKIP && mime.to_s =~ %r[;]
-        tmime = mime.to_s.split(";")[0].to_sym
+      if status == :SKIP && mime.to_s =~ /;/
+        tmime = mime.to_s.split(';')[0].to_sym
         tstatus = @statmap.fetch(tmime, :SKIP)
         if tstatus != :SKIP
           mime = tmime
@@ -41,51 +46,59 @@ class MimeTask < ObjHealthTask
       end
       map[mime] = status
     end
-    map.each do |k,v|
+    map.each do |k, v|
       objmap[v].append(k)
     end
     ohobj.analysis.set_key(:mimes_by_status, objmap)
 
-    ohobj.build.get_object.fetch(:producer, []).each do |f|
+    ohobj.build.hash_object.fetch(:producer, []).each do |f|
       next if f.fetch(:ignore_file, false)
-      ext = f.fetch(:ext, "").to_sym
+
+      ext = f.fetch(:ext, '').to_sym
 
       mime = f.fetch(:mime_type, '').to_sym
-      unless ext.empty?
-        cmimeext = @mimeext.fetch(mime, {})
-        cmimeext = {} if cmimeext.nil?
-        if cmimeext.key?(ext)
-          cmimestat = cmimeext.fetch(ext, :PASS)
-          cmimestat = cmimestat.nil? ? :PASS : cmimestat.to_sym
-          unless cmimestat == :PASS
-            objmap_ext_status[mime] = objmap_ext_status.fetch(mime, {})
-            objmap_ext_status[mime][ext] = cmimestat
-          end
-        else
-          objmap_ext_mismatch[mime] = objmap_ext_mismatch.fetch(mime, {})
-          objmap_ext_mismatch[mime][ext] = objmap_ext_mismatch.fetch(mime, {}).fetch(ext, []).append(f.fetch(:pathname, ''))
+      next if ext.empty?
+
+      cmimeext = @mimeext.fetch(mime, {})
+      cmimeext = {} if cmimeext.nil?
+      if cmimeext.key?(ext)
+        cmimestat = cmimeext.fetch(ext, :PASS)
+        cmimestat = cmimestat.nil? ? :PASS : cmimestat.to_sym
+        unless cmimestat == :PASS
+          objmap_ext_status[mime] = objmap_ext_status.fetch(mime, {})
+          objmap_ext_status[mime][ext] = cmimestat
         end
+      else
+        objmap_ext_mismatch[mime] = objmap_ext_mismatch.fetch(mime, {})
+        objmap_ext_mismatch[mime][ext] =
+          objmap_ext_mismatch.fetch(mime, {}).fetch(ext, []).append(f.fetch(:pathname, ''))
       end
     end
-    arr = []
-    objmap_ext_mismatch.each do |mime,v|
+
+    objmap_ext_mismatch.each_key do |mime|
       objmap_ext_mismatch[mime].each do |ext, arr|
-        ohobj.analysis.append_key(:mime_ext_mismatch, {
-          mime: mime,
-          ext: ext,
-          key: "#{mime}: #{ext}", 
-          count: arr.length,
-          files: arr
-        })
+        ohobj.analysis.append_key(
+          :mime_ext_mismatch,
+          {
+            mime: mime,
+            ext: ext,
+            key: "#{mime}: #{ext}",
+            count: arr.length,
+            files: arr
+          }
+        )
       end
     end
-    objmap_ext_status.each do |mime,v|
+    objmap_ext_status.each_key do |mime|
       objmap_ext_status[mime].each do |ext, stat|
-        ohobj.analysis.append_key(:mime_ext_status, {
-          mime: mime,
-          ext: ext,
-          status: stat
-        })
+        ohobj.analysis.append_key(
+          :mime_ext_status,
+          {
+            mime: mime,
+            ext: ext,
+            status: stat
+          }
+        )
       end
     end
 

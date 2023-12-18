@@ -1,8 +1,11 @@
+# frozen_string_literal: true
+
 require 'json'
 
+# Base class for a Merritt Object Health ANALYSIS Task and TEST
 class ObjHealthTask
-  def initialize(oh, taskdef, name)
-    @oh = oh
+  def initialize(objh, taskdef, name)
+    @oh = objh
     @taskdef = taskdef
     scope = @taskdef.fetch(:collection_scope, {})
     @skip = scope.fetch(:skip, [])
@@ -14,6 +17,7 @@ class ObjHealthTask
     m = ohobj.mnemonic
     return true if @apply.include?(m)
     return false if @skip.include?(m)
+
     @oh.collection_taxonomy(m).each do |g|
       return true if @apply.include?(g)
       return false if @skip.include?(g)
@@ -21,17 +25,13 @@ class ObjHealthTask
     @apply.empty?
   end
 
-  def name
-    @name
-  end
-  
-  def self.create(oh, taskdef, name)
-    unless taskdef.nil?
-      taskclass = taskdef.fetch(:class, '')
-      unless taskclass.empty?
-        Object.const_get(taskclass).new(oh, taskdef, name)
-      end
-    end
+  attr_reader :name
+
+  def self.create(objh, taskdef, name)
+    return if taskdef.nil?
+
+    taskclass = taskdef.fetch(:class, '')
+    Object.const_get(taskclass).new(objh, taskdef, name) unless taskclass.empty?
   end
 
   def run_task(ohobj)
@@ -39,22 +39,18 @@ class ObjHealthTask
   end
 
   def inspect
-    self.to_s
+    to_s
   end
-
 end
 
+# Base class for a Merritt Object Health TEST
 class ObjHealthTest < ObjHealthTask
-  def initialize(oh, taskdef, name)
-    super(oh, taskdef, name)
-  end
-
-  def run_test(ohobj)
+  def run_test(_ohobj)
     :SKIP
   end
 
   def report_status(cond: nil)
-    @taskdef.fetch(:report_status, {}).each do |k,v|
+    @taskdef.fetch(:report_status, {}).each do |k, v|
       return k if cond.nil? && v.nil?
       return k if v.nil?
       next if cond.nil?
