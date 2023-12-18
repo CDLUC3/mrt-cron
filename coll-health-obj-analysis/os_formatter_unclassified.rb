@@ -1,3 +1,6 @@
+# frozen_string_literal: true
+
+# When formatting the results of an Object Health Query, extract only files with an unclassified mime type
 class UnclassifiedMimeFormatter < OSFormatter
   def initialize(options, osfdef)
     super(options, osfdef)
@@ -6,17 +9,18 @@ class UnclassifiedMimeFormatter < OSFormatter
 
   def init_test
     @files_to_report = []
-    @doc.fetch("analysis", {}).fetch("unclassified_mime_files", {}).each do |v|
-      @files_to_report.append(v.fetch("path", []))
+    @doc.fetch('analysis', {}).fetch('unclassified_mime_files', {}).each do |v|
+      @files_to_report.append(v.fetch('path', []))
     end
   end
 
-  def has_file_test
+  def file_test?
     true
   end
 
-  def file_test(f)
-    return false unless file_filters(f)
-    @files_to_report.include?(f.fetch('pathname', ''))
+  def file_test(file)
+    return false unless file_filters(file)
+
+    @files_to_report.include?(file.fetch('pathname', ''))
   end
 end

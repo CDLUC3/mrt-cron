@@ -1,41 +1,34 @@
+# frozen_string_literal: true
+
 require 'json'
 require_relative 'oh_tasktest'
 
-# write analysis->mime->[status]->mime->[mime-type]
+# Merritt object test to determine if all file pathnames looks like filenames with file extensions
 class ExtTest < ObjHealthTest
-  def initialize(oh, taskdef, name)
-    super(oh, taskdef, name)
-  end
-
-  def get_filetype
+  def filetype
     :file
   end
 
   def run_test(ohobj)
     status = :PASS
-    ohobj.build.get_object.fetch(:producer, {}).each do |v|
-      status = report_status if v.fetch(:pathtype, '').to_sym == get_filetype
+    ohobj.build.hash_object.fetch(:producer, {}).each do |v|
+      status = report_status if v.fetch(:pathtype, '').to_sym == filetype
     end
     status
   end
 end
 
+# Merritt object test to determine if any file pathname looks like a url fragment rather than a filename with a
+# file extension
 class ExtUrlTest < ExtTest
-  def initialize(oh, taskdef, name)
-    super(oh, taskdef, name)
-  end
-
-  def get_filetype
+  def filetype
     :url
   end
 end
 
+# Merritt object test to determine if any file pathname has no discernable file extension
 class ExtNotPresentTest < ExtTest
-  def initialize(oh, taskdef, name)
-    super(oh, taskdef, name)
-  end
-
-  def get_filetype
+  def filetype
     :na
   end
 end

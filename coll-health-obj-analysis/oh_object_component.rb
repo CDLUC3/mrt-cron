@@ -1,42 +1,46 @@
+# frozen_string_literal: true
+
 require 'json'
 require 'time'
 
+# Base class to store the results of each phase of the Object Health process
+# Each the JSON creaded in each phase is stored in the hash @ohobj
 class ObjectHealthObjectComponent
   def initialize(ohobj, key)
     @updated = nil
     @ohobj = ohobj
     @compkey = key
-    @ohobj.get_osobj[@compkey] = default_object
+    @ohobj.opensearch_obj[@compkey] = default_object
   end
 
   def default_object
     {}
   end
 
-  def to_json
-    get_object.to_json
+  def to_json(*_args)
+    hash_object.to_json
   end
 
-  def get_object
-    @ohobj.get_osobj[@compkey]
+  def hash_object
+    @ohobj.opensearch_obj[@compkey]
   end
 
-  def set_object(obj)
-    @ohobj.get_osobj[@compkey] = obj
+  def ohobj_from_hash(obj)
+    @ohobj.opensearch_obj[@compkey] = obj
   end
 
   def init_object
-    set_object(default_object)
+    ohobj_from_hash(default_object)
   end
 
   def set_object_from_json(json, updated)
-    set_object(JSON.parse(json, symbolize_names: true)) unless json.nil?
+    ohobj_from_hash(JSON.parse(json, symbolize_names: true)) unless json.nil?
     @updated = ObjectHealthObject.make_opensearch_date(updated)
   end
 
   def pretty_json
-    JSON.pretty_generate(get_object)
-  end    
+    JSON.pretty_generate(hash_object)
+  end
 
   def set_key(key, val)
     @ohobj.set_key(@compkey, key, val)
@@ -75,71 +79,79 @@ class ObjectHealthObjectComponent
   end
 end
 
+# Component class representing the BUILD phase
 class ObjectHealthObjectBuild < ObjectHealthObjectComponent
-  def initialize(ohobj, key)
-    super(ohobj, key)
-  end
-
   def default_object
     {
       id: @ohobj.id
     }
   end
 
-  def build_object_representation(r)
-    loc = r.fetch('localids', '')
+  def build_object_representation(row)
+    loc = row.fetch('localids', '')
     loc = '' if loc.nil?
-    set_key(:identifiers, {
-      ark: r.fetch('ark', ''),
-      localids: loc.split(',')
-    })
-    m = r.fetch('mnemonic', '')
-    set_key(:containers, {
-      owner_ark: r.fetch('owner_ark', ''),
-      owner_name: r.fetch('owner_name', ''),
-      coll_ark: r.fetch('coll_ark', ''),
-      coll_name: r.fetch('coll_name', ''),
-      mnemonic: m,
-      campus: campus(r.fetch('coll_name', ''))
-    })
-    set_key(:metadata, {
-      erc_who: r.fetch('erc_who', ''),
-      erc_what: r.fetch('erc_what', ''),
-      erc_when: r.fetch('erc_when', ''),
-      erc_where: r.fetch('erc_where', '')
-    })
-    set_key(:modified, ObjectHealthObject.make_opensearch_date(r.fetch('modified', '')))
-    set_key(:embargo_end_date, ObjectHealthObject.make_opensearch_date(r.fetch('embargo_end_date', '')))
+    set_key(
+      :identifiers,
+      {
+        ark: row.fetch('ark', ''),
+        localids: loc.split(',')
+      }
+    )
+    m = row.fetch('mnemonic', '')
+    set_key(
+      :containers,
+      {
+        owner_ark: row.fetch('owner_ark', ''),
+        owner_name: row.fetch('owner_name', ''),
+        coll_ark: row.fetch('coll_ark', ''),
+        coll_name: row.fetch('coll_name', ''),
+        mnemonic: m,
+        campus: campus(row.fetch('coll_name', ''))
+      }
+    )
+    set_key(
+      :metadata,
+      {
+        erc_who: row.fetch('erc_who', ''),
+        erc_what: row.fetch('erc_what', ''),
+        erc_when: row.fetch('erc_when', ''),
+        erc_where: row.fetch('erc_where', '')
+      }
+    )
+    set_key(:modified, ObjectHealthObject.make_opensearch_date(row.fetch('modified', '')))
+    set_key(:embargo_end_date, ObjectHealthObject.make_opensearch_date(row.fetch('embargo_end_date', '')))
     @updated = DateTime.now.to_s
   end
 
   def campus(cname)
-    return "CDL" if cname =~ %r[^(CDL|UC3)]
-    return "UCB" if cname =~ %r[(^UCB |Berkeley)]
-    return "UCD" if cname =~ %r[^UCD]
-    return "UCLA" if cname =~ %r[^UCLA]
-    return "UCSB" if cname =~ %r[^UCSB]
-    return "UCI" if cname =~ %r[^UCI]
-    return "UCM" if cname =~ %r[^UCM]
-    return "UCR" if cname =~ %r[^UCR]
-    return "UCSC" if cname =~ %r[^UCSC]
-    return "UCSD" if cname =~ %r[^UCSD]
-    return "UCSF" if cname =~ %r[^UCSF]
-    "Other"
+    return 'CDL' if cname =~ /^(CDL|UC3)/
+    return 'UCB' if cname =~ /(^UCB |Berkeley)/
+    return 'UCD' if cname =~ /^UCD/
+    return 'UCLA' if cname =~ /^UCLA/
+    return 'UCSB' if cname =~ /^UCSB/
+    return 'UCI' if cname =~ /^UCI/
+    return 'UCM' if cname =~ /^UCM/
+    return 'UCR' if cname =~ /^UCR/
+    return 'UCSC' if cname =~ /^UCSC/
+    return 'UCSD' if cname =~ /^UCSD/
+    return 'UCSF' if cname =~ /^UCSF/
+
+    'Other'
   end
 
-  def self.make_sidecar(sidecarText)
+  def self.make_sidecar(sidecar_text)
     sidecar = {}
-    return sidecar if sidecarText.nil?
-    return sidecar if sidecarText.empty?
+    return sidecar if sidecar_text.nil?
+    return sidecar if sidecar_text.empty?
+
     begin
-      xml = Nokogiri::XML(sidecarText).remove_namespaces!
-      xml.xpath("//*[not(descendant::*)]").each do |n|
-        text = n.text.strip.gsub("\\n","").gsub("\n", "").strip
+      xml = Nokogiri::XML(sidecar_text).remove_namespaces!
+      xml.xpath('//*[not(descendant::*)]').each do |n|
+        text = n.text.strip.gsub('\\n', '').gsub("\n", '').strip
         sidecar[n.name] = sidecar.fetch(n.name, []).append(text) unless text.empty?
       end
-    rescue => exception
-      puts exception
+    rescue StandardError => e
+      puts e
     end
     sidecar
   end
@@ -148,27 +160,27 @@ class ObjectHealthObjectBuild < ObjectHealthObjectComponent
     set_key(:sidecar, [])
   end
 
-  def set_sidecar(text)
+  def append_sidecar(text)
     append_key(:sidecar, ObjectHealthObjectBuild.make_sidecar(text))
   end
 
   def process_object_files(ofiles, version)
-    set_key(:file_counts, {deleted: 0, empty: 0})
+    set_key(:file_counts, { deleted: 0, empty: 0 })
     set_key(:producer, [])
     set_key(:system, [])
     set_key(:na, [])
     set_key(:version, version)
-    ofiles.each do |k,v|
+    ofiles.each_value do |v|
       source = v.fetch(:source, :na).to_sym
       increment_subkey(:file_counts, source)
       # since we only record the first 1000 files for an object, this cannot be peformed at analysis time
       if v[:last_version_present] < version
-        increment_subkey(:file_counts, :deleted) 
+        increment_subkey(:file_counts, :deleted)
         v[:deleted] = true
       end
 
-      if v[:billable_size] == 0
-        increment_subkey(:file_counts, :empty) 
+      if (v[:billable_size]).zero?
+        increment_subkey(:file_counts, :empty)
         v[:empty] = true
       end
 
@@ -179,50 +191,46 @@ class ObjectHealthObjectBuild < ObjectHealthObjectComponent
 
       # count mime type for all files
       mime = v[:mime_type]
-      if source == :producer and !mime.empty?
-        count_mime(mime)
-      end
+      count_mime(mime) if (source == :producer) && !mime.empty?
 
       # record up to 1000 files for the object
-      if get_object.fetch(source, []).length <= 1000
-        append_key(source, v)
-      end
+      append_key(source, v) if hash_object.fetch(source, []).length <= 1000
     end
   end
 
-  def process_object_file(ofiles, r)
-    pathname = r.fetch('pathname', '')
+  def process_object_file(ofiles, row)
+    pathname = row.fetch('pathname', '')
     version = 0
     unless pathname.empty?
-      full_size = r.fetch('full_size', 0)
-      billable_size = r.fetch('billable_size', 0)
-      version = r.fetch('number', 0)
-      ext = ""
-      
-      ext = pathname.downcase.split(".")[-1] if pathname =~ %r[\.]
+      full_size = row.fetch('full_size', 0)
+      billable_size = row.fetch('billable_size', 0)
+      version = row.fetch('number', 0)
+      ext = ''
+
+      ext = pathname.downcase.split('.')[-1] if pathname =~ /\./
       if ext.empty?
         pathtype = :na
-      elsif ext =~ %r[^([a-z][a-z0-9]{1,4})$]
+      elsif ext =~ /^([a-z][a-z0-9]{1,4})$/
         pathtype = :file
-      elsif ext =~ %r[[\/\?]]
-        ext = ext.gsub(%r[[\/\?].*$], '')
+      elsif ext =~ %r{[/?]}
+        ext = ext.gsub(%r{[/?].*$}, '')
         pathtype = :url
-        ext = "" unless ext =~ %r[^([a-z][a-z0-9]{1,4})$]
+        ext = '' unless ext =~ /^([a-z][a-z0-9]{1,4})$/
       else
         pathtype = :na
-        ext = ""
+        ext = ''
       end
-      
+
       v = {
         version: version,
         last_version_present: version,
-        source: r.fetch('source', ''),
+        source: row.fetch('source', ''),
         pathname: pathname,
         billable_size: billable_size,
-        mime_type: r.fetch('mime_type', ''),
-        digest_type: r.fetch('digest_type', ''),
-        digest_value: r.fetch('digest_value', ''),
-        created: ObjectHealthObject.make_opensearch_date(r.fetch('created', '')),
+        mime_type: row.fetch('mime_type', ''),
+        digest_type: row.fetch('digest_type', ''),
+        digest_value: row.fetch('digest_value', ''),
+        created: ObjectHealthObject.make_opensearch_date(row.fetch('created', '')),
         pathtype: pathtype
       }
       v[:ext] = ext unless ext.empty?
@@ -235,38 +243,33 @@ class ObjectHealthObjectBuild < ObjectHealthObjectComponent
     end
     version
   end
-    
+
   def count_mime(mime)
-    get_object[:mimes_for_object] = [] unless get_object.key?(:mimes_for_object)
-    arr = get_object[:mimes_for_object]
-    arr.each_with_index do |r,i|
-      if r.fetch(:mime, '') == mime
-        arr[i][:count] = arr[i].fetch(:count, 0) + 1
-        return
-      end
+    hash_object[:mimes_for_object] = [] unless hash_object.key?(:mimes_for_object)
+    arr = hash_object[:mimes_for_object]
+    found = false
+    arr.each_with_index do |r, i|
+      next unless r.fetch(:mime, '') == mime
+
+      arr[i][:count] = arr[i].fetch(:count, 0) + 1
+      found = true
+      break
     end
-    arr.append({mime: mime, count: 1})
+    arr.append({ mime: mime, count: 1 }) unless found
   end
-    
 end
 
+# Component class representing the ANALYSIS phase
 class ObjectHealthObjectAnalysis < ObjectHealthObjectComponent
-  def initialize(ohobj, key)
-    super(ohobj, key)
-  end
-      
   def default_object
     {}
   end
 end
 
+# Component class representing the TEST phase
 class ObjectHealthObjectTests < ObjectHealthObjectComponent
-  def initialize(ohobj, key)
-    super(ohobj, key)
-  end
-            
   def default_object
-    tres = {failures: [], summary: [], results: {}, counts: {}}
+    tres = { failures: [], summary: [], results: {}, counts: {} }
     ObjectHealthUtil.status_values.each do |stat|
       tres[:counts][stat] = 0
     end
@@ -277,6 +280,6 @@ class ObjectHealthObjectTests < ObjectHealthObjectComponent
     set_subkey(:results, name.to_sym, status)
     increment_subkey(:counts, status)
     append_subkey(:by_status, status, name)
-    #append_key(:failures, name) if status == :FAIL
-  end    
+    # append_key(:failures, name) if status == :FAIL
+  end
 end

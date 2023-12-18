@@ -1,17 +1,13 @@
+# frozen_string_literal: true
+
 require 'json'
 require_relative 'oh_tasktest'
 
 # write analysis->mime->[status]->mime->[mime-type]
 class LocalIdTest < ObjHealthTest
-  def initialize(oh, taskdef, name)
-    super(oh, taskdef, name)
-  end
-
   def run_test(ohobj)
     status = :PASS
-    if ohobj.build.get_object.fetch(:identifiers, {}).fetch(:localids, []).empty?
-      status = report_status
-    end
+    status = report_status if ohobj.build.hash_object.fetch(:identifiers, {}).fetch(:localids, []).empty?
     status
   end
 end
