@@ -16,3 +16,4 @@ Layout/MultilineHashBraceLayout:
 
 AllCops:
   NewCops: enable
+  SuggestExtensions: false

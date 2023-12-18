@@ -5,3 +5,4 @@ Metrics/AbcSize:
 
 AllCops:
   NewCops: enable
+  SuggestExtensions: false
