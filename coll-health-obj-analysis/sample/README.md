@@ -2,6 +2,8 @@
 
 https://json-schema.org/overview/what-is-jsonschema
 
+---
+
 # Merritt Object Analysis as JSON Objects
 
 ## Sample JSON Object
@@ -105,7 +107,9 @@ File.open('config/obj_schema.json', 'w') do |f|
 end
 ```
 
-# We are implement an analysis rules engine driven from a complex Yaml file
+---
+
+# Rules engine driven from a complex Yaml file
 
 ## Validating Yaml Config File
 - [Complex Yaml Config File](../config/merritt_classifications.yml)
@@ -158,6 +162,9 @@ Output
 ```
 valid
 ```
+
+---
+
 
 # Why are we doing this?
 - [Project Goals](https://github.com/CDLUC3/mrt-cron/tree/main/coll-health-obj-analysis#merritt-collection-health-analysis-and-reporting)
