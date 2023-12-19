@@ -9,6 +9,7 @@ require 'yaml'
 def validate(schema, doc, label)
   stat = JSON::Validator.fully_validate(schema, doc)
   return if stat.empty?
+
   @val_errors[label] = stat
   puts "Validation errors for #{label}"
   stat.each do |s|
