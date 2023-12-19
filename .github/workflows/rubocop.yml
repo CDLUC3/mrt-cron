@@ -25,7 +25,7 @@ jobs:
     # Run the Rubocop linter checks
     - name: 'Validate JSON schemas'
       run: bundle exec ruby sample/ci_validate.rb
-      working-directory: coll-health
+      working-directory: coll-health-obj-analysis
 
     # Install Ruby and run bundler
     - uses: ruby/setup-ruby@v1
