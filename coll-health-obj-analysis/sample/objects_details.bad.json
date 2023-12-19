@@ -1,0 +1,342 @@
+{
+  "id": 1741491,
+  "@timestamp": "2023-12-19T11:50:09-0800",
+  "build": {
+    "foo": "bar",
+    "id": "1741491",
+    "identifiers": {
+      "ark": "ark:/99999/fk4348tn0h",
+      "localids": [
+
+      ]
+    },
+    "containers": {
+      "owner_ark": "ark:/13030/j2rn30xp",
+      "owner_name": "UC3 Merritt administrator",
+      "coll_ark": "ark:/13030/m5rn35s8",
+      "coll_name": "Merritt demo",
+      "mnemonic": "merritt_demo",
+      "campus": "Other"
+    },
+    "metadata": {
+      "erc_who": "Anon",
+      "erc_what": "Samuel Beckett",
+      "erc_when": "unknown",
+      "erc_where": "ark:/99999/fk4348tn0h ; (:unas)"
+    },
+    "modified": "2015-05-19T08:06:02-07:00",
+    "embargo_end_date": "",
+    "sidecar": [
+
+    ],
+    "file_counts": {
+      "deleted": 0,
+      "empty": 0,
+      "producer": 2,
+      "system": 8
+    },
+    "producer": [
+      {
+        "version": 1,
+        "last_version_present": 1,
+        "source": "producer",
+        "pathname": "producer/mrt-erc.txt",
+        "billable_size": 50,
+        "mime_type": "text/plain",
+        "digest_type": "sha-256",
+        "digest_value": "e4923a2092791b372deda8a5e5a2af333f400cc9b706596d08841ae479c106ad",
+        "created": "2015-05-19T08:05:59-07:00",
+        "pathtype": "file",
+        "ext": "txt"
+      },
+      {
+        "version": 1,
+        "last_version_present": 1,
+        "source": "producer",
+        "pathname": "producer/sbeckett01.jpg",
+        "billable_size": 5686,
+        "mime_type": "image/jpeg",
+        "digest_type": "sha-256",
+        "digest_value": "5b1d5a31fe187b9accd37e0edcfbafa61a9eeeabce870259dd9661b154d14b4f",
+        "created": "2015-05-19T08:05:59-07:00",
+        "pathtype": "file",
+        "ext": "jpg"
+      }
+    ],
+    "system": [
+      {
+        "version": 1,
+        "last_version_present": 1,
+        "source": "system",
+        "pathname": "system/mrt-dc.xml",
+        "billable_size": 149,
+        "mime_type": "application/xml",
+        "digest_type": "sha-256",
+        "digest_value": "f40dd72e54b7e93c389895de1c13922fe5ac2ac226d7159a9704ae6f19a67929",
+        "created": "2015-05-19T08:05:59-07:00",
+        "pathtype": "file",
+        "ext": "xml"
+      },
+      {
+        "version": 1,
+        "last_version_present": 1,
+        "source": "system",
+        "pathname": "system/mrt-erc.txt",
+        "billable_size": 95,
+        "mime_type": "text/plain",
+        "digest_type": "sha-256",
+        "digest_value": "26149543e43ae0dbd635c68b770f58634e4578a870c8b99e46bb811108dfcb2d",
+        "created": "2015-05-19T08:05:59-07:00",
+        "pathtype": "file",
+        "ext": "txt"
+      },
+      {
+        "version": 1,
+        "last_version_present": 1,
+        "source": "system",
+        "pathname": "system/mrt-ingest.txt",
+        "billable_size": 1676,
+        "mime_type": "text/plain",
+        "digest_type": "sha-256",
+        "digest_value": "f362b0039c238d001ac5d838b1a1f77cc5089b9c9b192195eeaa692619bc381b",
+        "created": "2015-05-19T08:05:59-07:00",
+        "pathtype": "file",
+        "ext": "txt"
+      },
+      {
+        "version": 1,
+        "last_version_present": 1,
+        "source": "system",
+        "pathname": "system/mrt-membership.txt",
+        "billable_size": 20,
+        "mime_type": "text/plain",
+        "digest_type": "sha-256",
+        "digest_value": "3c0f81e6969792c972b6bde8ffc47cb4dcb49e207e6fa0daf3444d6280a837e3",
+        "created": "2015-05-19T08:05:59-07:00",
+        "pathtype": "file",
+        "ext": "txt"
+      },
+      {
+        "version": 1,
+        "last_version_present": 1,
+        "source": "system",
+        "pathname": "system/mrt-mom.txt",
+        "billable_size": 82,
+        "mime_type": "text/plain",
+        "digest_type": "sha-256",
+        "digest_value": "2801b3a6968bfdc765ae49a266a44f8abfcb2c79e0429aad8f7714c41a0a0921",
+        "created": "2015-05-19T08:05:59-07:00",
+        "pathtype": "file",
+        "ext": "txt"
+      },
+      {
+        "version": 1,
+        "last_version_present": 1,
+        "source": "system",
+        "pathname": "system/mrt-object-map.ttl",
+        "billable_size": 2920,
+        "mime_type": "plain/turtle",
+        "digest_type": "sha-256",
+        "digest_value": "17e62347b281ac76d65605e27faf2cd39dae8f4eb7d11253a566e632b96f1574",
+        "created": "2015-05-19T08:05:59-07:00",
+        "pathtype": "file",
+        "ext": "ttl"
+      },
+      {
+        "version": 1,
+        "last_version_present": 1,
+        "source": "system",
+        "pathname": "system/mrt-owner.txt",
+        "billable_size": 19,
+        "mime_type": "text/plain",
+        "digest_type": "sha-256",
+        "digest_value": "c28418725d4039fe8995bef2ea60d1d8494696a891d4f5823bb57bac97815adb",
+        "created": "2015-05-19T08:05:59-07:00",
+        "pathtype": "file",
+        "ext": "txt"
+      },
+      {
+        "version": 1,
+        "last_version_present": 1,
+        "source": "system",
+        "pathname": "system/mrt-submission-manifest.txt",
+        "billable_size": 607,
+        "mime_type": "text/plain",
+        "digest_type": "sha-256",
+        "digest_value": "f74b29236d2d7ad37ecccf5492003ae2621b4f579889b16da329360cba6ca778",
+        "created": "2015-05-19T08:05:59-07:00",
+        "pathtype": "file",
+        "ext": "txt"
+      }
+    ],
+    "na": [
+
+    ],
+    "version": 1,
+    "mimes_for_object": [
+      {
+        "mime": "text/plain",
+        "count": 1
+      },
+      {
+        "mime": "image/jpeg",
+        "count": 1
+      }
+    ]
+  },
+  "analysis": {
+    "merritt_test_data": false,
+    "mimes_by_status": {
+      "SKIP": [
+
+      ],
+      "PASS": [
+        "text/plain",
+        "image/jpeg"
+      ],
+      "INFO": [
+
+      ],
+      "WARN": [
+
+      ],
+      "FAIL": [
+
+      ]
+    },
+    "classification": {
+      "na": 0,
+      "common_metadata": 0,
+      "etd_metadata": 0,
+      "nuxeo_style_metadata": 0,
+      "bag_metadata": 0,
+      "secondary": 1,
+      "metadata": 0,
+      "complex": 0,
+      "derivatives": 1,
+      "content": 0
+    },
+    "mime_file_classification": {
+      "na": [
+
+      ],
+      "common_metadata": [
+
+      ],
+      "etd_metadata": [
+
+      ],
+      "nuxeo_style_metadata": [
+
+      ],
+      "bag_metadata": [
+
+      ],
+      "secondary": [
+        "text/plain"
+      ],
+      "metadata": [
+
+      ],
+      "complex": [
+
+      ],
+      "derivatives": [
+        "image/jpeg"
+      ],
+      "content": [
+
+      ]
+    },
+    "metadata_paths": {
+      "common_metadata": [
+
+      ],
+      "nuxeo_style_metadata": [
+
+      ],
+      "bag_metadata": [
+
+      ],
+      "etd_metadata": [
+
+      ],
+      "metadata": [
+
+      ]
+    },
+    "object_classification": "has_derivatives_only",
+    "metadata_classification": "has_secondary_metadata_only",
+    "primary_metadata_file": "NA",
+    "containers": {
+      "collection_set": [
+        "tag_test_set1",
+        "tag_test_set"
+      ],
+      "url": "https://merritt.cdlib.org/m/ark%3A%2F99999%2Ffk4348tn0h"
+    }
+  },
+  "tests": {
+    "failures": [
+
+    ],
+    "summary": [
+      "object-classification",
+      "metadata-classification"
+    ],
+    "results": {
+      "unsustainable-mime-type": "PASS",
+      "mime-extension-mismatch": "PASS",
+      "unexpected-mime-extension": "PASS",
+      "mime-not-found": "PASS",
+      "has-ignored-file": "PASS",
+      "object-classification": "FAIL",
+      "metadata-classification": "WARN",
+      "ext-url-like-pathname": "PASS",
+      "ext-not-present": "PASS",
+      "empty-file": "PASS",
+      "has-delete": "PASS",
+      "doesnt-have-meaningful-erc-what": "PASS",
+      "doesnt-have-meaningful-erc-who": "PASS",
+      "doesnt-have-meaningful-erc-when": "PASS",
+      "has-embargo": "PASS",
+      "no-local-id": "SKIP"
+    },
+    "counts": {
+      "SKIP": 1,
+      "PASS": 13,
+      "INFO": 0,
+      "WARN": 1,
+      "FAIL": 1
+    },
+    "by_status": {
+      "PASS": [
+        "unsustainable-mime-type",
+        "mime-extension-mismatch",
+        "unexpected-mime-extension",
+        "mime-not-found",
+        "has-ignored-file",
+        "ext-url-like-pathname",
+        "ext-not-present",
+        "empty-file",
+        "has-delete",
+        "doesnt-have-meaningful-erc-what",
+        "doesnt-have-meaningful-erc-who",
+        "doesnt-have-meaningful-erc-when",
+        "has-embargo"
+      ],
+      "FAIL": [
+        "object-classification"
+      ],
+      "WARN": [
+        "metadata-classification"
+      ],
+      "SKIP": [
+        "no-local-id"
+      ]
+    },
+    "state": "FAIL"
+  },
+  "exported": "2023-12-19T11:50:13-08:00",
+  "validated": true
+}
