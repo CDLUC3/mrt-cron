@@ -1,6 +1,8 @@
-## JSON Schema Resources
+# JSON Schema Resources
 
 https://json-schema.org/overview/what-is-jsonschema
+
+# Merritt Object Analysis as JSON Objects
 
 ## Sample JSON Object
 
@@ -76,11 +78,12 @@ Output
 valid
 ```
 
-## Take a closer look at our schema... this is cumbersome to maintain
+## Take a closer look at our schema... 
+_Compliant JSON files can be difficult to maintain by hand in an editor..._
 
 - [Merritt Object Analysis Schema](../config/obj_schema.json)
 
-JSON files can be written as YAML which is often easier to maintain
+JSON files can be written as YAML which is often easier to maintain.
 
 - [Merritt Object Analysis Schema - YAML format](../config/obj_schema.yml)
 
@@ -101,6 +104,8 @@ File.open('config/obj_schema.json', 'w') do |f|
   f.write(JSON.pretty_generate(YAML.safe_load(File.read('config/obj_schema.yml'), aliases: true)))
 end
 ```
+
+# We are implement an analysis rules engine driven from a complex Yaml file
 
 ## Validating Yaml Config File
 - [Complex Yaml Config File](../config/merritt_classifications.yml)
@@ -148,3 +153,12 @@ stat = JSON::Validator.fully_validate(schema_for_schema, yaml_schema)
 puts "valid" if stat.empty?
 puts stat unless stat.empty?
 ```
+
+Output
+```
+valid
+```
+
+# Why are we doing this?
+- [Project Goals](https://github.com/CDLUC3/mrt-cron/tree/main/coll-health-obj-analysis#merritt-collection-health-analysis-and-reporting)
+- [Object Analysis Data Model](https://github.com/CDLUC3/mrt-cron/blob/main/coll-health-obj-analysis/data_model.md)
