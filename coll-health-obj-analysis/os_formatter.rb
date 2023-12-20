@@ -104,8 +104,9 @@ class OSFormatter
   end
 
   def file_filters(file)
-    b = true
+    b = file['billable_size'] < @options[:max_file_size]
     b &= file['pathname'] =~ @options[:file_path_regex] if @options[:file_path_regex]
+    b &= file['pathname'] !~ @options[:exclude_file_path_regex] if @options[:exclude_file_path_regex]
     b &= file['mime_type'] =~ @options[:file_mime_regex] if @options[:file_mime_regex]
     b
   end
@@ -126,7 +127,8 @@ class OSFormatter
           path: "#{v}/#{p}",
           url: "#{file_url}/#{v}/#{pesc}",
           mime_type: f.fetch('mime_type', ''),
-          ext: f.fetch('ext', '')
+          ext: f.fetch('ext', ''),
+          billable_size: f.fetch('billable_size', 0)
         }
       )
       break if rfiles.length >= @options.fetch(:max_file_per_object, 5)

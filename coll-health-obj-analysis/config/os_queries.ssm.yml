@@ -8,7 +8,8 @@ options:
   start: 0
   limit: 10
   max_file_per_object: 1000
-  output: console
+  output: console,
+  max_file_size: 1000000000
 outputs:
   console: 
     class: ConsoleOutput
@@ -18,6 +19,8 @@ outputs:
     class: FilesOutput
   fits: 
     class: FitsOutput
+  fits-filtered: 
+    class: FitsFilteredOutput
 
 queries:
   default:
@@ -55,3 +58,9 @@ queries:
     query:
       match: 
         tests.results.mime-not-found: FAIL
+  # bundle exec ruby object_health_query.rb --fmt=octet-stream --file_mime_regex=octet-stream --output=fits --max_file_per_object=5
+  octet-stream:
+    class: OSFilesFormatter
+    query:
+      match: 
+        build.producer.mime_type: octet-stream

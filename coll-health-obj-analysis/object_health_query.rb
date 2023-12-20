@@ -100,13 +100,20 @@ class ObjectHealthQuery
       opts.on('--file_path_regex=REGEX', 'Regex to filter files to return by pathname') do |n|
         options[:file_path_regex] = Regexp.new(n)
       end
+      opts.on('--exclude_file_path_regex=REGEX', 'Exclude Regex to filter files to return by pathname') do |n|
+        options[:exclude_file_path_regex] = Regexp.new(n)
+      end
       opts.on('--file_mime_regex=REGEX', 'Regex to filter files to return by mime_type') do |n|
         options[:file_mime_regex] = Regexp.new(n)
       end
     end.parse(argv)
 
     # the default extractor does not pull file details... change the formatter if needed
-    options[:fmt] = :files if options[:fmt] == :default && (options[:output] == :files || options[:output] == :fits)
+    if options[:fmt] == :default &&
+       (options[:output] == :files || options[:output] == :fits || options[:output] == :'fits-filtered')
+      options[:fmt] =
+        :files
+    end
     options
   end
 

@@ -46,6 +46,10 @@ class FitsOutput < OutputConfig
     system("#{fitscmd} -f #{fitscfg} -i '#{fname}' > #{fits_output} 2> #{fits_err}")
   end
 
+  def record_stat(stat)
+    # override in derived class
+  end
+
   def format_fits_output
     return unless File.exist?(fits_output)
 
@@ -56,15 +60,16 @@ class FitsOutput < OutputConfig
         stat = 'NA' if stat.empty?
         c = doc.xpath('count(identity)')
         count = c > 1 ? "(#{c.to_i} identities)" : ''
-        puts "\t\tStatus: #{stat} #{count}"
+        write "\t\tStatus: #{stat} #{count}"
+        record_stat(stat)
         doc.xpath('identity').each do |id|
           tools = []
           id.xpath('tool').each do |t|
             tools.append(t.xpath('@toolname').text)
           end
-          puts "\t\t  #{id.xpath('@format')} (#{id.xpath('@mimetype')}): #{tools}"
+          write "\t\t  #{id.xpath('@format')} (#{id.xpath('@mimetype')}): #{tools}"
           id.xpath('externalIdentifier').each do |ei|
-            puts "\t\t    #{ei.xpath('@type')}: #{ei.text}"
+            write "\t\t    #{ei.xpath('@type')}: #{ei.text}"
           end
         end
       end
@@ -79,7 +84,7 @@ class FitsOutput < OutputConfig
         end
         msg = doc.xpath('message[1]').text
         msg = "Msg: #{msg}" unless msg.empty?
-        puts "\t\t#{fswf}. #{fsv}. #{msg}" unless fswf.empty? && fsv.empty? && msg.empty?
+        write "\t\t#{fswf}. #{fsv}. #{msg}" unless fswf.empty? && fsv.empty? && msg.empty?
       end
       # xml.xpath('/fits/fileinfo').each do |doc|
       #  doc.xpath('creatingApplicationName').each do |app|
@@ -97,16 +102,47 @@ class FitsOutput < OutputConfig
   end
 
   def output(rec, index)
-    puts "#{index}. #{rec[:ark]} (#{rec[:producer_count]} files)"
+    write "#{index}. #{rec[:ark]} (#{rec[:producer_count]} files)"
     rec.fetch(:files, []).each do |f|
-      puts "\t#{f.fetch(:path, '')} (#{f.fetch(:mime_type, '')})"
-      puts
+      sz = f.fetch(:billable_size, 0)
+      write "\t#{f.fetch(:path, '')} (#{f.fetch(:mime_type, '')}) #{ObjectHealthUtil.num_format(sz)}"
+      write
       fname = "#{fileid_basename}#{f[:ext]}"
       cleanup_last_fileid
       download_file_to_identify(fname, f[:url])
       run_fits(fname)
       format_fits_output
-      puts
+      write
     end
+    flush
+  end
+
+  def write(str = '')
+    puts str
+  end
+
+  def flush; end
+end
+
+# Invoke FITS, only generate output if at least one file returns a status other than UNKNOWN
+class FitsFilteredOutput < FitsOutput
+  def initialize(merritt_config)
+    @msg = []
+    @interesting = false
+    super(merritt_config)
+  end
+
+  def write(str = '')
+    @msg.append(str)
+  end
+
+  def flush
+    puts @msg if @interesting
+    @msg = []
+    @interesting = false
+  end
+
+  def record_stat(stat)
+    @interesting = true unless stat == 'UNKNOWN'
   end
 end

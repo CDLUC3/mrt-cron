@@ -12,7 +12,8 @@ class ConsoleOutput < OutputConfig
   def output(rec, index)
     puts "#{index}. #{rec[:ark]} (#{rec[:producer_count]} files)"
     rec.fetch(:files, []).each do |f|
-      puts "\t#{f.fetch(:path, '')} (#{f.fetch(:mime_type, '')})"
+      sz = f.fetch(:billable_size, 0)
+      puts "\t#{f.fetch(:path, '')} (#{f.fetch(:mime_type, '')}) #{ObjectHealthUtil.num_format(sz)}"
     end
   end
 end
