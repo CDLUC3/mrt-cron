@@ -109,7 +109,8 @@ valid
 
 ----
 
-```json
+```json [5-6]
+{
   "id": 1741491,
   "@timestamp": "2023-12-19T11:50:09-0800",
   "build": {
@@ -125,6 +126,7 @@ valid
   }
 }
 ```
+"foo" is not in schema.  "id" is defined as numeric.
 
 ----
 
