@@ -23,9 +23,62 @@ https://json-schema.org/overview/what-is-jsonschema
 
 ----
 
+```json
+{
+  "id": 1741491,
+  "@timestamp": "2023-12-19T11:50:09-0800",
+  "build": {
+    "id": 1741491,
+    "identifiers": {
+      "ark": "ark:/99999/fk4348tn0h",
+      "localids": [
+
+      ]
+    },
+    ...
+  },
+  "analysis":{}
+  "tests": {}
+}
+```
+
+----
+
 ## JSON Schema for the object
 
 - [Merritt Object Analysis Schema](https://github.com/CDLUC3/mrt-cron/blob/main/coll-health-obj-analysis/config/obj_schema.json)
+
+----
+
+```json
+{
+  "$id": "https://merritt.cdlib.org/obj_schema.yml",
+  "title": "Merritt Object Health Object Schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "id",
+    "@timestamp",
+    "build"
+  ],
+  "properties": {
+    "id": {
+      "type": "number"
+    },
+    "@timestamp": {
+      "type": "string"
+    },
+    "build": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {}
+    }
+    "analysis":{}
+    "tests": {}
+  }
+}
+
+```
 
 ----
 
@@ -53,6 +106,25 @@ valid
 ## Sample JSON Object with validity issues
 
 - [Merritt Object Analysis - Invalid object](https://github.com/CDLUC3/mrt-cron/blob/main/coll-health-obj-analysis/sample/objects_details.bad.json)
+
+----
+
+```json
+  "id": 1741491,
+  "@timestamp": "2023-12-19T11:50:09-0800",
+  "build": {
+    "foo": "bar",
+    "id": "1741491",
+    "identifiers": {
+      "ark": "ark:/99999/fk4348tn0h",
+      "localids": [
+
+      ]
+    },
+    ...
+  }
+}
+```
 
 ----
 
@@ -120,6 +192,33 @@ JSON files can be written as YAML which is often easier to maintain.
 
 ----
 
+```yml
+"$id": https://merritt.cdlib.org/obj_schema.yml
+title: Merritt Object Health Object Schema
+type: object
+additionalProperties: false
+required:
+- id
+- "@timestamp"
+- build
+properties:
+  id: 
+    type: number
+  "@timestamp":
+    type: string
+  build:
+    type: object
+    additionalProperties: false
+    properties: 
+      ...
+  analysis:
+    ...
+  tests:
+    ...
+```
+
+----
+
 ## VSCode configuration to validate schema YAML
 _Uses YAML v1.14.0 extension_
 
@@ -178,8 +277,12 @@ end
 
 ## Code to Validate the Yaml config file using a Yaml formatted JSON schema
 ```rb
-yaml_schema = JSON.parse(YAML.safe_load(File.read('config/yaml_schema.yml'), aliases: true).to_json)
-config = JSON.parse(YAML.safe_load(File.read('config/merritt_classifications.yml'), aliases: true).to_json)
+yaml_schema = JSON.parse(
+  YAML.safe_load(File.read('config/yaml_schema.yml'), aliases: true).to_json
+)
+config = JSON.parse(
+  YAML.safe_load(File.read('config/merritt_classifications.yml'),  aliases: true).to_json
+)
 stat = JSON::Validator.fully_validate(schema_for_schema, schema)
 puts "valid" if stat.empty?
 puts stat unless stat.empty?
