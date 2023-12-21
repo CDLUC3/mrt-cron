@@ -237,7 +237,14 @@ _Uses YAML v1.14.0 extension_
 ## Conversion program to turn YAML into JSON
 ```rb
 File.open('config/obj_schema.json', 'w') do |f|
-  f.write(JSON.pretty_generate(YAML.safe_load(File.read('config/obj_schema.yml'), aliases: true)))
+  f.write(
+    JSON.pretty_generate(
+      YAML.safe_load(
+        File.read('config/obj_schema.yml'), 
+        aliases: true
+      )
+    )
+  )
 end
 ```
 
@@ -290,6 +297,8 @@ puts "valid" if stat.empty?
 puts stat unless stat.empty?
 ```
 
+----
+
 Output
 ```
 valid
@@ -300,7 +309,9 @@ valid
 ## Code to validate the Yaml formatted JSON schema
 ```rb
 schema_for_schema = JSON::Validator.validator_for_name('draft6').metaschema
-yaml_schema = JSON.parse(YAML.safe_load(File.read('config/yaml_schema.yml'), aliases: true).to_json)
+yaml_schema = JSON.parse(
+  YAML.safe_load(File.read('config/yaml_schema.yml'), aliases: true).to_json
+)
 stat = JSON::Validator.fully_validate(schema_for_schema, yaml_schema)
 puts "valid" if stat.empty?
 puts stat unless stat.empty?
