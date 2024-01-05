@@ -109,10 +109,11 @@ class ObjectHealthQuery
     end.parse(argv)
 
     # the default extractor does not pull file details... change the formatter if needed
-    if options[:fmt] == :default &&
-       (options[:output] == :files || options[:output] == :fits || options[:output] == :'fits-filtered')
-      options[:fmt] =
-        :files
+    if options[:fmt] == :default
+      case options[:output]
+      when :files, :fits, :'fits-filtered', :'fits-unfiltered'
+        options[:fmt] = :files
+      end
     end
     options
   end

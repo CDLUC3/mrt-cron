@@ -57,7 +57,7 @@ class FitsOutput < OutputConfig
       xml = Nokogiri::XML(File.read(fits_output)).remove_namespaces!
       xml.xpath('/fits/identification').each do |doc|
         stat = doc.xpath('@status').text
-        stat = 'NA' if stat.empty?
+        stat = 'TOOLS_AGREE' if stat.empty?
         c = doc.xpath('count(identity)')
         count = c > 1 ? "(#{c.to_i} identities)" : ''
         write "\t\tStatus: #{stat} #{count}"
@@ -144,5 +144,14 @@ class FitsFilteredOutput < FitsOutput
 
   def record_stat(stat)
     @interesting = true unless stat == 'UNKNOWN'
+  end
+end
+
+# Invoke FITS, output unfiltered FITS XML
+class FitsUnfilteredOutput < FitsOutput
+  def format_fits_output
+    return unless File.exist?(fits_output)
+
+    puts File.read(fits_output)
   end
 end

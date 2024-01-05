@@ -236,8 +236,7 @@ _Uses YAML v1.14.0 extension_
 
 ## Conversion program to turn YAML into JSON
 ```rb
-File.open('config/obj_schema.json', 'w') do |f|
-  f.write(
+File.open('config/obj_schema.json', 'w') do |f|  f.write(
     JSON.pretty_generate(
       YAML.safe_load(
         File.read('config/obj_schema.yml'), 

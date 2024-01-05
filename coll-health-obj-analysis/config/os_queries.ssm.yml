@@ -21,6 +21,8 @@ outputs:
     class: FitsOutput
   fits-filtered: 
     class: FitsFilteredOutput
+  fits-unfiltered: 
+    class: FitsUnfilteredOutput
 
 queries:
   default:
