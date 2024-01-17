@@ -113,7 +113,7 @@ class ConsistencyDriver
     d = `date "+%Y-%m-%d"`.chop
     msg = "#{@siteurl}?path=report&report=consistency-reports/#{d}"
     subj = "#{@status.upcase}: #{@mode} Consistency Report for #{d}"
-    `echo "#{msg}" | mail -s "#{subj}" #{@config.fetch('email', 'dpr2')}`
+    `echo "#{msg}" | mail -r uc3@cdlib.org -s "#{subj}" #{@config.fetch('email', 'dpr2')}`
   end
 end
 
