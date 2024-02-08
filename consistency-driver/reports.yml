@@ -50,9 +50,7 @@ admintool:
   # Check for storage nodes over allocation
   - path: nodes
   # Check daily build output
-  - path: s3-list
-    rptpath: daily-build
-    status-file: build-log.status.txt
+  - path: daily-build-s3-list
   actions:
   - label: test
     path: replication_initiated
