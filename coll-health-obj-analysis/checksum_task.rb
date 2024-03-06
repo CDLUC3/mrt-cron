@@ -15,7 +15,8 @@ class ChecksumTask < ObjHealthTask
     ohobj.analysis.set_key(:duplicate_checksums_within_object, [])
     digests.each do |dig, arr|
       next if arr.length <= 1
-      ohobj.analysis.append_key(:duplicate_checksums_within_object, {digest: dig, count: arr.length, paths: arr})
+
+      ohobj.analysis.append_key(:duplicate_checksums_within_object, { digest: dig, count: arr.length, paths: arr })
     end
     ohobj
   end
