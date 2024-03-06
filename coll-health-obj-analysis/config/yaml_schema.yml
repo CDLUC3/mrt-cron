@@ -149,7 +149,7 @@ properties:
                                   - INFO
                                   - WARN
                                   - FAIL
-          test-data|collection-tags:
+          test-data|collection-tags|duplicate-checksum-within-object:
             properties:
               class:
                 type: string

@@ -267,6 +267,20 @@ properties:
               type: string
             mime:
               type: string
+      duplicate_checksums_within_object:
+        type: array
+        items:
+          type: object
+          additionalProperties: false
+          properties:
+            digest:
+              type: string
+            count:
+              type: number
+            paths:
+              type: array
+              items:
+                type: string
   tests:
     additionalProperties: false
     type: object

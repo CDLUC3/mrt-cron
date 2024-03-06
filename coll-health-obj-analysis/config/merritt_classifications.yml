@@ -943,6 +943,8 @@ classifications:
       # everything else is classified as :na
     collection-tags:
       class: CollectionTagTask
+    duplicate-checksum-within-object:
+      class: ChecksumTask
 
   # -------------------
   # Bitstream Analysis: these functions are not yet in scope for Merritt
@@ -1108,10 +1110,13 @@ classifications:
         - lsta_pomonapl
         # apply:
         # - mnemonic
+    duplicate-checksum-within-object-test:
+      class: DuplicateChecksumTest
+      report_status: 
+        WARN:
     # -------------------------
     # Future Tests to define and implement
     # -------------------------
-    #has-duplicate-checksum:
     #has-duplicate-object-title:
     #filename-valid:
     #  name: Filename validation

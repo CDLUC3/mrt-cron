@@ -333,9 +333,9 @@ Clear analysis objects and re-analyze
 bundle exec ruby object_health.rb -at --limit 10000 --query=has-build --clear-analysis
 ```
 
-Clear re-analysis without clearing
+Re-analyze without clearing
 ```
-bundle exec ruby object_health.rb -at --limit 10000 --query=has-build --clear-analysis
+bundle exec ruby object_health.rb -at --limit 10000 --query=has-build
 ```
 
 ## Re-test
