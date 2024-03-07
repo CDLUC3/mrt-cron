@@ -60,8 +60,12 @@ classifications:
           tags:
             tag_etd:
         ucr_lib_nuxeo:
+          tags:
+            tag_nuxeo:
         ucsc_lib_sc:
         ucsf_ctp_archive:
+          tags:
+            tag_nuxeo:
         cdl_ipresbo:
     - name: Test Set 2
       groups:
@@ -75,10 +79,16 @@ classifications:
         ucb_lib_bonney:
         ucb_lib_eal_books:
         ucm_lib_ucce_sjo:
+          tags:
+            tag_nuxeo:
         uci_lib_legacy:
         ucsc_lib_grateful_dead:
         ucsf_lib_actup:
+          tags:
+            tag_nuxeo:
         ucsf_lib_bobbicampbell:
+          tags:
+            tag_nuxeo:
 
     - name: Test Set 3
       groups:
@@ -92,16 +102,32 @@ classifications:
           tags:
             tag_etd:
         uci_lib_sca_crit:
+          tags:
+            tag_nuxeo:
         uci_lib_sca_orange:
+          tags:
+            tag_nuxeo:
         uci_lib_sca_sc:
+          tags:
+            tag_nuxeo:
         uci_lib_sca_se_asian:
+          tags:
+            tag_nuxeo:
         uci_lib_sca_ua:
+          tags:
+            tag_nuxeo:
         uci_lib_sca_upub:
+          tags:
+            tag_nuxeo:
         uci_lib_ucispace:
         uci_lib_vaohp:
         ucr_lib_eatonfz:
+           tags:
+            tag_nuxeo:
         ucr_lib_wrca_laaqua:
         ucr_lib_wrca_wwaters:
+          tags:
+            tag_nuxeo:
         ucsc_lib_cabrillo:
         ucsc_lib_etd:
           tags:
@@ -398,30 +424,70 @@ classifications:
         ucm_admin_misc:
         ucm_dash:
         ucm_lib_acm:
+          tags:
+            tag_nuxeo:
         ucm_lib_clark:
+          tags:
+            tag_nuxeo:
         ucm_lib_donpedro:
+          tags:
+            tag_nuxeo:
         ucm_lib_dsc:
+          tags:
+            tag_nuxeo:
         ucm_lib_elowe:
+          tags:
+            tag_nuxeo:
         ucm_lib_etd:
           tags:
             tag_etd:
         ucm_lib_jaac_newsletters:
+          tags:
+            tag_nuxeo:
         ucm_lib_mcdaniel:
+          tags:
+            tag_nuxeo:
         ucm_lib_nuxeo:
+          tags:
+            tag_nuxeo:
         ucm_lib_psych:
         ucm_lib_ssczo:
         ucm_lib_ucce_anr:
+          tags:
+            tag_nuxeo:
         ucm_lib_ucce_fresno:
+          tags:
+            tag_nuxeo:
         ucm_lib_ucce_humboldt:
+          tags:
+            tag_nuxeo:
         ucm_lib_ucce_madera:
+          tags:
+            tag_nuxeo:
         ucm_lib_ucce_mariposa:
+          tags:
+            tag_nuxeo:
         ucm_lib_ucce_merced:
+          tags:
+            tag_nuxeo:
         ucm_lib_ucce_modoc:
+          tags:
+            tag_nuxeo:
         ucm_lib_ucce_sbslo:
+          tags:
+            tag_nuxeo:
         ucm_lib_ucce_sd:
+          tags:
+            tag_nuxeo:
         ucm_lib_ucce_syu:
+          tags:
+            tag_nuxeo:
         ucm_lib_ucce_tulare:
+          tags:
+            tag_nuxeo:
         ucm_lib_ucce_ventura:
+          tags:
+            tag_nuxeo:
         ucr_bcoe_2dmaterials:
         ucsb_admin_misc:
         ucsb_dash:
@@ -445,10 +511,29 @@ classifications:
         ucsf_lib_misc:
         ucsf_lib_robertday:
         ucsf_lib_speck:
+        ucsf_lib_nhprc_beyer:
+          tags:
+            tag_nuxeo:
+        ucsf_lib_nhprc_fraiberg:
+          tags:
+            tag_nuxeo:
+        ucsf_lib_nhprc_gofman:
+          tags:
+            tag_nuxeo:
+        ucsf_lib_nhprc_hardgrove:
+          tags:
+            tag_nuxeo:
+        ucsf_lib_nhprc_thelander:
+          tags:
+            tag_nuxeo:
         ucsf_lib_stantonglantz:
+          tags:
+            tag_nuxeo:
         ucsf_lib_synapse:
         ucsf_lib_text:
         ucsf_lib_wan:
+          tags:
+            tag_nuxeo:
 
   # -------------------
   # Object Build Config
