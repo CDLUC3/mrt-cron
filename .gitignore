@@ -1,6 +1,5 @@
 vendor/
 ruby/
-consistency-driver/Gemfile.lock
 billing/daily-billing-prd.sh
 billing/daily-billing-stg.sh
 README.local.md
