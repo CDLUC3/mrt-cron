@@ -4,6 +4,10 @@ This library is part of the [Merritt Preservation System](https://github.com/CDL
 
 ## Purpose
 The purpose of this repository is to house crons for the Merritt system that can be run from any host.
+
+## Merritt Object Health
+- [Merritt Object Health System](coll-health-obj-analysis/README.md)
+
 ## Code invoked by this repository
 - [Merritt Billing Scripts](https://github.com/CDLUC3/mrt-admin-lambda/tree/main/merrit-billing)
   - Depends on https://github.com/CDLUC3/uc3-aws-cli
