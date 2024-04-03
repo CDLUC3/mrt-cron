@@ -190,8 +190,7 @@ These can be used to locate the object in Merritt or in OpenSearch.
           "2023_10_30_1625_v1file"
         ]
       },
-    },
-    "@timestamp": "2023-11-06T13:44:35-0800",
+    }
 }
 ```
 
@@ -221,8 +220,7 @@ These allow for filtering for similar objects.
         "mnemonic": "merritt_demo",
         "campus": "Other"
       },
-    },
-    "@timestamp": "2023-11-06T13:44:35-0800",
+    }
 }
 ```
 
@@ -251,8 +249,7 @@ The Merritt inventory database maintains minimal metadata (what, who, when, wher
         "erc_when": "(:unas)",
         "erc_where": "ark:/99999/fk47708705 ; 2023_10_30_1625_v1file"
       },
-    },
-    "@timestamp": "2023-11-06T13:44:35-0800",
+    }
 }
 ```
 
@@ -302,8 +299,7 @@ Add detailed information about Merritt System Files for the object.
           "ext": "txt"
         }
       ],
-    },
-    "@timestamp": "2023-11-06T13:44:35-0800",
+    }
 }
 ```
 </details>
@@ -356,8 +352,7 @@ _Detailed information will be recorded for up to 1000 objects._
           "ext": "v2"
         }
       ],
-    },
-    "@timestamp": "2023-11-06T13:44:35-0800",
+    }
 }
 ```
 </details>
@@ -399,8 +394,7 @@ _Includes ALL files, not just the first 1000 files_
           "count": 1
         }
       ],
-    },
-    "@timestamp": "2023-11-06T13:44:35-0800",
+    }
 }
 ```
 </details>
@@ -427,8 +421,7 @@ Capture version information about the object and the last modified date
       "mimes_for_object": [],
       "version": 2,
       "modified": "2023-10-30T16:29:29-07:00",
-    },
-    "@timestamp": "2023-11-06T13:44:35-0800",
+    }
 }
 ```
 </details>
@@ -456,8 +449,7 @@ Capture embargo information about the object (if present)
       "version": 2,
       "modified": "2023-10-30T16:29:29-07:00",
       "embargo_end_date": "",
-    },
-    "@timestamp": "2023-11-06T13:44:35-0800",
+    }
 }
 ```
 </details>
@@ -488,8 +480,7 @@ Capture specific files (based on file name) that will be ignored by all subseque
       "ignore_files": [
         "producer/Thumbs.db",
       ]
-    },
-    "@timestamp": "2023-11-06T13:44:35-0800",
+    }
 }
 ```
 </details>
@@ -535,8 +526,40 @@ _If present in the inventory database **inv_metadatas** table. Data contains a d
         },
         {}
       ]
-    },
+    }
+}
+```
+
+</details>
+
+#### Build Summary
+
+<details>
+<summary>Sample Json</summary>
+  
+```json
+{
+    "id": 3632877,
     "@timestamp": "2023-11-06T13:44:35-0800",
+    "build": {
+      "id": 3632877,
+      "identifiers": {
+        "ark": "ark:/99999/fk47708705",
+        "localids": [
+          "2023_10_30_1625_v1file"
+        ]
+      },
+      "containers": {},
+      "metadata": {},
+      "system": [],
+      "producer": [],
+      "file_counts": {},
+      "mimes_for_object": [],
+      "version": 2,
+      "modified": "2023-10-30T16:29:29-07:00",
+      "embargo_end_date": "",
+      "sidecar": []
+    }
 }
 ```
 
