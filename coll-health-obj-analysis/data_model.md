@@ -1,7 +1,10 @@
 [Object Health Home](README.md)
 
+---
+
 ## Video Walkthrough of the Object Analysis Data Model
 [![Thumbnail](https://i9.ytimg.com/vi_webp/i_K6mWg2eO4/mq1.webp?sqp=CKDDwbAG-oaymwEmCMACELQB8quKqQMa8AEB-AH2BYAC0AWKAgwIABABGGUgZShlMA8=&rs=AOn4CLAkmeFujwPJtu2z4Ie9iN-P1veM4g)](https://www.youtube.com/watch?v=i_K6mWg2eO4)
+
 ---
 
 # Merritt Object Health Data Model
