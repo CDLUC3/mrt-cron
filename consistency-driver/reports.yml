@@ -35,8 +35,6 @@ admintool:
   # Check oldest unprocessed audits 
   - path: audit_size
   # Look for doi conflicts
-  - path: doi
-  # Check audit performance
   - path: audit_processed_size
     days: '5'
   # Check for version clobber
@@ -71,8 +69,8 @@ colladmin:
   # Check that all SSM variables are documented
   - path: ssm-describe
   actions:
-  - label: dryad_node_cleanup
-    path: replic-delete-coll-batch-from-node
-    nodenum: 2001
-    coll: 420
+  #- label: dryad_node_cleanup
+  #  path: replic-delete-coll-batch-from-node
+  #  nodenum: 2001
+  #  coll: 420
 
