@@ -1,10 +1,16 @@
 # JSON/Yaml Schema Validation
 
-_To view this presentation as a slideshow_
+Source: https://github.com/CDLUC3/mrt-cron/blob/main/coll-health-obj-analysis/sample/README.md
+
+View as slideshow
 ```
 docker-compose -f sample/docker-compose.yml up --build
 ```
 
+Create Static Website
+```
+docker-compose -f sample/docker-compose-static.yml up --build
+```
 ---
 
 # JSON Schema Resources
