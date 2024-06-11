@@ -10,4 +10,4 @@ phases:
     commands:
       - cd coll-health-obj-analysis
       - docker-compose -f sample/docker-compose-static.yml up --build
-      - aws s3 cp --recursive present_schema s3://${S3CFBUCKET}/present_schema
+      - aws s3 cp --recursive sample/present_schema s3://${S3CFBUCKET}/present_schema
