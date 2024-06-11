@@ -1,0 +1,14 @@
+phases:
+  pre_build:
+    commands:
+      - echo s3://${S3CFBUCKET}/api 
+      - aws s3 ls s3://${S3CFBUCKET}/
+
+  build:
+    commands:
+      - cd coll-health-obj-analysis
+      - docker-compose -f sample/docker-compose-static.yml up --build
+      - aws s3 cp --recursive present_schema s3://${S3CFBUCKET}/present_schema
+  post_build:
+    commands:
+      #- aws s3 rm s3://${S3CFBUCKET}/api --recursive

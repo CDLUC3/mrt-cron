@@ -20,4 +20,4 @@ coll-health-obj-analysis/debug/*.json
 coll-health-obj-analysis/scratch.json
 coll-health-obj-analysis/fits.log
 coll-health-obj-analysis/bake_off.txt
-coll-health-obj-analysis/sample/assets
+coll-health-obj-analysis/sample/present_schema

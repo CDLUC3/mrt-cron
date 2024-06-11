@@ -10,4 +10,4 @@ services:
     command: ["/slides", "README.md", "--css", "sample.css", "--static", "/assets"]
     volumes:
     - ".:/slides"
-    - "./assets:/assets"
+    - "./present_schema:/assets"
