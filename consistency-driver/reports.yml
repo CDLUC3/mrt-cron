@@ -47,8 +47,8 @@ admintool:
   - path: replication_initiated
   # Check for storage nodes over allocation
   - path: nodes
-  # Check daily build output
-  - path: daily-build-s3-list
+  # Check lambda build tags
+  - path: lambda_tag
   actions:
   - label: test
     path: replication_initiated
@@ -68,6 +68,10 @@ colladmin:
   - path: consistency-report-cleanup
   # Check that all SSM variables are documented
   - path: ssm-describe
+  # Check server state and build tags
+  - path: instances
+  # Check lambda build tags
+  - path: lambda_tag
   actions:
   #- label: dryad_node_cleanup
   #  path: replic-delete-coll-batch-from-node
