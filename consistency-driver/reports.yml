@@ -71,7 +71,7 @@ colladmin:
   # Check server state and build tags
   - path: instances
   # Check lambda build tags
-  - path: lambda_tag
+  - path: coll_lambda_tag
   actions:
   #- label: dryad_node_cleanup
   #  path: replic-delete-coll-batch-from-node
