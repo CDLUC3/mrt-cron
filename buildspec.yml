@@ -3,8 +3,9 @@ version: 0.2
 phases:
   pre_build:
     commands:
-      - echo s3://${S3CFBUCKET}/api 
-      - aws s3 ls s3://${S3CFBUCKET}/
+    - aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin ${ECR_REGISTRY}
+    - echo s3://${S3CFBUCKET}/api 
+    - aws s3 ls s3://${S3CFBUCKET}/
 
   build:
     commands:
