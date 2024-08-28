@@ -1,5 +1,5 @@
 #!/bin/bash
-cd /dpr2/installs/mrt-cron
+cd /dpr2/install/mrt-cron
 git pull
 cd coll-health
 echo
