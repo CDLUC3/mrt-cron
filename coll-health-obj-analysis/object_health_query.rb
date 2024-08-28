@@ -8,7 +8,7 @@ require_relative 'object_health_util'
 require_relative 'outputters'
 require_relative 'fits_outputter'
 
-Dir["#{File.dirname(__FILE__)}/os_formatter*.rb"].sort.each { |file| require file }
+Dir["#{File.dirname(__FILE__)}/os_formatter*.rb"].each { |file| require file }
 
 # Merritt Object Health query tool to extract interesting objects and files from opensearch
 # Custom formatters can be applied to the search results to make the results usable within other tools

@@ -28,9 +28,8 @@ class ObjectHealthMatch
   def self.match_template_list(list, str, ohobj)
     return false if list.nil?
 
-    tlist = []
-    list.each do |v|
-      tlist.append(Mustache.render(v, ohobj.nil? ? {} : ohobj.template_map))
+    tlist = list.map do |v|
+      Mustache.render(v, ohobj.nil? ? {} : ohobj.template_map)
     end
     match_list(tlist, str)
   end

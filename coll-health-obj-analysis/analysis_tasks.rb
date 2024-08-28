@@ -3,7 +3,7 @@
 require 'json'
 require_relative 'oh_tasktest'
 # All analysis task classes should reside in a file '*_task.rb'.
-Dir["#{File.dirname(__FILE__)}/*_task.rb"].sort.each { |file| require file }
+Dir["#{File.dirname(__FILE__)}/*_task.rb"].each { |file| require file }
 
 # During the ANALYSIS phase, this class applies each of the analysis tasks
 # configured in config/merritt_classifications.yml

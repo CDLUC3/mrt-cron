@@ -6,7 +6,7 @@ require_relative 'oh_tasktest'
 # write analysis->mime->[status]->mime->[mime-type]
 class MimeTask < ObjHealthTask
   def initialize(objh, taskdef, name)
-    super(objh, taskdef, name)
+    super
     @statmap = {}
     @mimeext = {}
     ObjectHealthUtil.status_values.each do |stat|

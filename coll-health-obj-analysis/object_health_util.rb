@@ -30,12 +30,12 @@ class ObjectHealthUtil
   end
 
   def self.config_from_yaml(file)
-    config = YAML.safe_load(File.read(file), aliases: true)
+    config = YAML.safe_load_file(file, aliases: true)
     JSON.parse(config.to_json, symbolize_names: true)
   end
 
   def self.json_schema(file)
-    config = YAML.safe_load(File.read(file), aliases: true)
+    config = YAML.safe_load_file(file, aliases: true)
     JSON.parse(config.to_json)
   end
 

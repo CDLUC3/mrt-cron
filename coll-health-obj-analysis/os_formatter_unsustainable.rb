@@ -3,7 +3,7 @@
 # When formatting the results of an Object Health Query, extract only files with a non-sustainable mime type
 class UnsustainableMimeFormatter < OSFormatter
   def initialize(options, osfdef)
-    super(options, osfdef)
+    super
     @mimes_to_report = []
   end
 

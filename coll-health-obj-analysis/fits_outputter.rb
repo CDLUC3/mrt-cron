@@ -63,9 +63,8 @@ class FitsOutput < OutputConfig
         write "\t\tStatus: #{stat} #{count}"
         record_stat(stat)
         doc.xpath('identity').each do |id|
-          tools = []
-          id.xpath('tool').each do |t|
-            tools.append(t.xpath('@toolname').text)
+          tools = id.xpath('tool').map do |t|
+            t.xpath('@toolname').text
           end
           write "\t\t  #{id.xpath('@format')} (#{id.xpath('@mimetype')}): #{tools}"
           id.xpath('externalIdentifier').each do |ei|
@@ -129,7 +128,7 @@ class FitsFilteredOutput < FitsOutput
   def initialize(merritt_config)
     @msg = []
     @interesting = false
-    super(merritt_config)
+    super
   end
 
   def write(str = '')

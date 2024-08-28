@@ -3,7 +3,7 @@
 # When formatting the results of an Object Health Query, extract only files with a Mime Extension mismatch
 class ExtensionMismatchFormatter < OSFormatter
   def initialize(options, osfdef)
-    super(options, osfdef)
+    super
     @files_to_report = []
   end
 

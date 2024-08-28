@@ -7,7 +7,7 @@ require_relative 'oh_tasktest'
 # write analysis->mime->[status]->mime->[mime-type]
 class ClassifyTask < ObjHealthTask
   def initialize(objh, taskdef, name)
-    super(objh, taskdef, name)
+    super
     @catmap = {}
     @categories = @taskdef.fetch(:categorize, [])
     @metadata_types = @taskdef.fetch(:metadata_types, [])

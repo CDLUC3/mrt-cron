@@ -7,7 +7,7 @@ require_relative 'oh_tasktest'
 # the analysis tasks performed on the object's files
 class ClassificationTest < ObjHealthTest
   def initialize(objh, taskdef, name)
-    super(objh, taskdef, name)
+    super
     @mapping = ObjectHealthMatch.make_status_key_map(taskdef, :status_keys)
   end
 

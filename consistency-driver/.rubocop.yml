@@ -13,6 +13,8 @@ Layout/MultilineHashKeyLineBreaks:
 Layout/MultilineHashBraceLayout:
   EnforcedStyle: new_line
 
+Style/HashSyntax:
+  Enabled: false
 
 AllCops:
   NewCops: enable

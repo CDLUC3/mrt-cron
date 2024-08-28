@@ -2,7 +2,7 @@
 
 require 'json'
 require_relative 'oh_tasktest'
-Dir["#{File.dirname(__FILE__)}/*_test.rb"].sort.each { |file| require file }
+Dir["#{File.dirname(__FILE__)}/*_test.rb"].each { |file| require file }
 
 # During the TEST phase, this class applies each of the tests configured in config/merritt_classifications.yml
 class ObjectHealthTests
