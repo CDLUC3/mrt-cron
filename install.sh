@@ -1,4 +1,6 @@
 #!/bin/bash
+cd /dpr2/installs/mrt-cron
+git pull
 cd coll-health
 echo
 pwd
