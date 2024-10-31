@@ -74,6 +74,8 @@ colladmin:
   - path: coll_lambda_tag
   # System State check - ldap cert dates
   - path: system_state
+  # Check for LDAP inconsistencies
+  - path: ldap/collmap
   actions:
   #- label: dryad_node_cleanup
   #  path: replic-delete-coll-batch-from-node
