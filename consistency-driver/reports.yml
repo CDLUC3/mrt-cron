@@ -60,8 +60,6 @@ colladmin:
   # Locate un-queued ingest batches
   - path: batchFolders
     days: '7'
-  # Look for inventory queue failures  
-  - path: inv-queues
   # Look for access queue failures  
   - path: acc-queues
   # Remove old consistency report results
