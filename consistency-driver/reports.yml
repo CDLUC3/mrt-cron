@@ -74,6 +74,8 @@ colladmin:
   - path: system_state
   # Check for LDAP inconsistencies
   - path: ldap/collmap
+  # Check for orphan zk nodes
+  - path: zk_orphan
   actions:
   #- label: dryad_node_cleanup
   #  path: replic-delete-coll-batch-from-node
