@@ -179,7 +179,7 @@ class ObjectHealthObjectBuild < ObjectHealthObjectComponent
         v[:deleted] = true
       end
 
-      if (v[:billable_size]).zero?
+      if v[:billable_size].zero?
         increment_subkey(:file_counts, :empty)
         v[:empty] = true
       end
