@@ -37,7 +37,7 @@ class ObjectHealthQuery
   end
 
   def os_result_formatter(query)
-    osfconfig = @query_config.fetch(:queries, {}).fetch(query, nil)
+    osfconfig = @query_config.dig(:queries, query)
     OSFormatter.create(@options, osfconfig)
   end
 
