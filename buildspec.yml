@@ -10,6 +10,6 @@ phases:
   build:
     commands:
       - cd coll-health-obj-analysis
-      - docker pull ${ECR_REGISTRY}/docker-hub/webpronl/reveal-md
+      - docker pull --quiet ${ECR_REGISTRY}/docker-hub/webpronl/reveal-md
       - docker-compose -f sample/docker-compose-static.yml up --build
       - aws s3 cp --recursive sample/present_schema s3://${S3CFBUCKET}/present_schema
