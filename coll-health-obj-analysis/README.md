@@ -87,7 +87,7 @@ Provide a means to:
 
 The DEV version of this application should run against a docker stack that uses the Merritt DEV database.
 ```
-docker-compose up -d
+docker compose up -d
 ```
 
 ## New Database Table

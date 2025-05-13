@@ -4,12 +4,12 @@ Source: https://github.com/CDLUC3/mrt-cron/blob/main/coll-health-obj-analysis/sa
 
 View as slideshow
 ```
-docker-compose -f sample/docker-compose.yml up --build
+docker compose -f sample/docker-compose.yml up --build
 ```
 
 Create Static Website
 ```
-docker-compose -f sample/docker-compose-static.yml up --build
+docker compose -f sample/docker-compose-static.yml up --build
 ```
 ---
 
