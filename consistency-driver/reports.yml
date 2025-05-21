@@ -30,6 +30,8 @@ admintool:
   - path: mult_coll
   # Look for unexpected audit status 
   - path: audit_status
+  # Look for audit status of new ucb content
+  - path: audit_ucb
   # Check oldest unprocessed audits 
   - path: audit_oldest
   # Check oldest unprocessed audits 
@@ -49,6 +51,8 @@ admintool:
   - path: nodes
   # Check lambda build tags
   - path: lambda_tag
+  # Check UCB re-audit
+  - path: audit_ucb
   actions:
   - label: test
     path: replication_initiated
@@ -76,6 +80,8 @@ colladmin:
   - path: ldap/collmap
   # Check for orphan zk nodes
   - path: zk_orphan
+  # Reset ucb audit state
+  - path: audit_ucb_reset
   actions:
   #- label: dryad_node_cleanup
   #  path: replic-delete-coll-batch-from-node
