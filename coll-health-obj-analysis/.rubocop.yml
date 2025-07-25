@@ -14,7 +14,8 @@ Metrics/BlockNesting:
   Enabled: false
 Metrics/ParameterLists:
   Enabled: false
-
+Naming/PredicateMethod:
+  Enabled: false
 
 Layout/MultilineMethodCallIndentation:
   EnforcedStyle: indented
