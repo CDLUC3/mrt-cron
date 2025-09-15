@@ -84,10 +84,10 @@ class ObjectHealthCli
       end
       # The following values may be edited into yaml queries... perform some sanitization on the values
       opts.on('--query=QUERY', 'Object Selection Query to Use') do |n|
-        options[:query_params][:QUERY] = n.gsub(/[^A-Za-z0-9_\-]/, '')
+        options[:query_params][:QUERY] = n.gsub(/[^A-Za-z0-9_-]/, '')
       end
       opts.on('--mnemonic=MNEMONIC', 'Set Query Param Mnemonic') do |n|
-        options[:query_params][:MNEMONIC] = n.gsub(/[^a-z0-9_\-]/, '')
+        options[:query_params][:MNEMONIC] = n.gsub(/[^a-z0-9_-]/, '')
         options[:query_params][:QUERY] = 'collection'
       end
       opts.on('--tag=TAG', 'Set Collection TAG to process') do |n|
