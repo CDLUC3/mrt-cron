@@ -5,6 +5,9 @@ This library is part of the [Merritt Preservation System](https://github.com/CDL
 ## Purpose
 The purpose of this repository is to house crons for the Merritt system that can be run from any host.
 
+> [!NOTE]
+> This code has been retired.  The functionality either has or will be migrated into an ECS Task.
+
 ## Merritt Object Health
 - [Merritt Object Health System](coll-health-obj-analysis/README.md)
 
